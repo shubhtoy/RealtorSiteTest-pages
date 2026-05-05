@@ -49,7 +49,7 @@ export default function GalleryPage() {
   const lightboxSlides = useMemo(
     () =>
       filteredItems.map((item) => ({
-        src: item.src,
+        src: resolveAppHref(item.src),
         alt: item.alt,
         title: item.label,
         description: item.category,
