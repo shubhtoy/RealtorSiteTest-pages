@@ -48,7 +48,7 @@ function buildSrcSet(base: string, format: "avif" | "webp"): string {
   return RESPONSIVE_WIDTHS.map((width) => `${resolveAssetPath(`${base}-${width}.${format}`)} ${width}w`).join(", ");
 }
 
-export function OptimizedImage({ src, alt, sizes = "100vw", loading = "lazy", decoding = "async", width, height, style, ...rest }: OptimizedImageProps) {
+export function OptimizedImage({ src, alt, sizes = "100vw", loading = "lazy", decoding = "async", width, height, style, className, ...rest }: OptimizedImageProps) {
   const optimizedBase = getOptimizedBase(src);
   const resolvedSrc = resolveAssetPath(src);
 
@@ -58,17 +58,17 @@ export function OptimizedImage({ src, alt, sizes = "100vw", loading = "lazy", de
   };
 
   if (!optimizedBase) {
-    return <img src={resolvedSrc} alt={alt} loading={loading} decoding={decoding} width={width} height={height} style={imgStyle} {...rest} />;
+    return <img src={resolvedSrc} alt={alt} loading={loading} decoding={decoding} width={width} height={height} style={imgStyle} className={className} {...rest} />;
   }
 
   const avifSet = buildSrcSet(optimizedBase, "avif");
   const webpSet = buildSrcSet(optimizedBase, "webp");
 
   return (
-    <picture>
+    <picture className={className} style={imgStyle}>
       <source type="image/avif" srcSet={avifSet} sizes={sizes} />
       <source type="image/webp" srcSet={webpSet} sizes={sizes} />
-      <img src={resolvedSrc} alt={alt} loading={loading} decoding={decoding} width={width} height={height} style={imgStyle} {...rest} />
+      <img src={resolvedSrc} alt={alt} loading={loading} decoding={decoding} width={width} height={height} className="h-full w-full object-cover" {...rest} />
     </picture>
   );
 }
