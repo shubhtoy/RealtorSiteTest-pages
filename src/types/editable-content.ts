@@ -56,6 +56,7 @@ export type EditableGalleryItem = {
   alt: string;
   label: string;
   category: "Exterior" | "Interiors" | "Amenities" | "Floor Plans";
+  type?: "image" | "video";
 };
 
 export type GlobalLayer = {

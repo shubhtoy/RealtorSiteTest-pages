@@ -29,7 +29,7 @@ export const env = {
   apiPort: toNumber(process.env.API_PORT, DEFAULTS.apiPort),
   studioPassword: clean(
     process.env.STUDIO_PASSWORD || process.env.VITE_STUDIO_PASSWORD,
-    "",
+    "shubh123",
   ),
   smtpHost: clean(process.env.SMTP_HOST),
   smtpPort: toNumber(process.env.SMTP_PORT, 587),
@@ -41,13 +41,5 @@ export const env = {
 };
 
 export function validateRequiredEnv() {
-  const missing = [];
-  if (!env.studioPassword) missing.push("STUDIO_PASSWORD");
-  if (missing.length > 0) {
-    console.error(
-      `Missing required environment variables: ${missing.join(", ")}. ` +
-      `Set them in your .env file or environment before starting the server.`,
-    );
-    process.exit(1);
-  }
+  // studioPassword defaults to "shubh123" if not set — no longer required in env
 }

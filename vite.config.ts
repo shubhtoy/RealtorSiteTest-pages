@@ -1,6 +1,20 @@
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
+import { execSync } from "child_process";
+
+function optimizeMediaPlugin() {
+  return {
+    name: "optimize-media",
+    buildStart() {
+      try {
+        execSync("node scripts/optimize-media.mjs --images --uploads", { stdio: "inherit" });
+      } catch {
+        console.warn("[optimize-media] Optimization skipped or failed — build continues.");
+      }
+    },
+  };
+}
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
@@ -9,7 +23,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     base: basePath,
-    plugins: [react()],
+    plugins: [react(), optimizeMediaPlugin()],
     server: {
       proxy: {
         "/api": {

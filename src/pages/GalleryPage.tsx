@@ -104,34 +104,56 @@ export default function GalleryPage() {
           </Reveal>
 
           <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredItems.map((item, index) => (
-              <figure
-                key={`${item.src}-${item.label}`}
-                className="group relative cursor-pointer overflow-hidden rounded-xl border border-border/60"
-                role="button"
-                tabIndex={0}
-                aria-label={`View ${item.label} in lightbox`}
-                onClick={() => setLightboxIndex(index)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    setLightboxIndex(index);
-                  }
-                }}
-              >
-                <OptimizedImage
-                  src={item.src}
-                  alt={item.alt}
-                  loading="lazy"
-                  className="h-64 w-full object-cover transition duration-500 group-hover:scale-[1.04] md:h-72"
-                  sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
-                />
-                <div className="absolute inset-x-0 bottom-0 h-24 bg-overlay-card-fade" />
-                <figcaption className="absolute bottom-0 z-10 px-3 py-3 text-xs font-semibold uppercase tracking-widest text-overlay-text">
-                  {item.label}
-                </figcaption>
-              </figure>
-            ))}
+            {filteredItems.map((item, index) => {
+              const isVideo = item.type === "video" || /\.(mp4|webm|ogg)$/i.test(item.src);
+              const isSvg = /\.svg$/i.test(item.src);
+              return (
+                <figure
+                  key={`${item.src}-${item.label}`}
+                  className="group relative cursor-pointer overflow-hidden rounded-xl border border-border/60"
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`View ${item.label} in lightbox`}
+                  onClick={() => !isVideo && setLightboxIndex(index)}
+                  onKeyDown={(e) => {
+                    if ((e.key === "Enter" || e.key === " ") && !isVideo) {
+                      e.preventDefault();
+                      setLightboxIndex(index);
+                    }
+                  }}
+                >
+                  {isVideo ? (
+                    <video
+                      src={item.src}
+                      muted
+                      loop
+                      playsInline
+                      autoPlay
+                      className="h-64 w-full object-cover md:h-72"
+                    />
+                  ) : isSvg ? (
+                    <img
+                      src={item.src}
+                      alt={item.alt}
+                      loading="lazy"
+                      className="h-64 w-full object-cover transition duration-500 group-hover:scale-[1.04] md:h-72"
+                    />
+                  ) : (
+                    <OptimizedImage
+                      src={item.src}
+                      alt={item.alt}
+                      loading="lazy"
+                      className="h-64 w-full object-cover transition duration-500 group-hover:scale-[1.04] md:h-72"
+                      sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
+                    />
+                  )}
+                  <div className="absolute inset-x-0 bottom-0 h-24 bg-overlay-card-fade" />
+                  <figcaption className="absolute bottom-0 z-10 px-3 py-3 text-xs font-semibold uppercase tracking-widest text-overlay-text">
+                    {item.label}
+                  </figcaption>
+                </figure>
+              );
+            })}
           </div>
         </div>
       </section> : null}

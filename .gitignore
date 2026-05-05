@@ -12,6 +12,7 @@
 *.pid
 *.seed
 *.pid.lock
+/server/data
 
 # Coverage directory
 /coverage

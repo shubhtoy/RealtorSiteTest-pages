@@ -51,8 +51,8 @@ const upload = multer({
   storage,
   limits: { fileSize: 12 * 1024 * 1024, files: 20 },
   fileFilter: (_req, file, cb) => {
-    const allowedMime = /^image\//.test(file.mimetype);
-    const allowedExt = /\.(jpg|jpeg|png|webp|avif|gif)$/i.test(file.originalname || "");
+    const allowedMime = /^(image|video)\//.test(file.mimetype);
+    const allowedExt = /\.(jpg|jpeg|png|webp|avif|gif|svg|mp4|webm|ogg)$/i.test(file.originalname || "");
     cb(null, allowedMime || allowedExt);
   },
 });
@@ -239,6 +239,19 @@ app.post("/api/contact/submit", contactLimiter, async (req, res) => {
     page: page ?? "contact",
     siteName: siteName ?? "Website",
   };
+
+  // Always persist submission to local file
+  const submissionsDir = path.resolve(process.cwd(), "server/data");
+  const submissionsFile = path.join(submissionsDir, "contact-submissions.json");
+  try {
+    await fs.mkdir(submissionsDir, { recursive: true });
+    let existing = [];
+    try { existing = JSON.parse(await fs.readFile(submissionsFile, "utf-8")); } catch {}
+    existing.push(payload);
+    await fs.writeFile(submissionsFile, JSON.stringify(existing, null, 2) + "\n", "utf-8");
+  } catch (err) {
+    console.error("[contact] Failed to persist submission to file:", err);
+  }
 
   const smtpResult = { attempted: false, success: false, mode: "none", error: null };
   const hookResults = [];
