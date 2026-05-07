@@ -1,6 +1,31 @@
 {
   "version": 1,
-  "updatedAt": "2026-05-07T15:37:00.025Z",
+  "updatedAt": "2026-05-07T16:01:56.229Z",
+  "theme": {
+    "colors": {
+      "primary": "198 65% 40%",
+      "accent": "172 44% 36%",
+      "background": "210 30% 97%",
+      "foreground": "218 24% 18%",
+      "secondary": "206 24% 92%",
+      "muted": "208 16% 89%",
+      "border": "208 18% 82%"
+    },
+    "fonts": {
+      "body": "Plus Jakarta Sans, sans-serif",
+      "display": "Plus Jakarta Sans, sans-serif"
+    },
+    "fontSize": {
+      "heroTitle": "clamp(2.5rem, 5vw, 4.5rem)",
+      "sectionTitle": "clamp(1.75rem, 3vw, 2.75rem)",
+      "body": "1rem"
+    },
+    "spacing": {
+      "sectionPadding": "clamp(3rem, 6vw, 6rem)",
+      "contentMaxWidth": "1140px"
+    },
+    "radius": "0.75rem"
+  },
   "global": {
     "siteName": "BabaFlats",
     "cityLabel": "Mableton, GA (Atlanta Region)",
@@ -224,17 +249,17 @@
         {
           "title": "Hartsfield-Jackson Airport",
           "description": "Convenient travel access for frequent flyers.",
-          "distance": "10 minutes"
+          "distance": "20 Minutes"
         },
         {
-          "title": "Greenbriar Mall",
-          "description": "Nearby retail and dining options.",
-          "distance": "5 minutes"
+          "title": "Truist Braves Stadium - Battery park",
+          "description": "Cumberland Mall and great place to dinning and hang out with Friends",
+          "distance": "12 minutes"
         },
         {
-          "title": "Cascade Springs Preserve",
-          "description": "Green space and trails for weekends outdoors.",
-          "distance": "8 minutes"
+          "title": "Six Flags",
+          "description": "Perfect place for family fun",
+          "distance": "10 Mins"
         }
       ]
     },
