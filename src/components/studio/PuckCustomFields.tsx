@@ -227,7 +227,9 @@ export function objectListField(
                       value={String(item?.[field.key] ?? "")}
                       onChange={(event) => {
                         const next = [...list];
-                        next[index] = { ...(next[index] || {}), [field.key]: event.target.value };
+                        const raw = event.target.value;
+                        const val = field.type === "number" ? (raw === "" ? 0 : Number(raw)) : raw;
+                        next[index] = { ...(next[index] || {}), [field.key]: val };
                         commit(next);
                       }}
                     />

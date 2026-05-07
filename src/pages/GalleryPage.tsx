@@ -124,7 +124,7 @@ export default function GalleryPage() {
                 >
                   {isVideo ? (
                     <video
-                      src={item.src}
+                      src={resolveAppHref(item.src)}
                       muted
                       loop
                       playsInline
@@ -133,7 +133,7 @@ export default function GalleryPage() {
                     />
                   ) : isSvg ? (
                     <img
-                      src={item.src}
+                      src={resolveAppHref(item.src)}
                       alt={item.alt}
                       loading="lazy"
                       className="h-64 w-full object-cover transition duration-500 group-hover:scale-[1.04] md:h-72"

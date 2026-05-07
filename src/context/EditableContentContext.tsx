@@ -1,5 +1,6 @@
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import {
+  coerceEditableSiteDocument,
   exportDraftAsJson,
   publishDraftDocument,
   readDraftDocument,
@@ -8,10 +9,12 @@ import {
   resetDraftToPublished,
   writeDraftDocument,
 } from "@/lib/editable-content-store";
-import { appEnv } from "@/config/env";
+import { GitHubCms } from "@/lib/github-cms";
 import type { EditableSiteDocument } from "@/types/editable-content";
 
 type EditableMode = "published" | "preview";
+
+type GitPublishStatus = "idle" | "publishing" | "success" | "error";
 
 type EditableContentContextValue = {
   mode: EditableMode;
@@ -21,6 +24,8 @@ type EditableContentContextValue = {
   current: EditableSiteDocument;
   updateDraft: (next: EditableSiteDocument) => void;
   publish: () => void;
+  publishToGitHub: () => Promise<{ ok: boolean; error?: string }>;
+  gitPublishStatus: GitPublishStatus;
   revertDraft: () => void;
   resetAll: () => void;
   exportDraftJson: () => string;
@@ -36,6 +41,36 @@ export function EditableContentProvider({ children }: Props) {
   const [mode, setMode] = useState<EditableMode>("published");
   const [published, setPublished] = useState<EditableSiteDocument>(() => readPublishedDocument());
   const [draft, setDraft] = useState<EditableSiteDocument>(() => readDraftDocument());
+  const [gitPublishStatus, setGitPublishStatus] = useState<GitPublishStatus>("idle");
+
+  // On mount, try to load content.json from the static build or GitHub
+  useEffect(() => {
+    const base = import.meta.env.BASE_URL || "/";
+    const url = `${base}content.json`;
+    fetch(url, { cache: "no-store" })
+      .then((res) => {
+        if (!res.ok) return null;
+        return res.json();
+      })
+      .then((data) => {
+        if (!data) return;
+        const { document } = coerceEditableSiteDocument(data);
+        if (document) {
+          // Only hydrate if localStorage doesn't already have a newer version
+          const localPublished = readPublishedDocument();
+          const localTime = new Date(localPublished.updatedAt).getTime();
+          const remoteTime = new Date(document.updatedAt).getTime();
+          if (remoteTime > localTime || isNaN(localTime)) {
+            publishDraftDocument(document);
+            setPublished(document);
+            setDraft(readDraftDocument());
+          }
+        }
+      })
+      .catch(() => {
+        // content.json not available yet — use localStorage/defaults
+      });
+  }, []);
 
   const value = useMemo<EditableContentContextValue>(
     () => ({
@@ -51,19 +86,22 @@ export function EditableContentProvider({ children }: Props) {
       publish: () => {
         publishDraftDocument(draft);
         setPublished(draft);
-
-        // Persist to API server (non-blocking)
-        const body = JSON.stringify(draft);
-        const headers: Record<string, string> = {
-          "Content-Type": "application/json",
-          "x-studio-password": appEnv.studioPassword,
-        };
-        fetch(`${appEnv.apiOrigin}/api/content/draft`, { method: "POST", headers, body })
-          .then(() => fetch(`${appEnv.apiOrigin}/api/content/publish`, { method: "POST", headers }))
-          .catch((err) => {
-            console.warn("[EditableContentContext] Failed to persist publish to API server:", err);
-          });
       },
+      publishToGitHub: async () => {
+        setGitPublishStatus("publishing");
+        // First persist locally
+        publishDraftDocument(draft);
+        setPublished(draft);
+
+        // Then push to GitHub
+        const result = await GitHubCms.publish(draft);
+        setGitPublishStatus(result.ok ? "success" : "error");
+        if (result.ok) {
+          setTimeout(() => setGitPublishStatus("idle"), 3000);
+        }
+        return result;
+      },
+      gitPublishStatus,
       revertDraft: () => {
         resetDraftToPublished();
         const next = readDraftDocument();
@@ -78,7 +116,7 @@ export function EditableContentProvider({ children }: Props) {
       },
       exportDraftJson: () => exportDraftAsJson(),
     }),
-    [draft, mode, published],
+    [draft, mode, published, gitPublishStatus],
   );
 
   return <EditableContentContext.Provider value={value}>{children}</EditableContentContext.Provider>;
