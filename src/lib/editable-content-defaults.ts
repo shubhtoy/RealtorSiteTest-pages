@@ -17,9 +17,36 @@ import type { EditableSiteDocument } from "@/types/editable-content";
 
 export const EDITABLE_CONTENT_VERSION = 1;
 
+export const defaultTheme: EditableSiteDocument["theme"] = {
+  colors: {
+    primary: "198 65% 40%",
+    accent: "172 44% 36%",
+    background: "210 30% 97%",
+    foreground: "218 24% 18%",
+    secondary: "206 24% 92%",
+    muted: "208 16% 89%",
+    border: "208 18% 82%",
+  },
+  fonts: {
+    body: "Plus Jakarta Sans, sans-serif",
+    display: "Plus Jakarta Sans, sans-serif",
+  },
+  fontSize: {
+    heroTitle: "clamp(2.5rem, 5vw, 4.5rem)",
+    sectionTitle: "clamp(1.75rem, 3vw, 2.75rem)",
+    body: "1rem",
+  },
+  spacing: {
+    sectionPadding: "clamp(3rem, 6vw, 6rem)",
+    contentMaxWidth: "1140px",
+  },
+  radius: "0.75rem",
+};
+
 export const defaultEditableSiteDocument: EditableSiteDocument = {
   version: EDITABLE_CONTENT_VERSION,
   updatedAt: new Date().toISOString(),
+  theme: defaultTheme,
   global: {
     siteName: "The Flats @ 1204",
     cityLabel: "Atlanta",

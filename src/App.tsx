@@ -5,6 +5,7 @@ import SitePreloader from "./components/layout/SitePreloader";
 import SiteFooter from "./components/layout/SiteFooter";
 import SiteHeader from "./components/layout/SiteHeader";
 import RouteErrorBoundary from "./components/layout/RouteErrorBoundary";
+import { ThemeInjector } from "./components/layout/ThemeInjector";
 import { EditableContentProvider } from "./context/EditableContentContext";
 const HomePage = lazy(() => import("./pages/HomePage"));
 const GalleryPage = lazy(() => import("./pages/GalleryPage"));
@@ -90,6 +91,7 @@ export default function App() {
   return (
     <BrowserRouter basename={import.meta.env.BASE_URL}>
       <EditableContentProvider>
+        <ThemeInjector />
         <AppContent showPreloader={showPreloader} />
       </EditableContentProvider>
     </BrowserRouter>

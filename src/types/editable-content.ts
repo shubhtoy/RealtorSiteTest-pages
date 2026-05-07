@@ -243,9 +243,36 @@ export type ContactLayer = {
   };
 };
 
+export type EditableTheme = {
+  colors: {
+    primary: string;
+    accent: string;
+    background: string;
+    foreground: string;
+    secondary: string;
+    muted: string;
+    border: string;
+  };
+  fonts: {
+    body: string;
+    display: string;
+  };
+  fontSize: {
+    heroTitle: string;
+    sectionTitle: string;
+    body: string;
+  };
+  spacing: {
+    sectionPadding: string;
+    contentMaxWidth: string;
+  };
+  radius: string;
+};
+
 export type EditableSiteDocument = {
   version: number;
   updatedAt: string;
+  theme: EditableTheme;
   global: GlobalLayer;
   home: HomeLayer;
   gallery: GalleryLayer;

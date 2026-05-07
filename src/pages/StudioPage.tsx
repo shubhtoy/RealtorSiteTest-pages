@@ -895,6 +895,64 @@ export default function StudioPage() {
             );
           },
         },
+        Theme: {
+          fields: {
+            primaryColor: { type: "text", label: "Primary Color (HSL)" },
+            accentColor: { type: "text", label: "Accent Color (HSL)" },
+            backgroundColor: { type: "text", label: "Background Color (HSL)" },
+            foregroundColor: { type: "text", label: "Foreground Color (HSL)" },
+            secondaryColor: { type: "text", label: "Secondary Color (HSL)" },
+            mutedColor: { type: "text", label: "Muted Color (HSL)" },
+            borderColor: { type: "text", label: "Border Color (HSL)" },
+            fontBody: { type: "text", label: "Body Font" },
+            fontDisplay: { type: "text", label: "Display Font" },
+            heroFontSize: { type: "text", label: "Hero Title Size" },
+            sectionFontSize: { type: "text", label: "Section Title Size" },
+            bodyFontSize: { type: "text", label: "Body Font Size" },
+            sectionPadding: { type: "text", label: "Section Padding" },
+            contentMaxWidth: { type: "text", label: "Content Max Width" },
+            radius: { type: "text", label: "Border Radius" },
+          },
+          render: (props: Record<string, unknown>) => (
+            <section className="rounded-2xl border border-border bg-panel-gradient p-5 shadow-soft">
+              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-accent">Theme & Design Tokens</p>
+              <div className="mt-3 grid gap-2 md:grid-cols-2">
+                <div className="rounded-xl border border-border/70 bg-background/50 p-3">
+                  <p className="text-[0.62rem] font-extrabold uppercase tracking-[0.12em] text-muted-foreground">Colors</p>
+                  <div className="mt-2 grid grid-cols-4 gap-2">
+                    {["primaryColor", "accentColor", "backgroundColor", "foregroundColor", "secondaryColor", "mutedColor", "borderColor"].map((key) => {
+                      const val = String(props?.[key] ?? "");
+                      return (
+                        <div key={key} className="flex items-center gap-1.5">
+                          <div className="h-4 w-4 rounded-full border border-border" style={{ backgroundColor: val ? `hsl(${val})` : undefined }} />
+                          <span className="truncate text-[10px] text-muted-foreground">{key.replace("Color", "")}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+                <div className="rounded-xl border border-border/70 bg-background/50 p-3">
+                  <p className="text-[0.62rem] font-extrabold uppercase tracking-[0.12em] text-muted-foreground">Typography</p>
+                  <p className="mt-1 text-xs">Body: {String(props?.fontBody ?? "")}</p>
+                  <p className="mt-1 text-xs">Display: {String(props?.fontDisplay ?? "")}</p>
+                  <p className="mt-1 text-xs">Hero: {String(props?.heroFontSize ?? "")}</p>
+                  <p className="mt-1 text-xs">Section: {String(props?.sectionFontSize ?? "")}</p>
+                  <p className="mt-1 text-xs">Body size: {String(props?.bodyFontSize ?? "")}</p>
+                </div>
+              </div>
+              <div className="mt-2 grid gap-2 md:grid-cols-3">
+                <div className="rounded-lg border border-border/70 bg-background/60 px-3 py-2 text-xs">
+                  <p className="font-extrabold uppercase tracking-[0.12em] text-muted-foreground">Spacing</p>
+                  <p className="mt-1">{String(props?.sectionPadding ?? "")} / {String(props?.contentMaxWidth ?? "")}</p>
+                </div>
+                <div className="rounded-lg border border-border/70 bg-background/60 px-3 py-2 text-xs">
+                  <p className="font-extrabold uppercase tracking-[0.12em] text-muted-foreground">Radius</p>
+                  <p className="mt-1">{String(props?.radius ?? "")}</p>
+                </div>
+              </div>
+            </section>
+          ),
+        },
       },
     }),
     [draft],
@@ -1061,10 +1119,31 @@ export default function StudioPage() {
             submitHooksJson: JSON.stringify(draft.contact.integrations.submitHooks, null, 2),
           },
         },
+        {
+          type: "Theme",
+          props: {
+            id: "theme",
+            primaryColor: draft.theme?.colors.primary ?? "",
+            accentColor: draft.theme?.colors.accent ?? "",
+            backgroundColor: draft.theme?.colors.background ?? "",
+            foregroundColor: draft.theme?.colors.foreground ?? "",
+            secondaryColor: draft.theme?.colors.secondary ?? "",
+            mutedColor: draft.theme?.colors.muted ?? "",
+            borderColor: draft.theme?.colors.border ?? "",
+            fontBody: draft.theme?.fonts.body ?? "",
+            fontDisplay: draft.theme?.fonts.display ?? "",
+            heroFontSize: draft.theme?.fontSize.heroTitle ?? "",
+            sectionFontSize: draft.theme?.fontSize.sectionTitle ?? "",
+            bodyFontSize: draft.theme?.fontSize.body ?? "",
+            sectionPadding: draft.theme?.spacing.sectionPadding ?? "",
+            contentMaxWidth: draft.theme?.spacing.contentMaxWidth ?? "",
+            radius: draft.theme?.radius ?? "",
+          },
+        },
       ];
 
       const sectionTypeMap: Record<typeof editorPage, string[]> = {
-        global: ["GlobalBrand", "GlobalCollections"],
+        global: ["GlobalBrand", "GlobalCollections", "Theme"],
         home: ["GlobalBrand", "GlobalCollections", "HomeHero", "HomeCollections", "HomeVisibility", "HomeUi"],
         gallery: ["GlobalBrand", "GlobalCollections", "GalleryHero", "GalleryCollections", "GalleryVisibility", "GalleryCta"],
         contact: ["GlobalBrand", "GlobalCollections", "ContactHero", "ContactCollections", "ContactVisibility", "ContactFormMeta", "ContactUi", "ContactIntegrations"],
@@ -1100,9 +1179,35 @@ export default function StudioPage() {
     const contactVisibilityEntry = PuckDataService.getEntryProps<ContactVisibilityProps>(nextData, "ContactVisibility");
     const contactUiEntry = PuckDataService.getEntryProps<ContactUiProps>(nextData, "ContactUi");
     const contactIntegrationsEntry = PuckDataService.getEntryProps<ContactIntegrationsProps>(nextData, "ContactIntegrations");
+    const themeEntry = PuckDataService.getEntryProps<Record<string, unknown>>(nextData, "Theme");
 
     const next = {
       ...draft,
+      theme: {
+        colors: {
+          primary: (themeEntry?.primaryColor as string) || draft.theme?.colors.primary || "",
+          accent: (themeEntry?.accentColor as string) || draft.theme?.colors.accent || "",
+          background: (themeEntry?.backgroundColor as string) || draft.theme?.colors.background || "",
+          foreground: (themeEntry?.foregroundColor as string) || draft.theme?.colors.foreground || "",
+          secondary: (themeEntry?.secondaryColor as string) || draft.theme?.colors.secondary || "",
+          muted: (themeEntry?.mutedColor as string) || draft.theme?.colors.muted || "",
+          border: (themeEntry?.borderColor as string) || draft.theme?.colors.border || "",
+        },
+        fonts: {
+          body: (themeEntry?.fontBody as string) || draft.theme?.fonts.body || "",
+          display: (themeEntry?.fontDisplay as string) || draft.theme?.fonts.display || "",
+        },
+        fontSize: {
+          heroTitle: (themeEntry?.heroFontSize as string) || draft.theme?.fontSize.heroTitle || "",
+          sectionTitle: (themeEntry?.sectionFontSize as string) || draft.theme?.fontSize.sectionTitle || "",
+          body: (themeEntry?.bodyFontSize as string) || draft.theme?.fontSize.body || "",
+        },
+        spacing: {
+          sectionPadding: (themeEntry?.sectionPadding as string) || draft.theme?.spacing.sectionPadding || "",
+          contentMaxWidth: (themeEntry?.contentMaxWidth as string) || draft.theme?.spacing.contentMaxWidth || "",
+        },
+        radius: (themeEntry?.radius as string) || draft.theme?.radius || "",
+      },
       global: {
         ...draft.global,
         siteName: globalEntry?.siteName ?? draft.global.siteName,

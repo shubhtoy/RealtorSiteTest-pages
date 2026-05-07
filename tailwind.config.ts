@@ -43,8 +43,8 @@ export default {
         glass: "0 8px 32px hsl(var(--shadow) / 0.08), inset 0 1px 0 hsl(var(--overlay-text) / 0.08)",
       },
       fontFamily: {
-        sans: ["Plus Jakarta Sans", "Avenir Next", "Manrope", "Segoe UI", "sans-serif"],
-        display: ["Plus Jakarta Sans", "Avenir Next", "Manrope", "Segoe UI", "sans-serif"],
+        sans: ["var(--font-body)", "Plus Jakarta Sans", "sans-serif"],
+        display: ["var(--font-display)", "Plus Jakarta Sans", "sans-serif"],
       },
       backgroundImage: {
         "body-mesh":

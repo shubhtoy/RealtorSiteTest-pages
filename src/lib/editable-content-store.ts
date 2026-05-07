@@ -34,6 +34,17 @@ export function validateEditableSiteDocument(document: EditableSiteDocument): { 
   if (!isNumber(document.version)) errors.push("version must be a number");
   if (!isString(document.updatedAt)) errors.push("updatedAt must be a string");
 
+  // Theme validation (lenient — all strings)
+  if (document.theme) {
+    if (!isObject(document.theme)) errors.push("theme must be an object");
+    else {
+      if (document.theme.colors && !isObject(document.theme.colors)) errors.push("theme.colors must be an object");
+      if (document.theme.fonts && !isObject(document.theme.fonts)) errors.push("theme.fonts must be an object");
+      if (document.theme.fontSize && !isObject(document.theme.fontSize)) errors.push("theme.fontSize must be an object");
+      if (document.theme.spacing && !isObject(document.theme.spacing)) errors.push("theme.spacing must be an object");
+    }
+  }
+
   if (!isString(document.global.siteName)) errors.push("global.siteName must be a string");
   if (!isString(document.global.cityLabel)) errors.push("global.cityLabel must be a string");
   if (!isString(document.global.tagline)) errors.push("global.tagline must be a string");
@@ -217,6 +228,26 @@ function hydrateDocument(partial: EditableSiteDocument): EditableSiteDocument {
   return {
     ...defaultEditableSiteDocument,
     ...partial,
+    theme: {
+      ...defaultEditableSiteDocument.theme,
+      ...partial.theme,
+      colors: {
+        ...defaultEditableSiteDocument.theme.colors,
+        ...partial.theme?.colors,
+      },
+      fonts: {
+        ...defaultEditableSiteDocument.theme.fonts,
+        ...partial.theme?.fonts,
+      },
+      fontSize: {
+        ...defaultEditableSiteDocument.theme.fontSize,
+        ...partial.theme?.fontSize,
+      },
+      spacing: {
+        ...defaultEditableSiteDocument.theme.spacing,
+        ...partial.theme?.spacing,
+      },
+    },
     global: {
       ...defaultEditableSiteDocument.global,
       ...partial.global,
