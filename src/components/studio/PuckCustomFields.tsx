@@ -1,6 +1,4 @@
-import { useEffect, useMemo, useState, type ChangeEvent, type ReactElement } from "react";
-import PhotoAlbum from "react-photo-album";
-import { STUDIO_PASSWORD } from "@/config/studio-auth";
+import { useState, type ChangeEvent, type ReactElement } from "react";
 import { resolveAppHref } from "@/lib/utils";
 
 const miniLabel = "mb-1 block text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500";
@@ -27,10 +25,13 @@ type GalleryItem = {
   src: string;
   alt: string;
   label: string;
-  category: "Exterior" | "Interiors" | "Amenities" | "Floor Plans";
+  category: string;
+  subcategory?: string;
+  type: "image" | "video";
+  poster?: string;
 };
 
-const galleryCategories: Array<GalleryItem["category"]> = ["Exterior", "Interiors", "Amenities", "Floor Plans"];
+const defaultGalleryCategories = ["Exterior", "Interiors", "Amenities", "Floor Plans"];
 
 function safeParse<T>(value: string, fallback: T): T {
   try {
@@ -281,503 +282,170 @@ export function visibilityField(label: string) {
     },
   };
 }
-
-export function galleryManagerField(label: string) {
+export function galleryManagerField(label: string, categoriesJson?: string) {
   return {
     type: "custom" as const,
     label,
-    render: ({ value, onChange }: CustomFieldRenderer): ReactElement => (
-      <GalleryManagerRenderer value={value} onChange={onChange} label={label} />
-    ),
-  };
-}
+    render: ({ value, onChange }: CustomFieldRenderer): ReactElement => {
+      const items: GalleryItem[] = safeParse(value, []);
+      const categories: string[] = categoriesJson
+        ? safeParse<Array<{ name: string }>>(categoriesJson, []).map((c) => c.name)
+        : defaultGalleryCategories;
 
-function GalleryManagerRenderer({
-  value,
-  onChange,
-  label,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-  label: string;
-}) {
-  let items = safeParse<GalleryItem[]>(value, []);
-  if (!Array.isArray(items)) items = [];
+      const commit = (next: GalleryItem[]) => commitJson(onChange, next);
+      const [isUploading, setIsUploading] = useState(false);
+      const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [selectedSet, setSelectedSet] = useState<number[]>([]);
-  const [searchText, setSearchText] = useState("");
-  const [filterCategory, setFilterCategory] = useState<"All" | GalleryItem["category"]>("All");
-  const [batchCategory, setBatchCategory] = useState<GalleryItem["category"]>("Interiors");
-  const [draftItem, setDraftItem] = useState<GalleryItem | null>(items[0] ? { ...items[0] } : null);
-  const [dragIndex, setDragIndex] = useState<number | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-
-  const commit = (next: GalleryItem[]) => commitJson(onChange, next);
-
-  useEffect(() => {
-    if (items.length === 0) {
-      setSelectedIndex(0);
-      setSelectedSet([]);
-      setDraftItem(null);
-      return;
-    }
-
-    if (selectedIndex >= items.length) {
-      setSelectedIndex(items.length - 1);
-      return;
-    }
-
-    setDraftItem({ ...items[selectedIndex] });
-  }, [items.length, selectedIndex, value]);
-
-  const selectedItem = items[selectedIndex] ?? null;
-  const isDirty = Boolean(selectedItem && draftItem && JSON.stringify(selectedItem) !== JSON.stringify(draftItem));
-
-  const visibleIndices = useMemo(() => {
-    const query = searchText.trim().toLowerCase();
-    return items
-      .map((item, index) => ({ item, index }))
-      .filter(({ item }) => {
-        if (filterCategory !== "All" && item.category !== filterCategory) return false;
-        if (!query) return true;
-        return [item.label, item.alt, item.src, item.category].some((part) =>
-          String(part || "").toLowerCase().includes(query),
-        );
-      })
-      .map((entry) => entry.index);
-  }, [filterCategory, items, searchText]);
-
-  const selectedVisibleCount = selectedSet.filter((index) => visibleIndices.includes(index)).length;
-
-  const add = () => {
-    const next = [
-      ...items,
-      {
-        src: "/images/",
-        alt: "New gallery image",
-        label: "New item",
-        category: "Interiors" as GalleryItem["category"],
-      },
-    ];
-    commit(next);
-    setSelectedIndex(next.length - 1);
-  };
-
-  const move = (from: number, to: number) => {
-    if (to < 0 || to >= items.length || from === to) return;
-    const next = [...items];
-    const [picked] = next.splice(from, 1);
-    next.splice(to, 0, picked);
-    commit(next);
-    setSelectedIndex(to);
-    setSelectedSet([]);
-  };
-
-  const duplicate = (index: number) => {
-    const picked = items[index];
-    if (!picked) return;
-    const next = [...items];
-    next.splice(index + 1, 0, { ...picked, label: `${picked.label || "Item"} Copy` });
-    commit(next);
-    setSelectedIndex(index + 1);
-  };
-
-  const removeOne = (index: number) => {
-    if (items.length <= 1) return;
-    const next = [...items];
-    next.splice(index, 1);
-    commit(next);
-    setSelectedSet([]);
-    setSelectedIndex(Math.max(0, Math.min(index, next.length - 1)));
-  };
-
-  const normalizePaths = () => {
-    const next = items.map((item) => {
-      const src = String(item.src || "").trim();
-      if (!src) return item;
-      if (src.startsWith("http://") || src.startsWith("https://") || src.startsWith("/")) return item;
-      return { ...item, src: `/${src.replace(/^\.\//, "")}` };
-    });
-    commit(next);
-  };
-
-  const autofillAlt = () => {
-    const next = items.map((item) => ({
-      ...item,
-      alt: String(item.alt || "").trim() || String(item.label || "Gallery image").trim() || "Gallery image",
-    }));
-    commit(next);
-  };
-
-  const cleanupEmpty = () => {
-    const next = items.filter((item) => String(item.src || "").trim() || String(item.label || "").trim());
-    if (next.length > 0) commit(next);
-  };
-
-  const dedupeBySrc = () => {
-    const seen = new Set<string>();
-    const next = items.filter((item) => {
-      const src = String(item.src || "").trim();
-      if (!src) return true;
-      if (seen.has(src)) return false;
-      seen.add(src);
-      return true;
-    });
-    commit(next);
-  };
-
-  const sortByCategory = () => {
-    const next = [...items].sort((a, b) => galleryCategories.indexOf(a.category) - galleryCategories.indexOf(b.category));
-    commit(next);
-    setSelectedSet([]);
-    setSelectedIndex(0);
-  };
-
-  const toggleSelected = (index: number) => {
-    setSelectedSet((prev) => (prev.includes(index) ? prev.filter((v) => v !== index) : [...prev, index]));
-  };
-
-  const clearSelected = () => setSelectedSet([]);
-
-  const applyBatchCategory = () => {
-    if (selectedSet.length === 0) return;
-    const next = items.map((item, index) => (selectedSet.includes(index) ? { ...item, category: batchCategory } : item));
-    commit(next);
-  };
-
-  const applyBatchAutofillAlt = () => {
-    if (selectedSet.length === 0) return;
-    const next = items.map((item, index) => {
-      if (!selectedSet.includes(index)) return item;
-      return {
-        ...item,
-        alt: String(item.alt || "").trim() || String(item.label || "Gallery image").trim() || "Gallery image",
+      const add = (type: "image" | "video") => {
+        const next = [...items, { src: "", alt: "", label: "New item", category: categories[0] || "", type, subcategory: "" }];
+        commit(next);
+        setExpandedIndex(next.length - 1);
       };
-    });
-    commit(next);
-  };
 
-  const removeSelected = () => {
-    if (selectedSet.length === 0 || items.length <= 1) return;
-    const shouldProceed = window.confirm(`Remove ${selectedSet.length} selected item(s)?`);
-    if (!shouldProceed) return;
-
-    const toRemove = new Set(selectedSet);
-    const next = items.filter((_, index) => !toRemove.has(index));
-    if (next.length === 0) return;
-    commit(next);
-    setSelectedSet([]);
-    setSelectedIndex(0);
-  };
-
-  const uploadFiles = async (files: FileList | File[]): Promise<Array<{ url: string; originalName: string }>> => {
-    const fileArray = Array.from(files || []);
-    if (fileArray.length === 0) return [];
-
-    const formData = new FormData();
-    fileArray.forEach((file) => formData.append("files", file));
-
-    const response = await fetch("/api/assets/upload", {
-      method: "POST",
-      headers: {
-        "x-studio-password": STUDIO_PASSWORD,
-      },
-      body: formData,
-    });
-
-    const result = (await response.json().catch(() => ({}))) as {
-      ok?: boolean;
-      files?: Array<{ url?: string; originalName?: string }>;
-      message?: string;
-    };
-
-    if (!response.ok || result.ok === false) {
-      throw new Error(result.message || "Upload failed");
-    }
-
-    return (result.files || [])
-      .filter((item): item is { url: string; originalName: string } => Boolean(item?.url))
-      .map((item) => ({
-        url: item.url,
-        originalName: item.originalName || "Uploaded image",
-      }));
-  };
-
-  const uploadAndAdd = async (event: ChangeEvent<HTMLInputElement>) => {
-    try {
-      setIsUploading(true);
-      const uploaded = await uploadFiles(event.target.files || []);
-      if (uploaded.length === 0) return;
-
-      const next = [
-        ...items,
-        ...uploaded.map((item) => {
-          const baseLabel = item.originalName.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ").trim();
-          return {
-            src: item.url,
-            alt: baseLabel || "Gallery image",
-            label: baseLabel || "New item",
-            category: "Interiors" as GalleryItem["category"],
-          };
-        }),
-      ];
-      commit(next);
-      setSelectedIndex(next.length - 1);
-    } catch (error) {
-      console.error(error);
-      alert(error instanceof Error ? error.message : "Upload failed");
-    } finally {
-      setIsUploading(false);
-      event.target.value = "";
-    }
-  };
-
-  const replaceSelectedImage = async (event: ChangeEvent<HTMLInputElement>) => {
-    if (!selectedItem) return;
-    try {
-      setIsUploading(true);
-      const uploaded = await uploadFiles(event.target.files || []);
-      const first = uploaded[0];
-      if (!first) return;
-
-      const baseLabel = first.originalName.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ").trim();
-      const next = [...items];
-      next[selectedIndex] = {
-        ...next[selectedIndex],
-        src: first.url,
-        label: next[selectedIndex].label || baseLabel,
-        alt: next[selectedIndex].alt || baseLabel,
+      const remove = (index: number) => {
+        commit(items.filter((_, i) => i !== index));
+        setExpandedIndex(null);
       };
-      commit(next);
-    } catch (error) {
-      console.error(error);
-      alert(error instanceof Error ? error.message : "Upload failed");
-    } finally {
-      setIsUploading(false);
-      event.target.value = "";
-    }
-  };
 
-  const previewPhotos = items
-    .filter((item) => item?.src)
-    .map((item, index) => ({
-      src: item.src,
-      width: 4,
-      height: 3,
-      alt: item.alt || item.label || `Gallery ${index + 1}`,
-      key: `${item.src}-${index}`,
-    }));
+      const update = (index: number, patch: Partial<GalleryItem>) => {
+        const next = [...items];
+        next[index] = { ...next[index], ...patch };
+        commit(next);
+      };
 
-  return (
-    <div style={{ display: "grid", gap: 10 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
-        <label className={btnAdd} style={{ cursor: isUploading ? "wait" : "pointer" }}>
-          {isUploading ? "Uploading..." : "Upload & Add Images"}
-          <input type="file" accept="image/*" multiple style={{ display: "none" }} onChange={uploadAndAdd} disabled={isUploading} />
-        </label>
-        <button type="button" className={btnAdd} onClick={add}>+ Add Empty {label}</button>
-      </div>
+      const move = (from: number, dir: -1 | 1) => {
+        const to = from + dir;
+        if (to < 0 || to >= items.length) return;
+        const next = [...items];
+        [next[from], next[to]] = [next[to], next[from]];
+        commit(next);
+        setExpandedIndex(to);
+      };
 
-      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-        <button type="button" className={btnAdd} onClick={normalizePaths}>Normalize Paths</button>
-        <button type="button" className={btnAdd} onClick={autofillAlt}>Auto-fill Alt</button>
-        <button type="button" className={btnAdd} onClick={cleanupEmpty}>Remove Empty</button>
-        <button type="button" className={btnAdd} onClick={dedupeBySrc}>De-duplicate</button>
-        <button type="button" className={btnAdd} onClick={sortByCategory}>Sort Categories</button>
-      </div>
+      const handleUpload = async (event: ChangeEvent<HTMLInputElement>) => {
+        const files = Array.from(event.target.files || []);
+        if (!files.length) return;
+        setIsUploading(true);
+        try {
+          const { GitHubCms } = await import("@/lib/github-cms");
+          if (!GitHubCms.hasToken()) {
+            alert("Configure GitHub token in Settings first");
+            return;
+          }
+          const results = await GitHubCms.uploadFiles(files);
+          const newItems: GalleryItem[] = results
+            .filter((r) => r.ok && r.url)
+            .map((r) => {
+              const isVideo = /\.(mp4|webm|ogg)$/i.test(r.url!);
+              const baseLabel = r.originalName.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ");
+              return { src: r.url!, alt: baseLabel, label: baseLabel, category: categories[0] || "", type: (isVideo ? "video" : "image") as "image" | "video", subcategory: "" };
+            });
+          if (newItems.length) {
+            commit([...items, ...newItems]);
+            setExpandedIndex(items.length);
+          }
+          const failed = results.filter((r) => !r.ok);
+          if (failed.length) alert(`${failed.length} file(s) failed: ${failed[0].error}`);
+        } catch (e) {
+          alert(e instanceof Error ? e.message : "Upload failed");
+        } finally {
+          setIsUploading(false);
+          event.target.value = "";
+        }
+      };
 
-      {previewPhotos.length > 0 ? (
-        <div style={{ border: "1px solid #e5e7eb", borderRadius: 10, padding: 8 }}>
-          <PhotoAlbum layout="rows" photos={previewPhotos} spacing={6} targetRowHeight={72} />
-        </div>
-      ) : null}
+      return (
+        <div style={{ display: "grid", gap: 8 }}>
+          {/* Actions bar */}
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
+            <label className={btnAdd} style={{ cursor: isUploading ? "wait" : "pointer" }}>
+              {isUploading ? "Uploading…" : "📁 Upload Files"}
+              <input type="file" accept="image/*,video/*" multiple style={{ display: "none" }} onChange={handleUpload} disabled={isUploading} />
+            </label>
+            <button type="button" className={btnAdd} onClick={() => add("image")}>+ Image</button>
+            <button type="button" className={btnAdd} onClick={() => add("video")}>+ Video</button>
+            <span style={{ fontSize: 11, color: "#64748b" }}>{items.length} items</span>
+          </div>
 
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-        <input
-          className={inputCls}
-          style={{ maxWidth: 240 }}
-          placeholder="Search label, alt, src"
-          value={searchText}
-          onChange={(event) => setSearchText(event.target.value)}
-        />
-        <select
-          className={inputCls}
-          style={{ maxWidth: 180 }}
-          value={filterCategory}
-          onChange={(event) => setFilterCategory(event.target.value as "All" | GalleryItem["category"])}
-        >
-          <option value="All">All Categories</option>
-          {galleryCategories.map((category) => (
-            <option key={category} value={category}>{category}</option>
-          ))}
-        </select>
-      </div>
-
-      {selectedSet.length > 0 ? (
-        <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", border: "1px dashed #cbd5e1", borderRadius: 8, padding: 8 }}>
-          <span className={miniLabel} style={{ margin: 0 }}>{selectedVisibleCount} selected</span>
-          <select
-            className={inputCls}
-            style={{ maxWidth: 170 }}
-            value={batchCategory}
-            onChange={(event) => setBatchCategory(event.target.value as GalleryItem["category"])}
-          >
-            {galleryCategories.map((category) => (
-              <option key={category} value={category}>{category}</option>
-            ))}
-          </select>
-          <button type="button" className={btnAdd} onClick={applyBatchCategory}>Set Category</button>
-          <button type="button" className={btnAdd} onClick={applyBatchAutofillAlt}>Auto-fill Alt</button>
-          <button type="button" className={btnAdd} onClick={removeSelected}>Remove Selected</button>
-          <button type="button" className={btnAdd} onClick={clearSelected}>Clear</button>
-        </div>
-      ) : null}
-
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.35fr) minmax(0, 1fr)", gap: 10 }}>
-        <div style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: 8, display: "grid", gap: 8, maxHeight: 560, overflow: "auto" }}>
-          {visibleIndices.length === 0 ? (
-            <p style={{ fontSize: 12, color: "#64748b", margin: 0 }}>No gallery items match current filters.</p>
-          ) : null}
-
-          {visibleIndices.map((index) => {
-            const item = items[index];
-            const isActive = selectedIndex === index;
-            const isPicked = selectedSet.includes(index);
-
-            return (
-              <div
-                key={`${item.src}-${index}`}
-                draggable
-                onDragStart={() => setDragIndex(index)}
-                onDragOver={(event) => event.preventDefault()}
-                onDrop={() => {
-                  if (dragIndex === null) return;
-                  move(dragIndex, index);
-                  setDragIndex(null);
-                }}
-                style={{
-                  border: `1px solid ${isActive ? "#3b82f6" : "#e5e7eb"}`,
-                  borderRadius: 8,
-                  padding: 8,
-                  display: "grid",
-                  gap: 6,
-                  background: isActive ? "#eff6ff" : "white",
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 6 }}>
-                  <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "#475569" }}>
-                    <input type="checkbox" checked={isPicked} onChange={() => toggleSelected(index)} />
-                    Select
-                  </label>
-                  <div style={{ display: "flex", gap: 6 }}>
-                    <button type="button" className={btnAdd} onClick={() => duplicate(index)}>Duplicate</button>
-                    <button type="button" className={btnAdd} onClick={() => removeOne(index)} disabled={items.length <= 1}>Remove</button>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => setSelectedIndex(index)}
-                  style={{ border: "none", background: "transparent", textAlign: "left", padding: 0, cursor: "pointer" }}
-                >
-                  <div style={{ display: "grid", gridTemplateColumns: "88px 1fr", gap: 8 }}>
-                    <div style={{ width: 88, height: 64, borderRadius: 6, overflow: "hidden", border: "1px solid #e5e7eb", background: "#f8fafc" }}>
-                      {item.src ? (
-                        <img src={resolveAppHref(item.src)} alt={item.alt || item.label} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          {/* Items list */}
+          <div style={{ display: "grid", gap: 6, maxHeight: 500, overflow: "auto" }}>
+            {items.map((item, index) => {
+              const isExpanded = expandedIndex === index;
+              return (
+                <div key={`${item.src}-${index}`} style={{ border: "1px solid #e2e8f0", borderRadius: 8, overflow: "hidden" }}>
+                  {/* Collapsed row */}
+                  <div
+                    style={{ display: "grid", gridTemplateColumns: "48px 1fr auto", gap: 8, padding: 6, alignItems: "center", cursor: "pointer", background: isExpanded ? "#f0f9ff" : "white" }}
+                    onClick={() => setExpandedIndex(isExpanded ? null : index)}
+                  >
+                    <div style={{ width: 48, height: 36, borderRadius: 4, overflow: "hidden", background: "#f1f5f9" }}>
+                      {item.type === "video" ? (
+                        <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>🎬</div>
+                      ) : item.src ? (
+                        <img src={resolveAppHref(item.src)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                       ) : null}
                     </div>
                     <div style={{ minWidth: 0 }}>
-                      <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: "#1f2937", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                        {item.label || "Untitled"}
-                      </p>
-                      <p style={{ margin: "2px 0 0", fontSize: 11, color: "#64748b" }}>{item.category}</p>
-                      <p style={{ margin: "4px 0 0", fontSize: 10, color: "#94a3b8", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                        {item.src || "(no src)"}
-                      </p>
+                      <p style={{ margin: 0, fontSize: 12, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.label || "Untitled"}</p>
+                      <p style={{ margin: 0, fontSize: 10, color: "#64748b" }}>{item.category}{item.subcategory ? ` › ${item.subcategory}` : ""} • {item.type}</p>
+                    </div>
+                    <div style={{ display: "flex", gap: 4 }}>
+                      <button type="button" className={btnAdd} onClick={(e) => { e.stopPropagation(); move(index, -1); }} disabled={index === 0}>↑</button>
+                      <button type="button" className={btnAdd} onClick={(e) => { e.stopPropagation(); move(index, 1); }} disabled={index === items.length - 1}>↓</button>
+                      <button type="button" className={btnAdd} onClick={(e) => { e.stopPropagation(); remove(index); }}>✕</button>
                     </div>
                   </div>
-                </button>
-              </div>
-            );
-          })}
-        </div>
 
-        <div style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: 10, display: "grid", gap: 8, alignContent: "start" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: "#334155" }}>
-              Inspector {isDirty ? "*" : ""}
-            </p>
-            <div style={{ display: "flex", gap: 6 }}>
-              <button type="button" className={btnAdd} onClick={() => setSelectedIndex((v) => Math.max(0, v - 1))} disabled={selectedIndex <= 0}>Prev</button>
-              <button type="button" className={btnAdd} onClick={() => setSelectedIndex((v) => Math.min(items.length - 1, v + 1))} disabled={selectedIndex >= items.length - 1}>Next</button>
-            </div>
+                  {/* Expanded editor */}
+                  {isExpanded && (
+                    <div style={{ padding: "8px 10px", borderTop: "1px solid #e2e8f0", display: "grid", gap: 6, background: "#fafbfc" }}>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+                        <div>
+                          <span className={miniLabel}>Label</span>
+                          <input className={inputCls} value={item.label} onChange={(e) => update(index, { label: e.target.value })} />
+                        </div>
+                        <div>
+                          <span className={miniLabel}>Alt Text</span>
+                          <input className={inputCls} value={item.alt} onChange={(e) => update(index, { alt: e.target.value })} />
+                        </div>
+                      </div>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 6 }}>
+                        <div>
+                          <span className={miniLabel}>Category</span>
+                          <select className={inputCls} value={item.category} onChange={(e) => update(index, { category: e.target.value, subcategory: "" })}>
+                            {categories.map((c) => <option key={c} value={c}>{c}</option>)}
+                          </select>
+                        </div>
+                        <div>
+                          <span className={miniLabel}>Subcategory</span>
+                          <input className={inputCls} value={item.subcategory || ""} onChange={(e) => update(index, { subcategory: e.target.value })} placeholder="Optional" />
+                        </div>
+                        <div>
+                          <span className={miniLabel}>Type</span>
+                          <select className={inputCls} value={item.type} onChange={(e) => update(index, { type: e.target.value as "image" | "video" })}>
+                            <option value="image">Image</option>
+                            <option value="video">Video</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div>
+                        <span className={miniLabel}>Source URL</span>
+                        <input className={inputCls} value={item.src} onChange={(e) => update(index, { src: e.target.value })} placeholder="/uploads/file.jpg or /images/file.jpg" />
+                      </div>
+                      {item.type === "video" && (
+                        <div>
+                          <span className={miniLabel}>Poster (thumbnail)</span>
+                          <input className={inputCls} value={item.poster || ""} onChange={(e) => update(index, { poster: e.target.value })} placeholder="/uploads/thumb.jpg" />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
-
-          {!selectedItem || !draftItem ? (
-            <p style={{ margin: 0, fontSize: 12, color: "#64748b" }}>Select an item to edit details.</p>
-          ) : (
-            <>
-              <div style={{ border: "1px solid #e5e7eb", borderRadius: 8, overflow: "hidden", background: "#f8fafc" }}>
-                {draftItem.src ? (
-                  <img src={resolveAppHref(draftItem.src)} alt={draftItem.alt || draftItem.label} style={{ width: "100%", height: 170, objectFit: "cover" }} />
-                ) : (
-                  <div style={{ height: 170 }} />
-                )}
-              </div>
-
-              <label className={btnAdd} style={{ cursor: isUploading ? "wait" : "pointer" }}>
-                {isUploading ? "Uploading..." : "Replace Image"}
-                <input type="file" accept="image/*" style={{ display: "none" }} onChange={replaceSelectedImage} disabled={isUploading} />
-              </label>
-
-              <div>
-                <span className={miniLabel}>Label</span>
-                <input className={inputCls} value={draftItem.label} onChange={(event) => setDraftItem({ ...draftItem, label: event.target.value })} />
-              </div>
-
-              <div>
-                <span className={miniLabel}>Alt Text</span>
-                <input className={inputCls} value={draftItem.alt} onChange={(event) => setDraftItem({ ...draftItem, alt: event.target.value })} />
-              </div>
-
-              <div>
-                <span className={miniLabel}>Category</span>
-                <select
-                  className={inputCls}
-                  value={draftItem.category}
-                  onChange={(event) => setDraftItem({ ...draftItem, category: event.target.value as GalleryItem["category"] })}
-                >
-                  {galleryCategories.map((category) => (
-                    <option key={category} value={category}>{category}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <span className={miniLabel}>Image Path</span>
-                <input className={inputCls} value={draftItem.src} onChange={(event) => setDraftItem({ ...draftItem, src: event.target.value })} />
-              </div>
-
-              <div style={{ display: "flex", gap: 6 }}>
-                <button
-                  type="button"
-                  className={btnAdd}
-                  onClick={() => {
-                    const next = [...items];
-                    next[selectedIndex] = { ...draftItem };
-                    commit(next);
-                  }}
-                  disabled={!isDirty}
-                >
-                  Apply
-                </button>
-                <button type="button" className={btnAdd} onClick={() => setDraftItem({ ...selectedItem })} disabled={!isDirty}>Discard</button>
-              </div>
-            </>
-          )}
         </div>
-      </div>
-    </div>
-  );
+      );
+    },
+  };
 }

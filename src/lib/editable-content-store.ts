@@ -122,7 +122,7 @@ export function validateEditableSiteDocument(document: EditableSiteDocument): { 
   if (!isString(document.gallery.heroTitle)) errors.push("gallery.heroTitle must be a string");
   if (!isString(document.gallery.heroDescription)) errors.push("gallery.heroDescription must be a string");
   if (!isString(document.gallery.heroImage)) errors.push("gallery.heroImage must be a string");
-  if (!Array.isArray(document.gallery.items) || !document.gallery.items.every((item) => isObject(item) && isString(item.src) && isString(item.alt) && isString(item.label) && ["Exterior", "Interiors", "Amenities", "Floor Plans"].includes(String(item.category)))) {
+  if (!Array.isArray(document.gallery.items) || !document.gallery.items.every((item) => isObject(item) && isString(item.src) && isString(item.alt) && isString(item.label) && isString(item.category) && (item.type === "image" || item.type === "video"))) {
     errors.push("gallery.items contains invalid entries");
   }
   if (!isString(document.gallery.cta.eyebrow) || !isString(document.gallery.cta.title) || !isString(document.gallery.cta.description)) {

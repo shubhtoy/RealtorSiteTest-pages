@@ -90,4 +90,63 @@ export class GitHubCms {
       return { ok: false, error: e instanceof Error ? e.message : "Network error" };
     }
   }
+
+  /**
+   * Upload a file to public/uploads/ in the GitHub repo.
+   * Returns the public URL path (e.g. /uploads/filename.jpg).
+   */
+  static async uploadFile(file: File): Promise<{ ok: boolean; url?: string; error?: string }> {
+    const token = this.getToken();
+    if (!token) return { ok: false, error: "GitHub token not configured" };
+
+    const { githubRepo, githubBranch } = appEnv;
+    const ext = file.name.split(".").pop()?.toLowerCase() || "bin";
+    const baseName = file.name.replace(/\.[^.]+$/, "").replace(/[^a-z0-9]+/gi, "-").toLowerCase().slice(0, 50);
+    const fileName = `${baseName}-${Date.now()}.${ext}`;
+    const filePath = `public/uploads/${fileName}`;
+    const apiUrl = `https://api.github.com/repos/${githubRepo}/contents/${filePath}`;
+
+    try {
+      const buffer = await file.arrayBuffer();
+      const bytes = new Uint8Array(buffer);
+      let binary = "";
+      for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+      const content = btoa(binary);
+
+      const putRes = await fetch(apiUrl, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/vnd.github.v3+json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: `upload: ${fileName}`,
+          content,
+          branch: githubBranch,
+        }),
+      });
+
+      if (!putRes.ok) {
+        const err = await putRes.json().catch(() => ({}));
+        return { ok: false, error: (err as { message?: string }).message || `HTTP ${putRes.status}` };
+      }
+
+      return { ok: true, url: `/uploads/${fileName}` };
+    } catch (e) {
+      return { ok: false, error: e instanceof Error ? e.message : "Upload failed" };
+    }
+  }
+
+  /**
+   * Upload multiple files, returns array of results.
+   */
+  static async uploadFiles(files: File[]): Promise<Array<{ ok: boolean; url?: string; originalName: string; error?: string }>> {
+    const results = [];
+    for (const file of files) {
+      const result = await this.uploadFile(file);
+      results.push({ ...result, originalName: file.name });
+    }
+    return results;
+  }
 }

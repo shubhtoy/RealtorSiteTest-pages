@@ -685,7 +685,7 @@ export default function StudioPage() {
         },
         GalleryCollections: {
           fields: {
-            galleryItemsJson: galleryManagerField("Gallery Item"),
+            galleryItemsJson: galleryManagerField("Gallery Item", JSON.stringify(draft.gallery.categories ?? [])),
           },
           render: (props: GalleryCollectionsProps) => {
             const items = PuckDataService.parseArray(props?.galleryItemsJson, [] as Array<{ src: string; alt: string; label: string; category: string }>);

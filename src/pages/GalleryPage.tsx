@@ -16,18 +16,19 @@ import "yet-another-react-lightbox/plugins/captions.css";
 import "yet-another-react-lightbox/plugins/counter.css";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 
-const categories = ["All", "Exterior", "Interiors", "Amenities", "Floor Plans"] as const;
-type Category = (typeof categories)[number];
-
 export default function GalleryPage() {
   const { current } = useEditableContent();
-  const [activeCategory, setActiveCategory] = useState<Category>("All");
+  const [activeCategory, setActiveCategory] = useState<string>("All");
   const [lightboxIndex, setLightboxIndex] = useState<number>(-1);
   const heroRef = useRef<HTMLElement>(null);
   const reducedMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "14%"]);
 
+  const categories = useMemo(() => {
+    const cats = current.gallery.categories?.map((c) => c.name) ?? [];
+    return ["All", ...cats];
+  }, [current.gallery.categories]);
   useEffect(() => {
     setPageMeta({
       title: `${current.global.siteName} Gallery ${current.global.cityLabel}`,

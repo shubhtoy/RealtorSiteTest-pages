@@ -223,7 +223,13 @@ export const defaultEditableSiteDocument: EditableSiteDocument = {
     heroTitle: "The Flats @ 1204 Gallery",
     heroDescription: "Explore exterior scenes, interior details, amenities, and floor plans.",
     heroImage: "/images/aerial.jpg",
-    items: galleryItems,
+    categories: [
+      { name: "Exterior", subcategories: ["Building", "Grounds"] },
+      { name: "Interiors", subcategories: ["Living", "Kitchen", "Bedroom"] },
+      { name: "Amenities", subcategories: ["Dog Park", "Laundry"] },
+      { name: "Floor Plans", subcategories: [] },
+    ],
+    items: galleryItems.map((item) => ({ ...item, type: "image" as const })),
     cta: {
       eyebrow: "Next Step",
       title: "Schedule a Tour After Browsing",

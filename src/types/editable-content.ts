@@ -55,8 +55,10 @@ export type EditableGalleryItem = {
   src: string;
   alt: string;
   label: string;
-  category: "Exterior" | "Interiors" | "Amenities" | "Floor Plans";
-  type?: "image" | "video";
+  category: string;
+  subcategory?: string;
+  type: "image" | "video";
+  poster?: string; // thumbnail for videos
 };
 
 export type GlobalLayer = {
@@ -159,6 +161,11 @@ export type HomeLayer = {
   };
 };
 
+export type GalleryCategory = {
+  name: string;
+  subcategories: string[];
+};
+
 export type GalleryLayer = {
   sectionVisibility: {
     hero: boolean;
@@ -169,6 +176,7 @@ export type GalleryLayer = {
   heroTitle: string;
   heroDescription: string;
   heroImage: string;
+  categories: GalleryCategory[];
   items: EditableGalleryItem[];
   cta: {
     eyebrow: string;
