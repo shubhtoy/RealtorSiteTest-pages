@@ -1544,7 +1544,7 @@ export default function StudioPage() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => window.open("/", "_blank")}
+                onClick={() => window.open(import.meta.env.BASE_URL || "/", "_blank")}
                 title="Preview in new tab"
               >
                 <ExternalLinkIcon className="size-3.5" />

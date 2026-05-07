@@ -27,10 +27,10 @@ type GalleryItem = {
   src: string;
   alt: string;
   label: string;
-  category: "Interiors" | "Exteriors" | "Floor Plans";
+  category: "Exterior" | "Interiors" | "Amenities" | "Floor Plans";
 };
 
-const galleryCategories: Array<GalleryItem["category"]> = ["Interiors", "Exteriors", "Floor Plans"];
+const galleryCategories: Array<GalleryItem["category"]> = ["Exterior", "Interiors", "Amenities", "Floor Plans"];
 
 function safeParse<T>(value: string, fallback: T): T {
   try {
