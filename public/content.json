@@ -1,0 +1,539 @@
+{
+  "version": 1,
+  "updatedAt": "2026-05-07T15:37:00.025Z",
+  "global": {
+    "siteName": "BabaFlats",
+    "cityLabel": "Mableton GA",
+    "tagline": "Premium Apartment Living in Atlanta",
+    "description": "Modern 1BR, 2BR, and 3BR apartments in Atlanta with practical layouts, pet-friendly spaces, and a connected location.",
+    "phone": "(770) 726-8907",
+    "email": "Contacts@babaflats.com",
+    "addressLine": "1204 Veterans Memorial Hwy SW, Mableton, GA 30126",
+    "hoursLine": "Mon–Fri 9am–6pm, Sat 10am–4pm",
+    "navCtaText": "Book a Tour",
+    "navCtaLink": "/contact",
+    "navLinks": [
+      {
+        "to": "/",
+        "label": "Home"
+      },
+      {
+        "to": "/gallery",
+        "label": "Gallery"
+      },
+      {
+        "to": "/contact",
+        "label": "Contact"
+      }
+    ],
+    "footerBadges": [
+      "1BR / 2BR / 3BR",
+      "Pet Friendly"
+    ],
+    "seoTitleSuffix": "Apartments Atlanta"
+  },
+  "home": {
+    "sectionVisibility": {
+      "stats": true,
+      "residences": true,
+      "unitExplorer": true,
+      "amenities": true,
+      "why": true,
+      "neighborhood": true,
+      "testimonials": true,
+      "faq": true,
+      "map": true,
+      "finalCta": true,
+      "mobileBar": true
+    },
+    "hero": {
+      "tagline": "Premium Apartment Living",
+      "title": "Atlanta Homes That Feel",
+      "highlightText": "Affordable, Reliable, Spacious",
+      "description": "Explore 1BR, 2BR, and 3BR homes with practical layouts, bright interiors, and a connected neighborhood location. Placeholder marketing copy: this lead paragraph can scale to two or three lines for stronger storytelling while still preserving fast scanning and clear CTA focus.",
+      "primaryCta": {
+        "text": "Explore Gallery",
+        "link": "/gallery"
+      },
+      "secondaryCta": {
+        "text": "Book a Tour",
+        "link": "/contact"
+      },
+      "heroRailMedia": [
+        "/images/exterior.jpg",
+        "/images/aerial.jpg",
+        "/images/living-1br.jpg",
+        "/images/kitchen-2br.jpg",
+        "/images/home-3br.jpg",
+        "/images/entrance.jpg",
+        "/images/dog-park.jpg",
+        "/images/kitchen-1br.jpg",
+        "/images/laundry.jpg"
+      ]
+    },
+    "stats": [
+      {
+        "value": 860,
+        "suffix": "+",
+        "label": "Min Sq Ft"
+      },
+      {
+        "value": 1300,
+        "suffix": "",
+        "label": "Max Sq Ft"
+      },
+      {
+        "value": 3,
+        "suffix": "",
+        "label": "Layout Options"
+      },
+      {
+        "value": 98,
+        "suffix": "%",
+        "label": "Resident Satisfaction"
+      }
+    ],
+    "focusCards": [
+      {
+        "title": "1BR / 1BA Suite",
+        "src": "/images/living-1br.jpg"
+      },
+      {
+        "title": "2BR / 1BA Home",
+        "src": "/images/kitchen-2br.jpg"
+      },
+      {
+        "title": "3BR / 2BA Family",
+        "src": "/images/home-3br.jpg"
+      }
+    ],
+    "floorPlans": [
+      {
+        "title": "1BR / 1BA",
+        "bedrooms": 1,
+        "bathrooms": 1,
+        "sqft": "~720 sq ft",
+        "description": "Efficient circulation with bright living room and practical kitchen flow. Placeholder detail text can include sample resident persona use-cases, furniture fit notes, and common move-in questions.",
+        "image": "/images/living-1br.jpg",
+        "features": [
+          "Open-concept living area",
+          "Modern kitchen with stainless finishes",
+          "Large windows for natural light"
+        ],
+        "priceRange": "Contact for pricing"
+      },
+      {
+        "title": "2BR / 1BA",
+        "bedrooms": 2,
+        "bathrooms": 1,
+        "sqft": "~950 sq ft",
+        "description": "Balanced shared and private zones for flexibility and comfort. Placeholder detail text demonstrates medium-length copy so design review can evaluate line breaks, card density, and hierarchy.",
+        "image": "/images/kitchen-2br.jpg",
+        "features": [
+          "Generous common area",
+          "Updated kitchen and storage",
+          "Flexible second bedroom"
+        ],
+        "priceRange": "Contact for pricing"
+      },
+      {
+        "title": "3BR / 2BA",
+        "bedrooms": 3,
+        "bathrooms": 2,
+        "sqft": "~1,250 sq ft",
+        "description": "Expanded footprint with family-friendly room count. Placeholder detail copy can hold storage notes, room dimensions context, and multigenerational use scenarios before final copy is signed off.",
+        "image": "/images/home-3br.jpg",
+        "features": [
+          "Primary suite with private bath",
+          "Two additional bedrooms",
+          "Ideal layout for larger households"
+        ],
+        "priceRange": "Contact for pricing"
+      }
+    ],
+    "amenityPanels": [
+      {
+        "title": "On-Site Laundry Facilities",
+        "description": "Modern laundry rooms are available on-site, reducing off-site trips and making your routine faster. Clean stations and practical layout keep laundry day easy.",
+        "image": "/images/laundry.jpg"
+      },
+      {
+        "title": "Pet-Friendly Community",
+        "description": "Dedicated pet zones, walkable paths, and convenient waste stations support a better daily rhythm for residents with pets.",
+        "image": "/images/dog-park.jpg"
+      },
+      {
+        "title": "Connected Atlanta Access",
+        "description": "Live near commuter routes, retail corridors, and neighborhood essentials so weekdays run smoother and weekends stay flexible.",
+        "image": "/images/aerial.jpg"
+      },
+      {
+        "title": "Updated Interiors",
+        "description": "Practical kitchens, bright living areas, and refreshed finishes create homes that are easy to maintain and comfortable to live in.",
+        "image": "/images/kitchen-2br.jpg"
+      }
+    ],
+    "whyCards": [
+      {
+        "title": "Practical Floor Plans",
+        "description": "Layouts are planned around real furniture placement and daily movement, so your living room and kitchen feel useful from day one.",
+        "tag": "Space Planning",
+        "icon": "building"
+      },
+      {
+        "title": "Pet-Ready Living",
+        "description": "Dedicated pet-friendly features and nearby walking routes make routines easier for residents balancing work, family, and pets.",
+        "tag": "Pet Friendly",
+        "icon": "paw"
+      },
+      {
+        "title": "Stress-Free Parking",
+        "description": "Resident parking is structured for convenience, with clear access patterns that reduce evening congestion and guest confusion.",
+        "tag": "Everyday Access",
+        "icon": "car"
+      },
+      {
+        "title": "Connected Location",
+        "description": "Commuter routes, grocery options, and neighborhood services are close enough to save time without sacrificing local character.",
+        "tag": "Commute Ready",
+        "icon": "map"
+      },
+      {
+        "title": "Reliable Support",
+        "description": "Leasing and maintenance support are designed around response clarity, so residents know what to expect and when.",
+        "tag": "Support Quality",
+        "icon": "shield"
+      },
+      {
+        "title": "Updated Interiors",
+        "description": "Updated finishes and brighter interiors create a clean backdrop that works for different styles without feeling generic.",
+        "tag": "Interior Refresh",
+        "icon": "sparkles"
+      }
+    ],
+    "neighborhood": {
+      "eyebrow": "Neighborhood",
+      "title": "Your Atlanta Neighborhood",
+      "description": "Baba Flats offers quick access to major routes, shopping, dining, and everyday essentials while staying rooted in a welcoming neighborhood environment. Placeholder copy: this paragraph can be extended to include commute patterns, lifestyle highlights, and weekend itinerary examples.",
+      "highlights": [
+        {
+          "title": "Downtown Atlanta",
+          "description": "Easy commute to business and entertainment districts.",
+          "distance": "15 minutes"
+        },
+        {
+          "title": "Hartsfield-Jackson Airport",
+          "description": "Convenient travel access for frequent flyers.",
+          "distance": "10 minutes"
+        },
+        {
+          "title": "Greenbriar Mall",
+          "description": "Nearby retail and dining options.",
+          "distance": "5 minutes"
+        },
+        {
+          "title": "Cascade Springs Preserve",
+          "description": "Green space and trails for weekends outdoors.",
+          "distance": "8 minutes"
+        }
+      ]
+    },
+    "testimonials": [
+      {
+        "quote": "Moving into Baba Flats was the best decision. The layout is practical, the community is welcoming, and the location is perfect for my commute.",
+        "name": "Sarah M.",
+        "designation": "1BR Resident since 2024"
+      },
+      {
+        "quote": "The 2BR unit gives us exactly the space we need. The kitchen is functional, natural light is great, and move-in was seamless.",
+        "name": "James and Priya K.",
+        "designation": "2BR Residents since 2023"
+      },
+      {
+        "quote": "Our family loves the 3BR layout. The dog park is a huge plus, and having laundry on-site saves us a lot of time every week.",
+        "name": "The Rodriguez Family",
+        "designation": "3BR Residents since 2024"
+      }
+    ],
+    "faq": [
+      {
+        "question": "What layout types are available?",
+        "answer": "1BR/1BA, 2BR/1BA, and 3BR/2BA options are available based on current inventory. Placeholder expansion: this answer can also include typical square-foot ranges and best-fit household examples.",
+        "category": "Units"
+      },
+      {
+        "question": "Can I schedule a same-week tour?",
+        "answer": "Yes. Contact leasing for current openings and same-week availability. Placeholder expansion: include suggested tour windows, what to bring, and virtual tour alternatives when schedules are tight.",
+        "category": "Tours"
+      },
+      {
+        "question": "Is the community pet-friendly?",
+        "answer": "Yes, pet-friendly living is available with practical outdoor access. Placeholder expansion: final copy can list max pets, estimated fees, breed guidance, and nearby walking routes.",
+        "category": "Pets"
+      },
+      {
+        "question": "What amenities are included?",
+        "answer": "On-site laundry, dedicated parking, responsive leasing support, and updated interior finishes. Placeholder expansion: this can be split into in-home amenities vs community amenities for easier scanning.",
+        "category": "Amenities"
+      },
+      {
+        "question": "How quickly are maintenance requests handled?",
+        "answer": "Routine requests are typically handled in normal business windows, while urgent issues are prioritized. Placeholder expansion: final copy can include average response times and emergency examples.",
+        "category": "Maintenance"
+      },
+      {
+        "question": "What documents are needed to apply?",
+        "answer": "Most applications require valid ID, proof of income, and prior rental history. Placeholder expansion: add exact file formats, guarantor requirements, and screening criteria as needed.",
+        "category": "Application"
+      },
+      {
+        "question": "Are short-term leases available?",
+        "answer": "Lease options vary by inventory and season. Placeholder expansion: this answer can include standard term lengths, premium adjustments, and renewal path examples.",
+        "category": "Leasing"
+      },
+      {
+        "question": "Which utilities are resident responsibility?",
+        "answer": "Utility responsibilities depend on unit and lease details. Placeholder expansion: final content can list included utilities, setup providers, and estimated monthly ranges.",
+        "category": "Utilities"
+      }
+    ],
+    "finalCta": {
+      "tagline": "Contact Leasing",
+      "title": "Ready to See Your Next Home?",
+      "description": "Call directly or open the full tour request form.",
+      "primary": {
+        "text": "(770) 726-8907",
+        "link": "tel:+17707268907"
+      },
+      "secondary": {
+        "text": "Contact Page",
+        "link": "/contact"
+      }
+    },
+    "ui": {
+      "residencesEyebrow": "Residences",
+      "residencesTitle": "Choose Your Layout",
+      "residencesDescription": "Practical kitchen flow, usable living space, and room options that scale from solo renters to larger households.",
+      "unitExplorerEyebrow": "Unit Explorer",
+      "unitExplorerTitle": "Interactive Layout Preview",
+      "unitExplorerDescription": "Placeholder copy: imagine each card expanding into full availability details, sample furniture staging notes, and move-in timing guidance. This section is intentionally text-rich so you can validate rhythm, spacing, and readability before final leasing copy is approved.",
+      "amenitiesEyebrow": "Amenities",
+      "amenitiesTitle": "Media-Rich Amenity Experience",
+      "amenitiesDescription": "Scroll through each amenity to see how daily life, comfort, and location work together at Baba Flats.",
+      "whyEyebrow": "Why Baba Flats",
+      "whyTitle": "Designed for Daily Life, Not Marketing Hype",
+      "whyDescription": "Baba Flats focuses on practical value: efficient layouts, responsive support, connected location access, and day-to-day comfort that holds up over time. Each feature below highlights how the property supports real routines, not just brochure claims.",
+      "whyStickyEyebrow": "Resident Experience",
+      "whyStickyTitle": "Practical features that blend into everyday living.",
+      "whyStickyDescription": "From commute flow and pet routines to support responsiveness and layout efficiency, each decision is designed to reduce friction and improve day-to-day comfort.",
+      "neighborhoodStickyEyebrow": "Atlanta Access",
+      "neighborhoodStickyTitle": "Live close to what matters most.",
+      "neighborhoodStickyDescription": "Daily essentials, commute routes, and weekend options are all nearby. The neighborhood offers practical convenience while keeping a residential feel.",
+      "testimonialsEyebrow": "Resident Stories",
+      "testimonialsTitle": "What Residents Are Saying",
+      "testimonialsDescription": "Clear, high-contrast cards improve readability while preserving a premium animated feel.",
+      "faqEyebrow": "FAQ",
+      "faqTitle": "Leasing Questions at a Glance",
+      "faqDescription": "Placeholder copy: this FAQ is intentionally expanded so you can preview real-world content volume, scan behavior, and accordion spacing across breakpoints.",
+      "faqHelpEyebrow": "Need More Help?",
+      "faqHelpTitle": "Questions before booking a tour?",
+      "faqHelpDescription": "We answered the most common leasing, move-in, and resident support questions below. If you need specifics for your timeline, our team can help directly.",
+      "faqHelpPrimaryLabel": "Call Leasing",
+      "faqHelpSecondaryLabel": "Contact Page",
+      "mapEyebrow": "Map & Address",
+      "mapTitle": "Find Baba Flats",
+      "mapDescription": "Placeholder location context: this section can include parking instructions, landmark tips, and best entry points for scheduled tours.",
+      "mapCardOfficeLabel": "Leasing Office",
+      "mapCardCallLabel": "Call",
+      "mapCardHoursLabel": "Hours",
+      "mobilePrimaryLabel": "Call Now",
+      "mobileSecondaryLabel": "Book Tour"
+    }
+  },
+  "gallery": {
+    "sectionVisibility": {
+      "hero": true,
+      "media": true,
+      "cta": true
+    },
+    "heroEyebrow": "Dedicated Media Page",
+    "heroTitle": "The Flats @ 1204 Gallery",
+    "heroDescription": "Explore exterior scenes, interior details, amenities, and floor plans.",
+    "heroImage": "/images/aerial.jpg",
+    "items": [
+      {
+        "src": "/images/exterior.jpg",
+        "alt": "Exterior view of Baba Flats apartment community",
+        "label": "Community Exterior",
+        "category": "Exterior"
+      },
+      {
+        "src": "/images/aerial.jpg",
+        "alt": "Aerial context around Baba Flats",
+        "label": "Aerial Context",
+        "category": "Exterior"
+      },
+      {
+        "src": "/images/entrance.jpg",
+        "alt": "Entrance sign at The Flats at 1204",
+        "label": "Entry Sign",
+        "category": "Exterior"
+      },
+      {
+        "src": "/images/living-1br.jpg",
+        "alt": "One bedroom living room at Baba Flats",
+        "label": "1BR Living",
+        "category": "Interiors"
+      },
+      {
+        "src": "/images/kitchen-1br.jpg",
+        "alt": "One bedroom kitchen at Baba Flats",
+        "label": "1BR Kitchen",
+        "category": "Interiors"
+      },
+      {
+        "src": "/images/kitchen-2br.jpg",
+        "alt": "Two bedroom kitchen at Baba Flats",
+        "label": "2BR Kitchen",
+        "category": "Interiors"
+      },
+      {
+        "src": "/images/entry-2br.jpg",
+        "alt": "Two bedroom entry area at Baba Flats",
+        "label": "2BR Entry",
+        "category": "Interiors"
+      },
+      {
+        "src": "/images/home-3br.jpg",
+        "alt": "Three bedroom interior at Baba Flats",
+        "label": "3BR Interior",
+        "category": "Interiors"
+      },
+      {
+        "src": "/images/dog-park.jpg",
+        "alt": "Dog park amenity at Baba Flats",
+        "label": "Dog Park",
+        "category": "Amenities"
+      },
+      {
+        "src": "/images/laundry.jpg",
+        "alt": "Laundry amenity at Baba Flats",
+        "label": "Laundry",
+        "category": "Amenities"
+      },
+      {
+        "src": "/images/layout-1br.png",
+        "alt": "One bedroom floor plan at Baba Flats",
+        "label": "1BR Plan",
+        "category": "Floor Plans"
+      },
+      {
+        "src": "/images/layout-2br.png",
+        "alt": "Two bedroom floor plan at Baba Flats",
+        "label": "2BR Plan",
+        "category": "Floor Plans"
+      }
+    ],
+    "cta": {
+      "eyebrow": "Next Step",
+      "title": "Schedule a Tour After Browsing",
+      "description": "Ready to visit in person? Contact leasing for availability, pricing, and current move-in options.",
+      "primary": {
+        "text": "Call (770) 726-8907",
+        "link": "tel:7707268907"
+      },
+      "secondary": {
+        "text": "Book Tour",
+        "link": "/contact"
+      }
+    }
+  },
+  "contact": {
+    "sectionVisibility": {
+      "hero": true,
+      "form": true,
+      "map": true
+    },
+    "heroEyebrow": "Contact & Leasing",
+    "heroTitle": "Book a Tour at Baba Flats",
+    "heroDescription": "Share your preferred layout, timeline, and tour format. Our leasing team will confirm current options and next steps.",
+    "heroImage": "/images/exterior.jpg",
+    "mapEmbedUrl": "https://www.google.com/maps?q=1204+Veterans+Memorial+Hwy+SW,+Atlanta,+GA&output=embed",
+    "officeHoursTitle": "Leasing Desk",
+    "officeHours": [
+      "Mon–Fri: 9 AM – 6 PM",
+      "Saturday: 10 AM – 4 PM",
+      "Sunday: By appointment"
+    ],
+    "tourFormTitle": "Tell Us What You Need",
+    "tourFormDescription": "Quick qualification inputs, concise details, and a clear action path.",
+    "formOptions": {
+      "bedroom": [
+        "1BR",
+        "2BR",
+        "3BR"
+      ],
+      "moveIn": [
+        "Immediately",
+        "Within 30 days",
+        "Within 60 days"
+      ],
+      "tourType": [
+        "In-person",
+        "Virtual first"
+      ]
+    },
+    "submitText": "Submit Tour Request",
+    "integrations": {
+      "smtp": {
+        "enabled": false,
+        "endpoint": "",
+        "method": "POST",
+        "authHeader": "",
+        "fromEmail": "",
+        "toEmail": "",
+        "subjectTemplate": "New Tour Request - {{fullName}}"
+      },
+      "submitHooks": [
+        {
+          "name": "Lead webhook",
+          "url": "",
+          "method": "POST",
+          "enabled": false,
+          "sendFormData": true,
+          "headersJson": "{}"
+        }
+      ]
+    },
+    "ui": {
+      "callButtonPrefix": "Call",
+      "browseButtonText": "Browse Gallery",
+      "formEyebrow": "Tour Request Form",
+      "infoBullets": [
+        "Preferred floor plan type",
+        "Move-in timeline",
+        "Tour preference and notes"
+      ],
+      "featureBadges": [
+        "Pet Friendly",
+        "On-site Laundry",
+        "Responsive Leasing"
+      ],
+      "labels": {
+        "fullName": "Full Name",
+        "email": "Email",
+        "phone": "Phone",
+        "bedroomType": "Bedroom Type",
+        "moveIn": "Move-In",
+        "tourPreference": "Tour Preference",
+        "message": "Message"
+      },
+      "placeholders": {
+        "fullName": "Your name",
+        "email": "you@email.com",
+        "phone": "(555) 123-4567",
+        "message": "Anything you'd like the leasing team to know"
+      }
+    }
+  }
+}
