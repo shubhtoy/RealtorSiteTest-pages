@@ -112,7 +112,7 @@
         "title": "1BR / 1BA",
         "bedrooms": 1,
         "bathrooms": 1,
-        "sqft": "~720 sq ft",
+        "sqft": "~860 sq",
         "description": "Efficient circulation with bright living room and practical kitchen flow. Placeholder detail text can include sample resident persona use-cases, furniture fit notes, and common move-in questions.",
         "image": "/images/living-1br.jpg",
         "features": [
@@ -126,7 +126,7 @@
         "title": "2BR / 1BA",
         "bedrooms": 2,
         "bathrooms": 1,
-        "sqft": "~950 sq ft",
+        "sqft": "~ 1060 Sq ft",
         "description": "Balanced shared and private zones for flexibility and comfort. Placeholder detail text demonstrates medium-length copy so design review can evaluate line breaks, card density, and hierarchy.",
         "image": "/images/kitchen-2br.jpg",
         "features": [
@@ -140,7 +140,7 @@
         "title": "3BR / 2BA",
         "bedrooms": 3,
         "bathrooms": 2,
-        "sqft": "~1,250 sq ft",
+        "sqft": "~1300 sq ft",
         "description": "Expanded footprint with family-friendly room count. Placeholder detail copy can hold storage notes, room dimensions context, and multigenerational use scenarios before final copy is signed off.",
         "image": "/images/home-3br.jpg",
         "features": [
