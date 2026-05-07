@@ -46,7 +46,7 @@ export class GitHubCms {
       // Commit the file
       const content = btoa(unescape(encodeURIComponent(JSON.stringify(document, null, 2))));
       const body: Record<string, unknown> = {
-        message: `chore: update site content via Studio [skip ci]`,
+        message: `chore: update site content via Studio`,
         content,
         branch: githubBranch,
       };
