@@ -537,6 +537,14 @@
         "type": "image"
       },
       {
+        "src": "/uploads/ariel-view-1779388979231.mp4",
+        "alt": "Ariel View",
+        "label": "Ariel View",
+        "category": "Exterior",
+        "type": "video",
+        "subcategory": ""
+      },
+      {
         "src": "/images/aerial.jpg",
         "alt": "Aerial context around Baba Flats",
         "label": "Aerial Context",
@@ -612,14 +620,6 @@
         "label": "2BR Plan",
         "category": "Floor Plans",
         "type": "image"
-      },
-      {
-        "src": "/uploads/ariel-view-1779388979231.mp4",
-        "alt": "Ariel View",
-        "label": "Ariel View",
-        "category": "Exterior",
-        "type": "video",
-        "subcategory": ""
       }
     ],
     "cta": {
