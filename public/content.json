@@ -497,7 +497,7 @@
       "cta": true
     },
     "heroEyebrow": "Dedicated Media Page",
-    "heroTitle": "The Flats @ 1204 Gallery",
+    "heroTitle": "BabaFlats @ 1204 Gallery",
     "heroDescription": "Explore exterior scenes, interior details, amenities, and floor plans.",
     "heroImage": "/images/aerial.jpg",
     "categories": [
@@ -612,6 +612,14 @@
         "label": "2BR Plan",
         "category": "Floor Plans",
         "type": "image"
+      },
+      {
+        "src": "/uploads/ariel-view-1779388979231.mp4",
+        "alt": "Ariel View",
+        "label": "Ariel View",
+        "category": "Exterior",
+        "type": "video",
+        "subcategory": ""
       }
     ],
     "cta": {
