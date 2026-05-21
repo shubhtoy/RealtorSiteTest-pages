@@ -28,11 +28,11 @@
   },
   "global": {
     "siteName": "The Flats @ 1204",
-    "cityLabel": "Atlanta",
-    "tagline": "Premium Apartment Living in Atlanta",
-    "description": "Modern 1BR, 2BR, and 3BR apartments in Atlanta with practical layouts, pet-friendly spaces, and a connected location.",
+    "cityLabel": "Mableton, GA",
+    "tagline": "Affordable, Reliable Spacious",
+    "description": "Newly renovated units! Our architecture offers you a choice of 1, 2, 3-bedroom \napartment homes, and you will be impressed with the amount of thought and \ncreativity that went into every detail of these remarkable newly renovated \napartment homes. Located directly off veteran memorial past Floyd Road, close to \nMabel house gym and new braves stadium, you’ll find yourself enjoying a relaxing \nstroll throughout the neighborhood, or visiting a local coffee shop, while others are \nstill fighting traffic. The kitchen is equipped with ample storage space and all \nappliance such as dishwasher (in most of our units), refrigerator and electric range \noven. Apply today to call this great property to make your new home. ",
     "phone": "(770) 726-8907",
-    "email": "leasing@babaflats.com",
+    "email": "Contact@babaflats.com",
     "addressLine": "1204 Veterans Memorial Hwy SW, Atlanta, GA 30331",
     "hoursLine": "Mon–Fri 9am–6pm, Sat 10am–4pm",
     "navCtaText": "Book a Tour",
@@ -260,6 +260,11 @@
           "title": "Six Flags",
           "description": "Perfect place for some high adventure, family time and water splash too cool down in summar.",
           "distance": "10-12 mins"
+        },
+        {
+          "title": "Lenox Mall, Buckhead Mid town",
+          "description": "Most lively place in Atlanta during weekends with some great shopping, food restaurants and music pubs",
+          "distance": "20-25 mins"
         }
       ]
     },
