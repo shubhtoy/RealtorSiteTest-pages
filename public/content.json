@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-05-07T16:01:56.229Z",
+  "updatedAt": "2026-05-21T17:40:24.363Z",
   "theme": {
     "colors": {
       "primary": "198 65% 40%",
@@ -27,13 +27,13 @@
     "radius": "0.75rem"
   },
   "global": {
-    "siteName": "BabaFlats",
-    "cityLabel": "Mableton, GA (Atlanta Region)",
+    "siteName": "The Flats @ 1204",
+    "cityLabel": "Atlanta",
     "tagline": "Premium Apartment Living in Atlanta",
     "description": "Modern 1BR, 2BR, and 3BR apartments in Atlanta with practical layouts, pet-friendly spaces, and a connected location.",
     "phone": "(770) 726-8907",
-    "email": "Contacts@babaflats.com",
-    "addressLine": "1204 Veterans Memorial Hwy SW, Mableton, GA 30126",
+    "email": "leasing@babaflats.com",
+    "addressLine": "1204 Veterans Memorial Hwy SW, Atlanta, GA 30331",
     "hoursLine": "Mon–Fri 9am–6pm, Sat 10am–4pm",
     "navCtaText": "Book a Tour",
     "navCtaLink": "/contact",
@@ -74,8 +74,8 @@
     "hero": {
       "tagline": "Premium Apartment Living",
       "title": "Atlanta Homes That Feel",
-      "highlightText": "Affordable, Reliable, Spacious",
-      "description": "Newly renovated units! Our architecture offers you a choice of 1, 2, 3-bedroom apartment homes, and you will be impressed with the amount of thought and creativity that went into every detail of these remarkable newly renovated apartment homes. Find yourself enjoying a relaxing stroll throughout the neighborhood, or visiting a local coffee shop, while others are still fighting traffic. The kitchen is equipped with ample storage space and all appliance such as dishwasher (in most of our units), refrigerator and electric range oven. Apply today to call this great property to make your new home.",
+      "highlightText": "Modern. Warm. Effortless.",
+      "description": "Explore 1BR, 2BR, and 3BR homes with practical layouts, bright interiors, and a connected neighborhood location. Placeholder marketing copy: this lead paragraph can scale to two or three lines for stronger storytelling while still preserving fast scanning and clear CTA focus.",
       "primaryCta": {
         "text": "Explore Gallery",
         "link": "/gallery"
@@ -137,7 +137,7 @@
         "title": "1BR / 1BA",
         "bedrooms": 1,
         "bathrooms": 1,
-        "sqft": "~860 sq",
+        "sqft": "~720 sq ft",
         "description": "Efficient circulation with bright living room and practical kitchen flow. Placeholder detail text can include sample resident persona use-cases, furniture fit notes, and common move-in questions.",
         "image": "/images/living-1br.jpg",
         "features": [
@@ -151,7 +151,7 @@
         "title": "2BR / 1BA",
         "bedrooms": 2,
         "bathrooms": 1,
-        "sqft": "~ 1060 Sq ft",
+        "sqft": "~950 sq ft",
         "description": "Balanced shared and private zones for flexibility and comfort. Placeholder detail text demonstrates medium-length copy so design review can evaluate line breaks, card density, and hierarchy.",
         "image": "/images/kitchen-2br.jpg",
         "features": [
@@ -165,7 +165,7 @@
         "title": "3BR / 2BA",
         "bedrooms": 3,
         "bathrooms": 2,
-        "sqft": "~1300 sq ft",
+        "sqft": "~1,250 sq ft",
         "description": "Expanded footprint with family-friendly room count. Placeholder detail copy can hold storage notes, room dimensions context, and multigenerational use scenarios before final copy is signed off.",
         "image": "/images/home-3br.jpg",
         "features": [
@@ -249,17 +249,17 @@
         {
           "title": "Hartsfield-Jackson Airport",
           "description": "Convenient travel access for frequent flyers.",
-          "distance": "20 Minutes"
+          "distance": "10 minutes"
         },
         {
-          "title": "Truist Braves Stadium - Battery park",
-          "description": "Cumberland Mall and great place to dinning and hang out with Friends",
-          "distance": "12 minutes"
+          "title": "Greenbriar Mall",
+          "description": "Nearby retail and dining options.",
+          "distance": "5 minutes"
         },
         {
-          "title": "Six Flags",
-          "description": "Perfect place for family fun",
-          "distance": "10 Mins"
+          "title": "Cascade Springs Preserve",
+          "description": "Green space and trails for weekends outdoors.",
+          "distance": "8 minutes"
         }
       ]
     },
@@ -382,81 +382,121 @@
       "cta": true
     },
     "heroEyebrow": "Dedicated Media Page",
-    "heroTitle": "BabaFlats @ 1204 Gallery",
+    "heroTitle": "The Flats @ 1204 Gallery",
     "heroDescription": "Explore exterior scenes, interior details, amenities, and floor plans.",
     "heroImage": "/images/aerial.jpg",
+    "categories": [
+      {
+        "name": "Exterior",
+        "subcategories": [
+          "Building",
+          "Grounds"
+        ]
+      },
+      {
+        "name": "Interiors",
+        "subcategories": [
+          "Living",
+          "Kitchen",
+          "Bedroom"
+        ]
+      },
+      {
+        "name": "Amenities",
+        "subcategories": [
+          "Dog Park",
+          "Laundry"
+        ]
+      },
+      {
+        "name": "Floor Plans",
+        "subcategories": []
+      }
+    ],
     "items": [
       {
         "src": "/images/exterior.jpg",
         "alt": "Exterior view of Baba Flats apartment community",
         "label": "Community Exterior",
-        "category": "Exterior"
+        "category": "Exterior",
+        "type": "image"
       },
       {
         "src": "/images/aerial.jpg",
         "alt": "Aerial context around Baba Flats",
         "label": "Aerial Context",
-        "category": "Exterior"
+        "category": "Exterior",
+        "type": "image"
       },
       {
         "src": "/images/entrance.jpg",
         "alt": "Entrance sign at The Flats at 1204",
         "label": "Entry Sign",
-        "category": "Exterior"
+        "category": "Exterior",
+        "type": "image"
       },
       {
         "src": "/images/living-1br.jpg",
         "alt": "One bedroom living room at Baba Flats",
         "label": "1BR Living",
-        "category": "Interiors"
+        "category": "Interiors",
+        "type": "image"
       },
       {
         "src": "/images/kitchen-1br.jpg",
         "alt": "One bedroom kitchen at Baba Flats",
         "label": "1BR Kitchen",
-        "category": "Interiors"
+        "category": "Interiors",
+        "type": "image"
       },
       {
         "src": "/images/kitchen-2br.jpg",
         "alt": "Two bedroom kitchen at Baba Flats",
         "label": "2BR Kitchen",
-        "category": "Interiors"
+        "category": "Interiors",
+        "type": "image"
       },
       {
         "src": "/images/entry-2br.jpg",
         "alt": "Two bedroom entry area at Baba Flats",
         "label": "2BR Entry",
-        "category": "Interiors"
+        "category": "Interiors",
+        "type": "image"
       },
       {
         "src": "/images/home-3br.jpg",
         "alt": "Three bedroom interior at Baba Flats",
         "label": "3BR Interior",
-        "category": "Interiors"
+        "category": "Interiors",
+        "type": "image"
       },
       {
         "src": "/images/dog-park.jpg",
         "alt": "Dog park amenity at Baba Flats",
         "label": "Dog Park",
-        "category": "Amenities"
+        "category": "Amenities",
+        "type": "image"
       },
       {
         "src": "/images/laundry.jpg",
         "alt": "Laundry amenity at Baba Flats",
         "label": "Laundry",
-        "category": "Amenities"
+        "category": "Amenities",
+        "type": "image"
       },
       {
         "src": "/images/layout-1br.png",
         "alt": "One bedroom floor plan at Baba Flats",
         "label": "1BR Plan",
-        "category": "Floor Plans"
+        "category": "Floor Plans",
+        "type": "image"
       },
       {
         "src": "/images/layout-2br.png",
         "alt": "Two bedroom floor plan at Baba Flats",
         "label": "2BR Plan",
-        "category": "Floor Plans"
+        "category": "Floor Plans",
+        "type": "image"
       }
     ],
     "cta": {
