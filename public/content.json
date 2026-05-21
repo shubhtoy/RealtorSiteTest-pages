@@ -32,8 +32,8 @@
     "tagline": "Affordable, Reliable, Spacious",
     "description": "Modern 1BR, 2BR, and 3BR apartments in Atlanta with practical layouts, pet-friendly spaces, and a connected location.",
     "phone": "(770) 726-8907",
-    "email": "Contac@babaflats.com",
-    "addressLine": "1204 Veterans Memorial Hwy SW, Atlanta, GA 30331",
+    "email": "Contact@babaflats.com",
+    "addressLine": "1204 Veterans Memorial Hwy SW, Atlanta, GA 30126",
     "hoursLine": "Mon–Fri 9am–6pm, Sat 10am–4pm",
     "navCtaText": "Book a Tour",
     "navCtaLink": "/contact",
@@ -191,11 +191,6 @@
         "title": "Connected Atlanta Access",
         "description": "Live near commuter routes, retail corridors, and neighborhood essentials so weekdays run smoother and weekends stay flexible.",
         "image": "/images/aerial.jpg"
-      },
-      {
-        "title": "Updated Interiors",
-        "description": "Practical kitchens, bright living areas, and refreshed finishes create homes that are easy to maintain and comfortable to live in.",
-        "image": "/images/kitchen-2br.jpg"
       }
     ],
     "whyCards": [
