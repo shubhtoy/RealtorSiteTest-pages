@@ -282,44 +282,159 @@
     ],
     "faq": [
       {
-        "question": "What layout types are available?",
-        "answer": "1BR/1BA, 2BR/1BA, and 3BR/2BA options are available based on current inventory. Placeholder expansion: this answer can also include typical square-foot ranges and best-fit household examples.",
-        "category": "Units"
+        "question": "What floor plans are available?",
+        "answer": "We currently offer 1-bedroom, 2-bedroom, and 3-bedroom units. Detailed layouts for each floor plan are available in our photo gallery — take a look and find the one that fits your lifestyle!",
+        "category": "Floor Plans & Amenities"
       },
       {
-        "question": "Can I schedule a same-week tour?",
-        "answer": "Yes. Contact leasing for current openings and same-week availability. Placeholder expansion: include suggested tour windows, what to bring, and virtual tour alternatives when schedules are tight.",
-        "category": "Tours"
+        "question": "Is the apartment complex pet friendly?",
+        "answer": "Absolutely! We are a pet-friendly community. Our complex features a dedicated dog park, along with conveniently placed waste stations to keep the community clean and enjoyable for everyone.",
+        "category": "Pets and Community"
       },
       {
-        "question": "Is the community pet-friendly?",
-        "answer": "Yes, pet-friendly living is available with practical outdoor access. Placeholder expansion: final copy can list max pets, estimated fees, breed guidance, and nearby walking routes.",
-        "category": "Pets"
+        "question": "What is the guest/visitor policy?",
+        "answer": "Guests are welcome! Visitors may stay for up to 7 consecutive days without prior notice. Extended stays beyond 15 days within a 30-day period must be approved by management. Guests are expected to follow all community rules while on the property. Unauthorized long-term occupants may be considered lease violations.",
+        "category": "Pets and Community"
+      },
+      {
+        "question": "What is the noise/quiet hours policy?",
+        "answer": "We are a peaceful, respectful community. Quiet hours are observed from 10:00 PM to 8:00 AM on weekdays, and 11:00 PM to 9:00 AM on weekends. During these hours, residents are expected to keep noise to a minimum — including music, televisions, and gatherings — out of respect for neighbors. Repeated violations may result in lease action.",
+        "category": "Pets and Community"
+      },
+      {
+        "question": "Is the community gated or does it have controlled access?",
+        "answer": "Our community is an open campus with 24-hour property monitoring and well-lit common areas to ensure resident safety. The safety and security of our residents is a top priority.",
+        "category": "Pets and Community"
       },
       {
         "question": "What amenities are included?",
-        "answer": "On-site laundry, dedicated parking, responsive leasing support, and updated interior finishes. Placeholder expansion: this can be split into in-home amenities vs community amenities for easier scanning.",
-        "category": "Amenities"
+        "answer": "Our community offers the following amenities:\n•\tOn-site laundry facility\n•\tBeautifully maintained dog park\n•\tBenches and outdoor seating areas perfect for relaxing\n•\tAmple community parking\nIt's a peaceful neighborhood — perfect for unwinding or simply enjoying the quiet surroundings.",
+        "category": "Floor Plans & Amenities"
       },
       {
-        "question": "How quickly are maintenance requests handled?",
-        "answer": "Routine requests are typically handled in normal business windows, while urgent issues are prioritized. Placeholder expansion: final copy can include average response times and emergency examples.",
-        "category": "Maintenance"
+        "question": "Are package lockers or a mail room available?",
+        "answer": "We have a mailbox corner where residents can access their USPS mails from individual mail boxes. Major carriers including UPS, FedEx, and USPS deliver packages to your door step.",
+        "category": "Floor Plans & Amenities"
+      },
+      {
+        "question": "Is the neighborhood near public transportation, schools, or shopping?",
+        "answer": "• Shopping & Dining: Conveniently located near major shopping and dining options including Kroger, Publix, Lowe’s, Home Depot, local restaurants, and various fast-food options, all within approximately 5–15 minutes.\n\n• Public Transportation: While I am not completely certain about the exact routes, it does appear that there are CobbLinc bus routes operating along Veterans Memorial Hwy.\n\n• Schools: Zoned for the Cobb County School District, with nearby schools including Mableton Elementary School, Harmony-Leland Elementary School, Lindley Middle School, and Pebblebrook High School. The area is also close to Chattahoochee Technical College – Austell Campus and Cobb Medical Institute (formerly Cobb CNA School).\n\n• Healthcare: Close to Saint James Medical Center, Wellstar Cobb Hospital, and Wellstar Cobb Medical Center.\n\n• Highway Access: Convenient access to I-20, I-285, and Veterans Memorial Hwy, making commuting throughout Metro Atlanta easier.\n\n• Entertainment: Six Flags Over Georgia, Truist Park/The Battery Atlanta, Cumberland Mall, and Mable House Amphitheatre are all within approximately a 15-minute drive.",
+        "category": "Floor Plans & Amenities"
+      },
+      {
+        "question": "NewAre furnished units available? question?",
+        "answer": "At this time, our units are offered unfurnished, giving you the freedom to make your space truly your own. However, we can connect you with trusted local furniture rental providers if needed.",
+        "category": "Floor Plans & Amenities"
+      },
+      {
+        "question": "Can I schedule a same-week tour?",
+        "answer": "Yes! We're happy to arrange same-week tours. We simply ask for at least one day's notice to ensure a smooth experience. While you're welcome to visit the property at any time, a guided tour of an available unit will need to be scheduled with one of our leasing agents.",
+        "category": "Touring & Applications"
       },
       {
         "question": "What documents are needed to apply?",
-        "answer": "Most applications require valid ID, proof of income, and prior rental history. Placeholder expansion: add exact file formats, guarantor requirements, and screening criteria as needed.",
-        "category": "Application"
+        "answer": "To help us process your application as quickly as possible, please have the following documents ready:\n•\tGovernment-issued photo ID (Driver's License)\n•\tSocial Security Number (SSN)\n•\tLast 2 months' pay stubs\n•\tLast 2 months' bank statements\n",
+        "category": "Touring & Applications"
+      },
+      {
+        "question": "What are the requirements to qualify for a lease?",
+        "answer": "To be eligible for approval, applicants must complete an application along with the applicable application fee, which initiates a background check. Minimum requirements include:\n•\tIncome: Monthly gross income of at least 3x the base rent\n•\tCredit Score: 580 or above\n•\tBackground: No felony convictions\nAdditional factors that may influence eligibility include prior eviction history, payment history over the past 24 months, and employment stability.",
+        "category": "Touring & Applications"
+      },
+      {
+        "question": "What is the application processing time?",
+        "answer": "Once a completed application and all required documents are submitted, processing typically takes 2–5 business days. Delays may occur if background or credit checks require additional verification. You will be notified via email or phone as soon as a decision is made. To avoid delays, please ensure all documents are complete and legible at the time of submission.",
+        "category": "Touring & Applications"
+      },
+      {
+        "question": "Are there any special considerations for students or applicants without traditional income?",
+        "answer": "Yes! We understand that not all applicants have traditional employment income. The following alternatives may be considered:\n•\tStudents: A qualified co-signer or guarantor may be accepted in place of standard income requirements\n•\tSelf-employed applicants: Bank statements and tax returns (last 2 years) may be submitted in lieu of pay stubs\n•\tOther income sources: Social Security, alimony, or other verifiable income may also qualify\nPlease speak with our leasing team to discuss your specific situation — we review every application individually.",
+        "category": "Touring & Applications"
+      },
+      {
+        "question": "What happens after I submit my application?",
+        "answer": "Once submitted, our team will review your application, verify your income, rental history, and background information, and reach out if any additional documentation is needed. You’ll be kept informed throughout the process.",
+        "category": "Touring & Applications"
+      },
+      {
+        "question": "How soon can I move in after my application is approved?",
+        "answer": "Typically, approved applicants can move in within about a week after approval. This allows enough time to complete payments, sign all required documents, and set up utilities before your move-in date.",
+        "category": "Touring & Applications"
+      },
+      {
+        "question": "What if I don’t meet all of the leasing requirements?",
+        "answer": "We understand that every applicant’s situation is unique. Depending on the overall strength of your application, we may still be able to work with you through options such as a qualified co-signer, a higher security deposit, or additional supporting documentation. We encourage you to speak with our leasing team to explore what options may be available.",
+        "category": "Touring & Applications"
       },
       {
         "question": "Are short-term leases available?",
-        "answer": "Lease options vary by inventory and season. Placeholder expansion: this answer can include standard term lengths, premium adjustments, and renewal path examples.",
-        "category": "Leasing"
+        "answer": "Yes, we do offer short-term lease options. Our minimum lease term is 6 months. Please note that short-term leases are typically priced approximately 15% higher than a standard annual lease.",
+        "category": "Lease Terms & Fees"
       },
       {
-        "question": "Which utilities are resident responsibility?",
-        "answer": "Utility responsibilities depend on unit and lease details. Placeholder expansion: final content can list included utilities, setup providers, and estimated monthly ranges.",
-        "category": "Utilities"
+        "question": "Is there a security deposit?",
+        "answer": "Yes, a security deposit is required. The amount ranges from half a month's rent to 1.5x the base rent, and is determined after your application has been reviewed and the background report is completed.",
+        "category": "Lease Terms & Fees"
+      },
+      {
+        "question": "Are there any move-in fees separate from the security deposit?",
+        "answer": "Yes, in addition to the security deposit, the following one-time move-in fees may apply:\n•\tApplication Fee: $[amount]\n•\tAdmin/Move-in Fee: $[amount]\n•\tPet Fee (if applicable): $[one-time fee] + $[monthly pet rent]\nAll applicable fees will be clearly outlined in your lease agreement before signing.",
+        "category": "Lease Terms & Fees"
+      },
+      {
+        "question": "Do you accept Housing Vouchers / Section 8?",
+        "answer": "Yes, we do accept Housing Choice Vouchers (Section 8) where permitted by law. Please note that all applicants, including voucher holders, must still meet our standard screening requirements. We encourage you to contact our leasing team for more details on the process.",
+        "category": "Lease Terms & Fees"
+      },
+      {
+        "question": "How much is required before move-in?",
+        "answer": "Move-in costs generally include the Security Deposit, first month’s rent, and a one-time move-in fee. Exact amounts vary by unit and will be clearly provided to you before approval so there are no surprises.",
+        "category": "Lease Terms & Fees"
+      },
+      {
+        "question": "Is renters insurance required?",
+        "answer": "Yes, renters insurance is required for all residents. A minimum liability coverage of $100,000 is recommended. Proof of an active policy must be submitted prior to or on your move-in date. Renters insurance is affordable and protects your personal belongings — your leasing agent can point you to providers if needed.",
+        "category": "Lease Terms & Fees"
+      },
+      {
+        "question": "Is subleasing allowed?",
+        "answer": "Subleasing is not permitted without prior written approval from management. Any unauthorized sublease or transfer of occupancy may be considered a violation of your lease agreement. If your circumstances change and you need to explore options, we encourage you to speak with our leasing team — we're here to help find the best solution.",
+        "category": "Lease Terms & Fees"
+      },
+      {
+        "question": "What is the lease renewal process, and how much notice is required before moving out?",
+        "answer": "We love our residents and hope you'll call this home for years to come! Here's how the process works:\n•\tResidents will be contacted 60 days before their lease end date with renewal options and any updated pricing\n•\tIf you choose not to renew, a written 60-day notice to vacate is required prior to your lease end date\n•\tMonth-to-month arrangements may be available after your initial lease term at an adjusted rate — speak with your leasing agent for details",
+        "category": "Lease Terms & Fees"
+      },
+      {
+        "question": "When is rent due, and when are late fees charged?",
+        "answer": "Rent is due on the 1st of each month. A 3-day grace period is provided, so as long as rent is paid by the 3rd, no late fee is assessed. Late fees are applied to accounts starting on the 4th of each month.",
+        "category": "Rent, Payments & Utilities"
+      },
+      {
+        "question": "How do I pay rent?",
+        "answer": "Rent can be paid conveniently through our online resident portal set up through Appfolio (We cannot provide a link to the direct portal as it is only set up once a tenant signs a lease). \n\nWe accept electronic bank transfers (ACH), debit, and credit cards. Auto-pay enrollment is available and encouraged to ensure you never miss a due date.",
+        "category": "Rent, Payments & Utilities"
+      },
+      {
+        "question": "What utilities are tenants responsible for?",
+        "answer": "Tenants are responsible for trash, pest control, water, and common area maintenance charges, which are billed on a monthly basis. Electricity is billed directly through Georgia Power and is set up independently by each tenant.",
+        "category": "Rent, Payments & Utilities"
+      },
+      {
+        "question": "Are there any current specials or move-in incentives?",
+        "answer": "We periodically offer specials based on availability, demand, and the time of year. We encourage you to reach out to our leasing team to inquire about any current promotions — you might just catch a great deal!",
+        "category": "Rent, Payments & Utilities"
+      },
+      {
+        "question": "Is parking available?",
+        "answer": "While we don't offer unit-specific assigned parking, our community has ample parking throughout the complex, making it easy and convenient for residents and their guests.",
+        "category": "Parking & Maintenance"
+      },
+      {
+        "question": "How is maintenance handled, and what are the response times?",
+        "answer": "Maintenance requests can be submitted through our online resident portal or by contacting the leasing office directly. We prioritize requests as follows:\n•\tEmergency requests (water leaks, no heat/AC, electrical hazards): Responded to within 24 hours\n•\tUrgent requests (appliance issues, plumbing): Addressed within 2–3 business days\n•\tRoutine requests (cosmetic or non-urgent repairs): Completed within 5–7 business days\nOur goal is to make sure your home is always comfortable and well-maintained.",
+        "category": "Parking & Maintenance"
       }
     ],
     "finalCta": {
