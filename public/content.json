@@ -243,23 +243,23 @@
       "highlights": [
         {
           "title": "Downtown Atlanta",
-          "description": "Easy commute to business and entertainment districts.",
-          "distance": "15 minutes"
+          "description": "Easy commute to Coca Cola, Georgia Aquarium, CNN and State Street Arena, Mercedes Benz Stadium",
+          "distance": "15-20 mins"
         },
         {
           "title": "Hartsfield-Jackson Airport",
           "description": "Convenient travel access for frequent flyers.",
-          "distance": "10 minutes"
+          "distance": "25-30 mins"
         },
         {
-          "title": "Greenbriar Mall",
-          "description": "Nearby retail and dining options.",
-          "distance": "5 minutes"
+          "title": "Truist Braves stadium",
+          "description": "Home to Atlanta Falcons, Cumberland Mall, Battery park for great evening with friends and family.",
+          "distance": "15-20 mins"
         },
         {
-          "title": "Cascade Springs Preserve",
-          "description": "Green space and trails for weekends outdoors.",
-          "distance": "8 minutes"
+          "title": "Six Flags",
+          "description": "Perfect place for some high adventure, family time and water splash too cool down in summar.",
+          "distance": "10-12 mins"
         }
       ]
     },
