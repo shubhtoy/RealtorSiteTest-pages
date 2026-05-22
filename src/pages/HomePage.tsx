@@ -120,6 +120,16 @@ export default function HomePage() {
     [home.whyCards],
   );
 
+  const faqCategories = useMemo(() => {
+    const cats: string[] = [];
+    for (const item of home.faq) {
+      if (!cats.includes(item.category)) cats.push(item.category);
+    }
+    return cats;
+  }, [home.faq]);
+  const [activeFaqCat, setActiveFaqCat] = useState<string>("");
+  useEffect(() => { if (faqCategories.length && !activeFaqCat) setActiveFaqCat(faqCategories[0]); }, [faqCategories, activeFaqCat]);
+  const filteredFaq = useMemo(() => home.faq.filter(f => f.category === activeFaqCat), [home.faq, activeFaqCat]);
   const defaultFaqValue = useMemo(() => ["item-0"], []);
   const eyebrowClass = "text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-accent";
   const sectionTitleClass = "mt-2 font-display text-[1.9rem] leading-[1.08] md:text-5xl";
@@ -421,6 +431,67 @@ export default function HomePage() {
                 </AccordionItem>
               ))}
             </Accordion>
+          </div>
+        </div>
+      </section> : null}
+
+      {home.sectionVisibility.faq ? <section className="bg-background py-12 md:py-24">
+        <div className="mx-auto w-[min(760px,92vw)]">
+          <Reveal className="mb-8 text-center">
+            <p className={eyebrowClass}>{home.ui.faqEyebrow}</p>
+            <h2 className={sectionTitleClass}>{home.ui.faqTitle}</h2>
+            <p className={sectionCopyClass}>
+              {home.ui.faqDescription}
+            </p>
+          </Reveal>
+          <div className="grid items-start gap-8 md:grid-cols-[0.85fr_1.15fr] md:gap-10">
+            <div className="rounded-3xl bg-[linear-gradient(145deg,hsl(var(--primary)/0.14),transparent)] p-6 md:p-7">
+              <p className="text-[0.64rem] font-semibold uppercase tracking-[0.14em] text-accent">{home.ui.faqHelpEyebrow}</p>
+              <h3 className="mt-2 font-display text-2xl leading-tight">{home.ui.faqHelpTitle}</h3>
+              <p className="mt-3 text-[0.95rem] leading-relaxed text-muted-foreground">
+                {home.ui.faqHelpDescription}
+              </p>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <a
+                  href={resolveAppHref(home.finalCta.primary.link)}
+                  className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 min-h-[44px] text-[0.64rem] font-semibold uppercase tracking-[0.14em] text-primary-foreground"
+                >
+                  {home.ui.faqHelpPrimaryLabel}
+                </a>
+                <Link
+                  to={home.finalCta.secondary.link}
+                  className="inline-flex items-center justify-center rounded-full border border-primary/35 px-4 py-2 min-h-[44px] text-[0.64rem] font-semibold uppercase tracking-[0.14em] text-primary"
+                >
+                  {home.ui.faqHelpSecondaryLabel}
+                </Link>
+              </div>
+            </div>
+
+            <div>
+              <div className="mb-4 flex flex-wrap gap-2">
+                {faqCategories.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setActiveFaqCat(cat)}
+                    className={`rounded-full px-3 py-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.1em] transition ${activeFaqCat === cat ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:bg-muted"}`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+              <Accordion key={activeFaqCat} defaultValue={defaultFaqValue} className="border-t border-border/60">
+                {filteredFaq.map((item, index) => (
+                  <AccordionItem key={item.question} value={`item-${index}`} className="border-b border-border/60 py-1">
+                    <AccordionTrigger className="py-4 text-base font-semibold leading-snug text-foreground hover:no-underline md:text-[1.02rem]">
+                      <span className="text-left pr-2">{item.question}</span>
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-5 text-[0.95rem] leading-relaxed text-muted-foreground">
+                      {item.answer}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </div>
           </div>
         </div>
       </section> : null}

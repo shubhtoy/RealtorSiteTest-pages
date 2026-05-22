@@ -45,7 +45,7 @@ export const defaultTheme: EditableSiteDocument["theme"] = {
 
 export const defaultEditableSiteDocument: EditableSiteDocument = {
   version: EDITABLE_CONTENT_VERSION,
-  updatedAt: new Date().toISOString(),
+  updatedAt: "1970-01-01T00:00:00.000Z",
   theme: defaultTheme,
   global: {
     siteName: "The Flats @ 1204",

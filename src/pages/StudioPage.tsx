@@ -1354,12 +1354,14 @@ export default function StudioPage() {
   };
 
   const onPublish = (nextData: PuckIncomingData) => {
-    applyPuckData(nextData, "Publish blocked");
-    toast.success("Studio changes applied to draft");
+    applyPuckData(nextData, "Save blocked");
+    toast.success("Draft saved");
   };
 
-  const onChange = (nextData: PuckIncomingData) => {
-    applyPuckData(nextData, "Edit blocked");
+  const onChange = (_nextData: PuckIncomingData) => {
+    // Don't sync on every keystroke — it resets Puck's internal state (cursor, focus).
+    // Draft is synced when user clicks Puck's "Publish" (save) button (onPublish above).
+    if (autosaveStatus === "saved" || autosaveStatus === "idle") setAutosaveStatus("idle");
   };
 
   const downloadDraftJson = () => {
@@ -1656,7 +1658,7 @@ export default function StudioPage() {
                 size="sm"
                 onClick={() => setPublishDialogOpen(true)}
               >
-                Publish
+                Go Live
               </Button>
               <Button
                 variant="ghost"
@@ -1838,6 +1840,7 @@ export default function StudioPage() {
                 onPublish={onPublish}
                 onChange={onChange}
                 plugins={plugins as Parameters<typeof Puck>[0]["plugins"]}
+                overrides={{ headerActions: ({ children }) => <>{children}<span className="text-xs text-muted-foreground ml-2">↑ saves to draft</span></> }}
               />
             </div>
           </>
