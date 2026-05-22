@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-05-23T00:29:00.000Z",
+  "updatedAt": "2026-05-22T19:07:08.364Z",
   "theme": {
     "colors": {
       "primary": "198 65% 40%",
@@ -34,7 +34,7 @@
     "phone": "(770) 726-8907",
     "email": "Contact@babaflats.com",
     "addressLine": "1204 Veterans Memorial Hwy SW, Atlanta, GA 30126",
-    "hoursLine": "Mon\u2013Fri 9am\u20136pm, Sat 10am\u20134pm",
+    "hoursLine": "Mon–Fri 9am–6pm, Sat 10am–4pm",
     "navCtaText": "Book a Tour",
     "navCtaLink": "/contact",
     "navLinks": [
@@ -75,7 +75,7 @@
       "tagline": "Affordable, Reliable, Spacious",
       "title": "Atlanta Homes That Feel",
       "highlightText": "Modern. Warm. Effortless.",
-      "description": "Explore 1BR, 2BR, and 3BR homes with practical layouts, bright interiors, and a connected neighborhood location. Placeholder marketing copy: this lead paragraph can scale to two or three lines for stronger storytelling while still preserving fast scanning and clear CTA focus.",
+      "description": "Hello",
       "primaryCta": {
         "text": "Explore Gallery",
         "link": "/gallery"
@@ -283,7 +283,7 @@
     "faq": [
       {
         "question": "What floor plans are available?",
-        "answer": "We currently offer 1-bedroom, 2-bedroom, and 3-bedroom units. Detailed layouts for each floor plan are available in our photo gallery \u2014 take a look and find the one that fits your lifestyle!",
+        "answer": "We currently offer 1-bedroom, 2-bedroom, and 3-bedroom units. Detailed layouts for each floor plan are available in our photo gallery — take a look and find the one that fits your lifestyle!",
         "category": "Floor Plans & Amenities"
       },
       {
@@ -298,7 +298,7 @@
       },
       {
         "question": "What is the noise/quiet hours policy?",
-        "answer": "We are a peaceful, respectful community. Quiet hours are observed from 10:00 PM to 8:00 AM on weekdays, and 11:00 PM to 9:00 AM on weekends. During these hours, residents are expected to keep noise to a minimum \u2014 including music, televisions, and gatherings \u2014 out of respect for neighbors. Repeated violations may result in lease action.",
+        "answer": "We are a peaceful, respectful community. Quiet hours are observed from 10:00 PM to 8:00 AM on weekdays, and 11:00 PM to 9:00 AM on weekends. During these hours, residents are expected to keep noise to a minimum — including music, televisions, and gatherings — out of respect for neighbors. Repeated violations may result in lease action.",
         "category": "Pets and Community"
       },
       {
@@ -308,7 +308,7 @@
       },
       {
         "question": "What amenities are included?",
-        "answer": "Our community offers the following amenities:\n\u2022\tOn-site laundry facility\n\u2022\tBeautifully maintained dog park\n\u2022\tBenches and outdoor seating areas perfect for relaxing\n\u2022\tAmple community parking\nIt's a peaceful neighborhood \u2014 perfect for unwinding or simply enjoying the quiet surroundings.",
+        "answer": "Our community offers the following amenities:\n•\tOn-site laundry facility\n•\tBeautifully maintained dog park\n•\tBenches and outdoor seating areas perfect for relaxing\n•\tAmple community parking\nIt's a peaceful neighborhood — perfect for unwinding or simply enjoying the quiet surroundings.",
         "category": "Floor Plans & Amenities"
       },
       {
@@ -318,7 +318,7 @@
       },
       {
         "question": "Is the neighborhood near public transportation, schools, or shopping?",
-        "answer": "\u2022 Shopping & Dining: Conveniently located near major shopping and dining options including Kroger, Publix, Lowe\u2019s, Home Depot, local restaurants, and various fast-food options, all within approximately 5\u201315 minutes.\n\n\u2022 Public Transportation: While I am not completely certain about the exact routes, it does appear that there are CobbLinc bus routes operating along Veterans Memorial Hwy.\n\n\u2022 Schools: Zoned for the Cobb County School District, with nearby schools including Mableton Elementary School, Harmony-Leland Elementary School, Lindley Middle School, and Pebblebrook High School. The area is also close to Chattahoochee Technical College \u2013 Austell Campus and Cobb Medical Institute (formerly Cobb CNA School).\n\n\u2022 Healthcare: Close to Saint James Medical Center, Wellstar Cobb Hospital, and Wellstar Cobb Medical Center.\n\n\u2022 Highway Access: Convenient access to I-20, I-285, and Veterans Memorial Hwy, making commuting throughout Metro Atlanta easier.\n\n\u2022 Entertainment: Six Flags Over Georgia, Truist Park/The Battery Atlanta, Cumberland Mall, and Mable House Amphitheatre are all within approximately a 15-minute drive.",
+        "answer": "• Shopping & Dining: Conveniently located near major shopping and dining options including Kroger, Publix, Lowe’s, Home Depot, local restaurants, and various fast-food options, all within approximately 5–15 minutes.\n\n• Public Transportation: While I am not completely certain about the exact routes, it does appear that there are CobbLinc bus routes operating along Veterans Memorial Hwy.\n\n• Schools: Zoned for the Cobb County School District, with nearby schools including Mableton Elementary School, Harmony-Leland Elementary School, Lindley Middle School, and Pebblebrook High School. The area is also close to Chattahoochee Technical College – Austell Campus and Cobb Medical Institute (formerly Cobb CNA School).\n\n• Healthcare: Close to Saint James Medical Center, Wellstar Cobb Hospital, and Wellstar Cobb Medical Center.\n\n• Highway Access: Convenient access to I-20, I-285, and Veterans Memorial Hwy, making commuting throughout Metro Atlanta easier.\n\n• Entertainment: Six Flags Over Georgia, Truist Park/The Battery Atlanta, Cumberland Mall, and Mable House Amphitheatre are all within approximately a 15-minute drive.",
         "category": "Floor Plans & Amenities"
       },
       {
@@ -333,27 +333,27 @@
       },
       {
         "question": "What documents are needed to apply?",
-        "answer": "To help us process your application as quickly as possible, please have the following documents ready:\n\u2022\tGovernment-issued photo ID (Driver's License)\n\u2022\tSocial Security Number (SSN)\n\u2022\tLast 2 months' pay stubs\n\u2022\tLast 2 months' bank statements\n",
+        "answer": "To help us process your application as quickly as possible, please have the following documents ready:\n•\tGovernment-issued photo ID (Driver's License)\n•\tSocial Security Number (SSN)\n•\tLast 2 months' pay stubs\n•\tLast 2 months' bank statements\n",
         "category": "Touring & Applications"
       },
       {
         "question": "What are the requirements to qualify for a lease?",
-        "answer": "To be eligible for approval, applicants must complete an application along with the applicable application fee, which initiates a background check. Minimum requirements include:\n\u2022\tIncome: Monthly gross income of at least 3x the base rent\n\u2022\tCredit Score: 580 or above\n\u2022\tBackground: No felony convictions\nAdditional factors that may influence eligibility include prior eviction history, payment history over the past 24 months, and employment stability.",
+        "answer": "To be eligible for approval, applicants must complete an application along with the applicable application fee, which initiates a background check. Minimum requirements include:\n•\tIncome: Monthly gross income of at least 3x the base rent\n•\tCredit Score: 580 or above\n•\tBackground: No felony convictions\nAdditional factors that may influence eligibility include prior eviction history, payment history over the past 24 months, and employment stability.",
         "category": "Touring & Applications"
       },
       {
         "question": "What is the application processing time?",
-        "answer": "Once a completed application and all required documents are submitted, processing typically takes 2\u20135 business days. Delays may occur if background or credit checks require additional verification. You will be notified via email or phone as soon as a decision is made. To avoid delays, please ensure all documents are complete and legible at the time of submission.",
+        "answer": "Once a completed application and all required documents are submitted, processing typically takes 2–5 business days. Delays may occur if background or credit checks require additional verification. You will be notified via email or phone as soon as a decision is made. To avoid delays, please ensure all documents are complete and legible at the time of submission.",
         "category": "Touring & Applications"
       },
       {
         "question": "Are there any special considerations for students or applicants without traditional income?",
-        "answer": "Yes! We understand that not all applicants have traditional employment income. The following alternatives may be considered:\n\u2022\tStudents: A qualified co-signer or guarantor may be accepted in place of standard income requirements\n\u2022\tSelf-employed applicants: Bank statements and tax returns (last 2 years) may be submitted in lieu of pay stubs\n\u2022\tOther income sources: Social Security, alimony, or other verifiable income may also qualify\nPlease speak with our leasing team to discuss your specific situation \u2014 we review every application individually.",
+        "answer": "Yes! We understand that not all applicants have traditional employment income. The following alternatives may be considered:\n•\tStudents: A qualified co-signer or guarantor may be accepted in place of standard income requirements\n•\tSelf-employed applicants: Bank statements and tax returns (last 2 years) may be submitted in lieu of pay stubs\n•\tOther income sources: Social Security, alimony, or other verifiable income may also qualify\nPlease speak with our leasing team to discuss your specific situation — we review every application individually.",
         "category": "Touring & Applications"
       },
       {
         "question": "What happens after I submit my application?",
-        "answer": "Once submitted, our team will review your application, verify your income, rental history, and background information, and reach out if any additional documentation is needed. You\u2019ll be kept informed throughout the process.",
+        "answer": "Once submitted, our team will review your application, verify your income, rental history, and background information, and reach out if any additional documentation is needed. You’ll be kept informed throughout the process.",
         "category": "Touring & Applications"
       },
       {
@@ -362,8 +362,8 @@
         "category": "Touring & Applications"
       },
       {
-        "question": "What if I don\u2019t meet all of the leasing requirements?",
-        "answer": "We understand that every applicant\u2019s situation is unique. Depending on the overall strength of your application, we may still be able to work with you through options such as a qualified co-signer, a higher security deposit, or additional supporting documentation. We encourage you to speak with our leasing team to explore what options may be available.",
+        "question": "What if I don’t meet all of the leasing requirements?",
+        "answer": "We understand that every applicant’s situation is unique. Depending on the overall strength of your application, we may still be able to work with you through options such as a qualified co-signer, a higher security deposit, or additional supporting documentation. We encourage you to speak with our leasing team to explore what options may be available.",
         "category": "Touring & Applications"
       },
       {
@@ -378,7 +378,7 @@
       },
       {
         "question": "Are there any move-in fees separate from the security deposit?",
-        "answer": "Yes, in addition to the security deposit, the following one-time move-in fees may apply:\n\u2022\tApplication Fee: $[amount]\n\u2022\tAdmin/Move-in Fee: $[amount]\n\u2022\tPet Fee (if applicable): $[one-time fee] + $[monthly pet rent]\nAll applicable fees will be clearly outlined in your lease agreement before signing.",
+        "answer": "Yes, in addition to the security deposit, the following one-time move-in fees may apply:\n•\tApplication Fee: $[amount]\n•\tAdmin/Move-in Fee: $[amount]\n•\tPet Fee (if applicable): $[one-time fee] + $[monthly pet rent]\nAll applicable fees will be clearly outlined in your lease agreement before signing.",
         "category": "Lease Terms & Fees"
       },
       {
@@ -388,22 +388,22 @@
       },
       {
         "question": "How much is required before move-in?",
-        "answer": "Move-in costs generally include the Security Deposit, first month\u2019s rent, and a one-time move-in fee. Exact amounts vary by unit and will be clearly provided to you before approval so there are no surprises.",
+        "answer": "Move-in costs generally include the Security Deposit, first month’s rent, and a one-time move-in fee. Exact amounts vary by unit and will be clearly provided to you before approval so there are no surprises.",
         "category": "Lease Terms & Fees"
       },
       {
         "question": "Is renters insurance required?",
-        "answer": "Yes, renters insurance is required for all residents. A minimum liability coverage of $100,000 is recommended. Proof of an active policy must be submitted prior to or on your move-in date. Renters insurance is affordable and protects your personal belongings \u2014 your leasing agent can point you to providers if needed.",
+        "answer": "Yes, renters insurance is required for all residents. A minimum liability coverage of $100,000 is recommended. Proof of an active policy must be submitted prior to or on your move-in date. Renters insurance is affordable and protects your personal belongings — your leasing agent can point you to providers if needed.",
         "category": "Lease Terms & Fees"
       },
       {
         "question": "Is subleasing allowed?",
-        "answer": "Subleasing is not permitted without prior written approval from management. Any unauthorized sublease or transfer of occupancy may be considered a violation of your lease agreement. If your circumstances change and you need to explore options, we encourage you to speak with our leasing team \u2014 we're here to help find the best solution.",
+        "answer": "Subleasing is not permitted without prior written approval from management. Any unauthorized sublease or transfer of occupancy may be considered a violation of your lease agreement. If your circumstances change and you need to explore options, we encourage you to speak with our leasing team — we're here to help find the best solution.",
         "category": "Lease Terms & Fees"
       },
       {
         "question": "What is the lease renewal process, and how much notice is required before moving out?",
-        "answer": "We love our residents and hope you'll call this home for years to come! Here's how the process works:\n\u2022\tResidents will be contacted 60 days before their lease end date with renewal options and any updated pricing\n\u2022\tIf you choose not to renew, a written 60-day notice to vacate is required prior to your lease end date\n\u2022\tMonth-to-month arrangements may be available after your initial lease term at an adjusted rate \u2014 speak with your leasing agent for details",
+        "answer": "We love our residents and hope you'll call this home for years to come! Here's how the process works:\n•\tResidents will be contacted 60 days before their lease end date with renewal options and any updated pricing\n•\tIf you choose not to renew, a written 60-day notice to vacate is required prior to your lease end date\n•\tMonth-to-month arrangements may be available after your initial lease term at an adjusted rate — speak with your leasing agent for details",
         "category": "Lease Terms & Fees"
       },
       {
@@ -423,7 +423,7 @@
       },
       {
         "question": "Are there any current specials or move-in incentives?",
-        "answer": "We periodically offer specials based on availability, demand, and the time of year. We encourage you to reach out to our leasing team to inquire about any current promotions \u2014 you might just catch a great deal!",
+        "answer": "We periodically offer specials based on availability, demand, and the time of year. We encourage you to reach out to our leasing team to inquire about any current promotions — you might just catch a great deal!",
         "category": "Rent, Payments & Utilities"
       },
       {
@@ -433,7 +433,7 @@
       },
       {
         "question": "How is maintenance handled, and what are the response times?",
-        "answer": "Maintenance requests can be submitted through our online resident portal or by contacting the leasing office directly. We prioritize requests as follows:\n\u2022\tEmergency requests (water leaks, no heat/AC, electrical hazards): Responded to within 24 hours\n\u2022\tUrgent requests (appliance issues, plumbing): Addressed within 2\u20133 business days\n\u2022\tRoutine requests (cosmetic or non-urgent repairs): Completed within 5\u20137 business days\nOur goal is to make sure your home is always comfortable and well-maintained.",
+        "answer": "Maintenance requests can be submitted through our online resident portal or by contacting the leasing office directly. We prioritize requests as follows:\n•\tEmergency requests (water leaks, no heat/AC, electrical hazards): Responded to within 24 hours\n•\tUrgent requests (appliance issues, plumbing): Addressed within 2–3 business days\n•\tRoutine requests (cosmetic or non-urgent repairs): Completed within 5–7 business days\nOur goal is to make sure your home is always comfortable and well-maintained.",
         "category": "Parking & Maintenance"
       }
     ],
@@ -649,8 +649,8 @@
     "mapEmbedUrl": "https://www.google.com/maps?q=1204+Veterans+Memorial+Hwy+SW,+Atlanta,+GA&output=embed",
     "officeHoursTitle": "Leasing Desk",
     "officeHours": [
-      "Mon\u2013Fri: 9 AM \u2013 6 PM",
-      "Saturday: 10 AM \u2013 4 PM",
+      "Mon–Fri: 9 AM – 6 PM",
+      "Saturday: 10 AM – 4 PM",
       "Sunday: By appointment"
     ],
     "tourFormTitle": "Tell Us What You Need",
