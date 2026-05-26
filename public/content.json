@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-05-22T19:07:08.364Z",
+  "updatedAt": "2026-05-22T19:40:10.841Z",
   "theme": {
     "colors": {
       "primary": "198 65% 40%",
@@ -138,7 +138,7 @@
         "bedrooms": 1,
         "bathrooms": 1,
         "sqft": "~860 sq ft",
-        "description": "Efficient circulation with bright living room and practical kitchen flow. Placeholder detail text can include sample resident persona use-cases, furniture fit notes, and common move-in questions.",
+        "description": "Efficient circulation with bright living room and practical kitchen flow. ",
         "image": "/images/living-1br.jpg",
         "features": [
           "Open-concept living area",
@@ -152,7 +152,7 @@
         "bedrooms": 2,
         "bathrooms": 1,
         "sqft": "~1060 sq ft",
-        "description": "Balanced shared and private zones for flexibility and comfort. Placeholder detail text demonstrates medium-length copy so design review can evaluate line breaks, card density, and hierarchy.",
+        "description": "Balanced shared and private zones for flexibility and comfort. ",
         "image": "/images/kitchen-2br.jpg",
         "features": [
           "Generous common area",
@@ -166,7 +166,7 @@
         "bedrooms": 3,
         "bathrooms": 2,
         "sqft": "~1300 sq ft",
-        "description": "Expanded footprint with family-friendly room count. Placeholder detail copy can hold storage notes, room dimensions context, and multigenerational use scenarios before final copy is signed off.",
+        "description": "Expanded footprint with family-friendly room count. ",
         "image": "/images/home-3br.jpg",
         "features": [
           "Primary suite with private bath",
@@ -265,9 +265,9 @@
     },
     "testimonials": [
       {
-        "quote": "Moving into Baba Flats was the best decision. The layout is practical, the community is welcoming, and the location is perfect for my commute.",
-        "name": "Sarah M.",
-        "designation": "1BR Resident since 2024"
+        "quote": "I’ve really enjoyed living here. The apartment complex offers convenient amenities like on-site laundry and trash cans within walking distance, which makes everyday living much easier. The landlord is very attentive and responsive, and any issue I’ve had has always been addressed within a reasonable and comfortable timeframe.\nOne of the best parts of living here is the community. My neighbors are quiet, friendly, and always speak when passing by. They’re also very helpful and look out for one another, especially when the little ones are outside playing. Overall, it’s been a peaceful, welcoming, and well-managed place to live.",
+        "name": "Amber Davis",
+        "designation": "2BR Resident since 2025"
       },
       {
         "quote": "The 2BR unit gives us exactly the space we need. The kitchen is functional, natural light is great, and move-in was seamless.",
@@ -650,14 +650,14 @@
     "officeHoursTitle": "Leasing Desk",
     "officeHours": [
       "Mon–Fri: 9 AM – 6 PM",
-      "Saturday: 10 AM – 4 PM",
+      "Saturday: By appointment",
       "Sunday: By appointment"
     ],
     "tourFormTitle": "Tell Us What You Need",
     "tourFormDescription": "Quick qualification inputs, concise details, and a clear action path.",
     "formOptions": {
       "bedroom": [
-        "1BR",
+        "1Br",
         "2BR",
         "3BR"
       ],
