@@ -134,11 +134,11 @@
     ],
     "floorPlans": [
       {
-        "title": "1BR / 1BA",
+        "title": "1BR / 1BA - Gardenia",
         "bedrooms": 1,
         "bathrooms": 1,
         "sqft": "~860 sq ft",
-        "description": "Efficient circulation with bright living room and practical kitchen flow. ",
+        "description": "Efficient circulation with bright living room and practical kitchen flow. Got to see the bedroom walk-in closet. Its like mini bed office.",
         "image": "/images/living-1br.jpg",
         "features": [
           "Open-concept living area",
@@ -148,7 +148,7 @@
         "priceRange": "Contact for pricing"
       },
       {
-        "title": "2BR / 1BA",
+        "title": "2BR / 1BA - Peony",
         "bedrooms": 2,
         "bathrooms": 1,
         "sqft": "~1060 sq ft",
@@ -162,7 +162,7 @@
         "priceRange": "Contact for pricing"
       },
       {
-        "title": "3BR / 2BA",
+        "title": "3BR / 2BA - Dahlia",
         "bedrooms": 3,
         "bathrooms": 2,
         "sqft": "~1300 sq ft",
