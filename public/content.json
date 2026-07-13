@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-05-22T19:07:08.364Z",
+  "updatedAt": "2026-05-26T18:46:11.858Z",
   "welcome": {
     "heading": "Welcome to Baba Flats",
     "message": "We're delighted to have you here. Step inside to explore bright, thoughtfully designed 1, 2, and 3-bedroom apartment homes in the heart of Atlanta — where comfort, convenience, and community come together to feel like home.",
@@ -126,25 +126,25 @@
     ],
     "focusCards": [
       {
-        "title": "1BR / 1BA Suite",
+        "title": "1BR / 1BA - Gardenia",
         "src": "/images/living-1br.jpg"
       },
       {
-        "title": "2BR / 1BA Home",
+        "title": "2BR / 1BA Peony ",
         "src": "/images/kitchen-2br.jpg"
       },
       {
-        "title": "3BR / 2BA Family",
+        "title": "3BR / 2BA Dahlia",
         "src": "/images/home-3br.jpg"
       }
     ],
     "floorPlans": [
       {
-        "title": "1BR / 1BA",
+        "title": "1BR / 1BA - Gardenia",
         "bedrooms": 1,
         "bathrooms": 1,
         "sqft": "~860 sq ft",
-        "description": "Efficient circulation with bright living room and practical kitchen flow. Placeholder detail text can include sample resident persona use-cases, furniture fit notes, and common move-in questions.",
+        "description": "Efficient circulation with bright living room and practical kitchen flow. Got to see the bedroom walk-in closet. Its like mini office.",
         "image": "/images/living-1br.jpg",
         "features": [
           "Open-concept living area",
@@ -154,11 +154,11 @@
         "priceRange": "Contact for pricing"
       },
       {
-        "title": "2BR / 1BA",
+        "title": "2BR / 1BA - Peony",
         "bedrooms": 2,
         "bathrooms": 1,
         "sqft": "~1060 sq ft",
-        "description": "Balanced shared and private zones for flexibility and comfort. Placeholder detail text demonstrates medium-length copy so design review can evaluate line breaks, card density, and hierarchy.",
+        "description": "2 Bed 1 Bath are most effective utilization of total area and kitchen is large for ample space for breakfast area.",
         "image": "/images/kitchen-2br.jpg",
         "features": [
           "Generous common area",
@@ -168,11 +168,11 @@
         "priceRange": "Contact for pricing"
       },
       {
-        "title": "3BR / 2BA",
+        "title": "3BR / 2BA - Dahlia",
         "bedrooms": 3,
         "bathrooms": 2,
         "sqft": "~1300 sq ft",
-        "description": "Expanded footprint with family-friendly room count. Placeholder detail copy can hold storage notes, room dimensions context, and multigenerational use scenarios before final copy is signed off.",
+        "description": "3 Bed 2 Baths are the most spacious one. The master Bed room has a attached bath and there is one common bath for other two rooms. There is also storage place in hall way. Idealy for family with 2-3 kids.",
         "image": "/images/home-3br.jpg",
         "features": [
           "Primary suite with private bath",
@@ -271,9 +271,9 @@
     },
     "testimonials": [
       {
-        "quote": "Moving into Baba Flats was the best decision. The layout is practical, the community is welcoming, and the location is perfect for my commute.",
-        "name": "Sarah M.",
-        "designation": "1BR Resident since 2024"
+        "quote": "I’ve really enjoyed living here. The apartment complex offers convenient amenities like on-site laundry and trash cans within walking distance, which makes everyday living much easier. The landlord is very attentive and responsive, and any issue I’ve had has always been addressed within a reasonable and comfortable timeframe.\nOne of the best parts of living here is the community. My neighbors are quiet, friendly, and always speak when passing by. They’re also very helpful and look out for one another, especially when the little ones are outside playing. Overall, it’s been a peaceful, welcoming, and well-managed place to live.",
+        "name": "Amber Davis",
+        "designation": "2BR Resident since 2025"
       },
       {
         "quote": "The 2BR unit gives us exactly the space we need. The kitchen is functional, natural light is great, and move-in was seamless.",
@@ -459,16 +459,16 @@
     "ui": {
       "residencesEyebrow": "Residences",
       "residencesTitle": "Choose Your Layout",
-      "residencesDescription": "Practical kitchen flow, usable living space, and room options that scale from solo renters to larger households.",
+      "residencesDescription": "See the different floor plans available and pick the one like the most and best suites your family needs.",
       "unitExplorerEyebrow": "Unit Explorer",
       "unitExplorerTitle": "Interactive Layout Preview",
-      "unitExplorerDescription": "Placeholder copy: imagine each card expanding into full availability details, sample furniture staging notes, and move-in timing guidance. This section is intentionally text-rich so you can validate rhythm, spacing, and readability before final leasing copy is approved.",
+      "unitExplorerDescription": "Check out the details associated with each type of floor plan.",
       "amenitiesEyebrow": "Amenities",
       "amenitiesTitle": "Media-Rich Amenity Experience",
       "amenitiesDescription": "Scroll through each amenity to see how daily life, comfort, and location work together at Baba Flats.",
       "whyEyebrow": "Why Baba Flats",
       "whyTitle": "Designed for Daily Life, Not Marketing Hype",
-      "whyDescription": "Baba Flats focuses on practical value: efficient layouts, responsive support, connected location access, and day-to-day comfort that holds up over time. Each feature below highlights how the property supports real routines, not just brochure claims.",
+      "whyDescription": "Baba Flats focuses on practical value: efficient layouts, responsive support, connected location access, and day-to-day comfort that holds up over time. ",
       "whyStickyEyebrow": "Resident Experience",
       "whyStickyTitle": "Practical features that blend into everyday living.",
       "whyStickyDescription": "From commute flow and pet routines to support responsiveness and layout efficiency, each decision is designed to reduce friction and improve day-to-day comfort.",
@@ -656,14 +656,14 @@
     "officeHoursTitle": "Leasing Desk",
     "officeHours": [
       "Mon–Fri: 9 AM – 6 PM",
-      "Saturday: 10 AM – 4 PM",
+      "Saturday: By appointment",
       "Sunday: By appointment"
     ],
     "tourFormTitle": "Tell Us What You Need",
     "tourFormDescription": "Quick qualification inputs, concise details, and a clear action path.",
     "formOptions": {
       "bedroom": [
-        "1BR",
+        "1Br",
         "2BR",
         "3BR"
       ],
