@@ -2,6 +2,7 @@ import { Suspense, lazy, useEffect, useState } from "react";
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster } from "sonner";
 import SitePreloader from "./components/layout/SitePreloader";
+import WelcomeGate from "./components/layout/WelcomeGate";
 import SiteFooter from "./components/layout/SiteFooter";
 import SiteHeader from "./components/layout/SiteHeader";
 import RouteErrorBoundary from "./components/layout/RouteErrorBoundary";
@@ -24,6 +25,7 @@ function AppContent({ showPreloader }: { showPreloader: boolean }) {
   return (
     <>
       {!isStudio ? <SitePreloader visible={showPreloader} /> : null}
+      {!isStudio ? <WelcomeGate /> : null}
       {!isStudio ? <SiteHeader /> : null}
 
       <Routes>

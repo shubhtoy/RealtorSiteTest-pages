@@ -75,6 +75,7 @@ export type GlobalLayer = {
   navLinks: Array<{ to: string; label: string }>;
   footerBadges: string[];
   seoTitleSuffix: string;
+  reviewsUrl: string;
 };
 
 export type HomeLayer = {
@@ -277,10 +278,17 @@ export type EditableTheme = {
   radius: string;
 };
 
+export type WelcomeLayer = {
+  heading: string;
+  message: string;
+  prompt: string;
+};
+
 export type EditableSiteDocument = {
   version: number;
   updatedAt: string;
   theme: EditableTheme;
+  welcome: WelcomeLayer;
   global: GlobalLayer;
   home: HomeLayer;
   gallery: GalleryLayer;

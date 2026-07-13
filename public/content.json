@@ -1,6 +1,11 @@
 {
   "version": 1,
   "updatedAt": "2026-05-26T18:46:11.858Z",
+  "welcome": {
+    "heading": "Welcome to Baba Flats",
+    "message": "We're delighted to have you here. Step inside to explore bright, thoughtfully designed 1, 2, and 3-bedroom apartment homes in the heart of Atlanta — where comfort, convenience, and community come together to feel like home.",
+    "prompt": "Click anywhere to start"
+  },
   "theme": {
     "colors": {
       "primary": "198 65% 40%",
@@ -55,7 +60,8 @@
       "1BR / 2BR / 3BR",
       "Pet Friendly"
     ],
-    "seoTitleSuffix": "Apartments Atlanta"
+    "seoTitleSuffix": "Apartments Atlanta",
+    "reviewsUrl": "https://www.google.com/search?q=Baba+Flats+Apartments+Atlanta+reviews"
   },
   "home": {
     "sectionVisibility": {
@@ -497,7 +503,7 @@
       "cta": true
     },
     "heroEyebrow": "Dedicated Media Page",
-    "heroTitle": "BabaFlats @ 1204 Gallery",
+    "heroTitle": "Baba Flats Gallery",
     "heroDescription": "Explore exterior scenes, interior details, amenities, and floor plans.",
     "heroImage": "/images/aerial.jpg",
     "categories": [
@@ -553,7 +559,7 @@
       },
       {
         "src": "/images/entrance.jpg",
-        "alt": "Entrance sign at The Flats at 1204",
+        "alt": "Entrance sign at Baba Flats",
         "label": "Entry Sign",
         "category": "Exterior",
         "type": "image"

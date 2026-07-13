@@ -47,8 +47,14 @@ export const defaultEditableSiteDocument: EditableSiteDocument = {
   version: EDITABLE_CONTENT_VERSION,
   updatedAt: "1970-01-01T00:00:00.000Z",
   theme: defaultTheme,
+  welcome: {
+    heading: "Welcome to Baba Flats",
+    message:
+      "We're delighted to have you here. Step inside to explore bright, thoughtfully designed 1, 2, and 3-bedroom apartment homes in the heart of Atlanta — where comfort, convenience, and community come together to feel like home.",
+    prompt: "Click anywhere to start",
+  },
   global: {
-    siteName: "The Flats @ 1204",
+    siteName: "Baba Flats",
     cityLabel: "Atlanta",
     tagline: siteMetadata.tagline,
     description: siteMetadata.description,
@@ -65,6 +71,7 @@ export const defaultEditableSiteDocument: EditableSiteDocument = {
     ],
     footerBadges: ["1BR / 2BR / 3BR", "Pet Friendly"],
     seoTitleSuffix: "Apartments Atlanta",
+    reviewsUrl: "",
   },
   home: {
     sectionVisibility: {
@@ -220,7 +227,7 @@ export const defaultEditableSiteDocument: EditableSiteDocument = {
       cta: true,
     },
     heroEyebrow: "Dedicated Media Page",
-    heroTitle: "The Flats @ 1204 Gallery",
+    heroTitle: "Baba Flats Gallery",
     heroDescription: "Explore exterior scenes, interior details, amenities, and floor plans.",
     heroImage: "/images/aerial.jpg",
     categories: [

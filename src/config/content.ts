@@ -300,13 +300,13 @@ export const ctaContent: CTAContent = {
 
 export const contactInfo: ContactInfo = {
   phone: "(770) 726-8907",
-  email: "leasing@babaflats.com",
+  email: "Contact@babaflats.com",
   address: {
     street: "1204 Veterans Memorial Hwy SW",
     city: "Atlanta",
     state: "GA",
-    zip: "30331",
-    full: "1204 Veterans Memorial Hwy SW, Atlanta, GA 30331",
+    zip: "30126",
+    full: "1204 Veterans Memorial Hwy SW, Atlanta, GA 30126",
   },
   hours: {
     weekdays: "Monday - Friday: 9:00 AM - 6:00 PM",
