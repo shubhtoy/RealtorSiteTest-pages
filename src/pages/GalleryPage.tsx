@@ -108,6 +108,7 @@ export default function GalleryPage() {
             {filteredItems.map((item, index) => {
               const isVideo = item.type === "video" || /\.(mp4|webm|ogg)$/i.test(item.src);
               const isSvg = /\.svg$/i.test(item.src);
+              const isFloorPlan = item.category === "Floor Plans";
               return (
                 <figure
                   key={`${item.src}-${item.label}`}
@@ -144,7 +145,12 @@ export default function GalleryPage() {
                       src={item.src}
                       alt={item.alt}
                       loading="lazy"
-                      className="h-64 w-full object-cover transition duration-500 group-hover:scale-[1.04] md:h-72"
+                      objectFit={isFloorPlan ? "contain" : "cover"}
+                      className={
+                        isFloorPlan
+                          ? "h-64 w-full bg-muted p-4 transition duration-500 md:h-72"
+                          : "h-64 w-full object-cover transition duration-500 group-hover:scale-[1.04] md:h-72"
+                      }
                       sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
                     />
                   )}

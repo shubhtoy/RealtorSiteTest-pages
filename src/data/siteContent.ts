@@ -20,7 +20,7 @@ export const galleryItems: GalleryItem[] = [
   },
   {
     src: "/images/entrance.jpg",
-    alt: "Entrance sign at The Flats at 1204",
+    alt: "Entrance sign at Baba Flats",
     label: "Entry Sign",
     category: "Exterior"
   },

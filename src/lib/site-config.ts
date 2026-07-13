@@ -4,7 +4,7 @@ import { contactInfo, siteMetadata } from "@/config/content";
 export const SITE_CONFIG_STORAGE_KEY = "baba.siteConfig";
 
 export const defaultSiteConfig: SiteConfig = {
-  siteName: "The Flats @ 1204",
+  siteName: "Baba Flats",
   cityLabel: "Atlanta",
   tagline: siteMetadata.tagline,
   description: siteMetadata.description,

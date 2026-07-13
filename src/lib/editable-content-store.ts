@@ -45,6 +45,14 @@ export function validateEditableSiteDocument(document: EditableSiteDocument): { 
     }
   }
 
+  if (!isObject(document.welcome)) {
+    errors.push("welcome must be an object");
+  } else {
+    if (!isString(document.welcome.heading)) errors.push("welcome.heading must be a string");
+    if (!isString(document.welcome.message)) errors.push("welcome.message must be a string");
+    if (!isString(document.welcome.prompt)) errors.push("welcome.prompt must be a string");
+  }
+
   if (!isString(document.global.siteName)) errors.push("global.siteName must be a string");
   if (!isString(document.global.cityLabel)) errors.push("global.cityLabel must be a string");
   if (!isString(document.global.tagline)) errors.push("global.tagline must be a string");
@@ -247,6 +255,10 @@ function hydrateDocument(partial: EditableSiteDocument): EditableSiteDocument {
         ...defaultEditableSiteDocument.theme.spacing,
         ...partial.theme?.spacing,
       },
+    },
+    welcome: {
+      ...defaultEditableSiteDocument.welcome,
+      ...partial.welcome,
     },
     global: {
       ...defaultEditableSiteDocument.global,

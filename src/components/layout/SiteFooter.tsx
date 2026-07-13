@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Phone, Mail, MapPin, Clock } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, Star } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useEditableContent } from "@/context/EditableContentContext";
@@ -74,6 +74,17 @@ export default function SiteFooter() {
                 <Clock className="h-4 w-4 text-primary" />
                 {global.hoursLine}
               </div>
+              {global.reviewsUrl && (
+                <a
+                  href={global.reviewsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-primary"
+                >
+                  <Star className="h-4 w-4 text-primary" />
+                  Read our Google Reviews
+                </a>
+              )}
             </div>
           </div>
         </div>
