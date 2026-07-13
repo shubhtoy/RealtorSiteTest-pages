@@ -131,9 +131,39 @@ Each phase is a reviewable checkpoint; the app must build at every checkpoint. T
 | Hosting undecided | Build host-agnostic (Docker); run locally in prod mode until chosen. |
 | SEO regressions during cutover | Preserve routes/canonicals; sitemap; verify metadata parity before switching DNS. |
 
-## Open Decisions (need sign-off before implementation)
+## No Static Hosting
 
-1. **Framework**: Confirm **Next.js App Router** (recommended) vs Astro vs Remix.
-2. **Content store**: Keep JSON file (server-authoritative) initially, or move to a database (e.g., SQLite/Postgres) now? Recommendation: keep JSON now, DB later.
-3. **Lead delivery**: SMTP, Google Apps Script (email+Sheet in one), or both? Recommendation: Apps Script for the Sheet + email now (host-independent), SMTP optional later.
-4. **Studio**: Keep Puck, or simplify to form-based editing of the content model? Recommendation: keep current behavior; port as-is.
+The site is served exclusively by the Node application server (Next.js) at runtime — **no static export, no GitHub Pages**. SSG/ISR may pre-render pages, but they are served by the running server, not a static host. The existing `deploy-pages.yml` is retired during cutover (Requirement 9, Task 13–14).
+
+## Coding Standards and Guardrails (Requirements 13–14)
+
+Adopted standard toolchain for all new code:
+
+- **Lint**: ESLint + `typescript-eslint` + `eslint-config-next` + `eslint-plugin-jsx-a11y` + `eslint-plugin-react-hooks`. (Biome is a viable single-tool alternative; ESLint chosen for Next.js parity.)
+- **Format**: Prettier + `prettier-plugin-tailwindcss`, plus `.editorconfig`.
+- **Dead code / hygiene**: Knip (unused files/exports/deps); optionally `dependency-cruiser` for architecture rules.
+- **Git hooks**: Husky + lint-staged (lint + format + type-check staged files pre-commit).
+- **Commits**: Conventional Commits enforced via commitlint (`@commitlint/config-conventional`).
+- **CI**: run lint, type-check, Knip, and tests on every push; block merge on failure.
+- **Docs**: `CODING_STANDARDS.md` documents conventions, structure, and the toolchain.
+
+## Agent Skills (coding guidelines)
+
+Managed by the `npx skills` toolchain, tracked in `skills-lock.json`, reproducible with `npx skills install`:
+
+- **Installed**: `web-design-guidelines`, `writing-guidelines` (from `vercel-labs/agent-skills`), alongside the existing `shadcn` skill.
+- **Recommended to add**: `react-best-practices`, `composition-patterns` (React/component standards).
+
+Note: the CLI installs skill bodies under `.agents/skills/` (gitignored, like `node_modules`); the lock file is the committed source of truth. `CODING_STANDARDS.md` will instruct contributors to run `npx skills install` after clone.
+
+## Frontend Component Audit and Cleanup (Requirement 13)
+
+Before and during porting: run Knip + a manual pass to (a) verify each component renders/behaves correctly on its route, (b) drop dead/orphaned code (`AdminConfigPage`, `ContactStudioPage`, `HeroEditorPage`, unused UI components), and (c) remove unused dependencies. Only verified, used components are ported — no dead code is carried forward.
+
+## Decisions (confirmed)
+
+1. **Framework**: **Next.js App Router** + TypeScript + Tailwind.
+2. **Content store**: JSON file (server-authoritative) now; database later.
+3. **Lead delivery**: Google Apps Script (email + Google Sheet in one) now; SMTP optional later.
+4. **Studio**: port Puck as-is (no behavior change).
+5. **Hosting**: server-only — no static/GitHub Pages; specific Node host chosen at the deploy phase.

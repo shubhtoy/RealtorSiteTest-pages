@@ -165,3 +165,29 @@ This spec supersedes and absorbs the hosting/backend concerns tracked in GitHub 
 3. THE migration SHALL proceed in phases, each independently reviewable, with the site remaining buildable at each phase checkpoint.
 4. IF the migrated WebApp cannot reach parity for a route, THEN that route SHALL remain served by the current implementation until parity is achieved (no half-broken releases).
 5. THE migration SHALL retain the current git history and provide a clear rollback path.
+
+### Requirement 13: Frontend Component Correctness and Codebase Cleanup
+
+**User Story:** As a developer, I want every frontend component verified to work and all dead code removed, so that only correct, used code is carried into the new app.
+
+#### Acceptance Criteria
+
+1. THE migration SHALL verify each ported component renders and behaves correctly (visual and interaction parity) on its route before that route is considered done.
+2. THE migration SHALL run a dead-code analyzer (e.g., Knip) to identify unused files, exports, and dependencies, and SHALL exclude them from the WebApp.
+3. THE WebApp SHALL contain no orphaned pages/components (including the previously identified `AdminConfigPage`, `ContactStudioPage`, and `HeroEditorPage`).
+4. THE WebApp SHALL declare zero unused dependencies in `package.json`.
+5. THE WebApp SHALL pass lint and type-check with zero errors as a precondition for each migration-phase checkpoint.
+
+### Requirement 14: Coding Standards and Automated Guardrails
+
+**User Story:** As a developer, I want enforced coding standards and guidelines for all future code, so that quality and style stay consistent and are checked automatically.
+
+#### Acceptance Criteria
+
+1. THE WebApp SHALL enforce linting (ESLint with `typescript-eslint` and the framework's recommended config, plus `jsx-a11y` and `react-hooks`; Biome is an accepted single-tool alternative) with zero errors in CI.
+2. THE WebApp SHALL enforce consistent formatting via a standard formatter (Prettier or Biome) and an `.editorconfig`.
+3. THE WebApp SHALL run lint, format, and type-check on staged files pre-commit via Git hooks (e.g., Husky + lint-staged).
+4. THE WebApp SHALL enforce Conventional Commits (e.g., commitlint) so history stays semantic.
+5. THE repository SHALL include agent coding-guideline skills managed by the `npx skills` toolchain and tracked in `skills-lock.json`, covering React best practices, web design, and writing guidelines, reproducible via `npx skills install`.
+6. THE repository SHALL include a documented coding-standards reference (`CODING_STANDARDS.md`) describing conventions, structure, and the guardrail toolchain.
+7. THE CI pipeline SHALL run lint, type-check, dead-code analysis, and tests, and SHALL block merge on failure.
