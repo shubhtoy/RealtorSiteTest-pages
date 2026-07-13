@@ -1,0 +1,44 @@
+# Dependencies & build outputs
+node_modules/
+.next/
+out/
+build/
+dist/
+coverage/
+
+# Generated files & lockfiles (managed by their own tools)
+next-env.d.ts
+*.tsbuildinfo
+package-lock.json
+skills-lock.json
+
+# Content & data snapshots (server-authoritative; do not reformat)
+public/content.json
+
+# Static assets
+public/images/
+public/images-optimized/
+public/videos/
+public/videos-optimized/
+public/uploads/
+
+# External / vendored skill bodies (gitignored) and authored docs & specs
+.agents/
+.kiro/
+.github/
+.vscode/
+
+# Legacy root files (ported and removed in later migration phases)
+/README.md
+/TODO_STUDIO_IMPLEMENTATION.md
+/index.html
+
+# Config files with idiomatic anonymous default exports (also ESLint-ignored)
+tailwind.config.ts
+postcss.config.js
+
+# Legacy Vite + Express sources (ported and removed in later migration phases)
+src/
+server/
+scripts/
+docs/

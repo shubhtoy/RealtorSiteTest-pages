@@ -21,7 +21,7 @@
     "next:dev": "next dev",
     "next:build": "next build",
     "next:start": "next start",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "type-check": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -31,7 +31,10 @@
     "media:optimize:uploads": "node scripts/optimize-media.mjs --uploads",
     "media:optimize:videos": "node scripts/optimize-media.mjs --videos",
     "clean": "rm -rf dist .next .turbo node_modules/.cache",
-    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md}\""
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "knip": "knip",
+    "prepare": "husky"
   },
   "keywords": [
     "react",
@@ -85,6 +88,8 @@
     "yet-another-react-lightbox": "^3.29.1"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.2.1",
+    "@commitlint/config-conventional": "^21.2.0",
     "@fast-check/vitest": "^0.3.0",
     "@types/node": "^25.5.0",
     "@types/react": "^19.2.14",
@@ -94,8 +99,14 @@
     "concurrently": "^9.2.1",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
     "fast-check": "^4.6.0",
+    "husky": "^9.1.7",
+    "knip": "^6.26.0",
+    "lint-staged": "^17.0.8",
     "postcss": "^8.5.8",
+    "prettier": "^3.9.5",
+    "prettier-plugin-tailwindcss": "^0.8.0",
     "shadcn": "^4.0.8",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.9.3",

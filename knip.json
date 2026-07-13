@@ -1,0 +1,19 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": [
+    "app/**/{page,layout,loading,error,global-error,not-found,route,template,default,sitemap,robots,manifest,icon,apple-icon,opengraph-image,twitter-image}.{ts,tsx}",
+    "next.config.ts",
+    "eslint.config.mjs",
+    "server/index.mjs"
+  ],
+  "project": ["app/**/*.{ts,tsx}", "server/**/*.{mjs,js}"],
+  "ignore": [
+    "src/**",
+    "scripts/**",
+    "public/**",
+    "vite.config.ts",
+    "tsconfig.vite.json",
+    "tsconfig.node.json"
+  ],
+  "ignoreBinaries": ["vite"]
+}

@@ -14,10 +14,9 @@ export default function HomePage() {
         Baba Flats
       </h1>
       <p className="max-w-xl text-lg text-muted-foreground">
-        The Next.js app is scaffolded and sharing the existing design tokens.
-        This heading uses <code className="text-accent">text-primary</code> on{" "}
-        <code className="text-accent">bg-background</code> to prove theme parity
-        with the Vite app.
+        The Next.js app is scaffolded and sharing the existing design tokens. This heading uses{" "}
+        <code className="text-accent">text-primary</code> on{" "}
+        <code className="text-accent">bg-background</code> to prove theme parity with the Vite app.
       </p>
     </main>
   );
