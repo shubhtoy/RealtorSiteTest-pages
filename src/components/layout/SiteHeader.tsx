@@ -1,3 +1,5 @@
+"use client";
+
 import { Link, NavLink } from "react-router-dom";
 import { motion, useReducedMotion } from "motion/react";
 import { Badge } from "@/components/ui/badge";

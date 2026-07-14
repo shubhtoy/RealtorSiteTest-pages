@@ -1,3 +1,5 @@
+"use client";
+
 import { useEditableContent } from "@/context/EditableContentContext";
 import { defaultTheme } from "@/lib/editable-content-defaults";
 import type { EditableTheme } from "@/types/editable-content";

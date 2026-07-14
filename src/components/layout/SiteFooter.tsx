@@ -1,3 +1,5 @@
+"use client";
+
 import { Link } from "react-router-dom";
 import { Phone, Mail, MapPin, Clock, Star } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
