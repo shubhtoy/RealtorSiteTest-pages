@@ -111,7 +111,7 @@ Recommended unified env variables (`.env`):
 ```bash
 npm run build
 ```
-Builds the app for production to the `dist` folder.
+Builds the Next.js app for production (output in the `.next` folder).
 
 ### Preview
 ```bash
@@ -194,7 +194,45 @@ The project uses a custom design system with Tailwind CSS. Key design tokens:
 
 ## 🚀 Deployment
 
-The project is configured for static deployment. Build output is in the `dist` folder.
+This is a Next.js (App Router) application. It ships with SSR pages and `/api/*`
+route handlers, so it requires a Node.js server host (not static hosting).
+
+### Vercel (recommended)
+
+Vercel auto-detects Next.js from the Git repository — no `vercel.json` is needed.
+
+1. In the [Vercel dashboard](https://vercel.com), choose **Add New → Project** and
+   import this GitHub repository.
+2. Vercel detects the framework as **Next.js** and applies the defaults: build
+   command `next build`, with the build output managed automatically by Vercel.
+   Leave these as-is.
+3. Under **Project Settings → Environment Variables**, add:
+
+   | Variable | Required | Notes |
+   | --- | --- | --- |
+   | `STUDIO_PASSWORD` | Yes | Server-side Studio password used to authorize draft/publish API calls. |
+   | `NEXT_PUBLIC_STUDIO_PASSWORD` | Yes | Client-side Studio password — **must equal `STUDIO_PASSWORD`**, or the Studio's save/publish requests are rejected with 401. |
+   | `NEXT_PUBLIC_SITE_URL` | Recommended | Public site origin for SEO (canonical + Open Graph URLs, `sitemap.xml`, `robots.txt`), e.g. `https://babaflats.com`. Defaults to `https://babaflats.com`. |
+   | `CONTACT_TO_EMAIL` | Recommended | Recipient inbox for contact-form leads. Defaults to `Contact@babaflats.com`. |
+   | `CONTACT_APPS_SCRIPT_URL` | Optional | Google Apps Script Web App `/exec` URL for lead delivery (Google Sheet row + email). |
+   | `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`, `SMTP_TO` | Optional | Enable the contact form's SMTP email channel (nodemailer). |
+
+4. Deploy. Each push to the connected branch then triggers an automatic Vercel
+   build and deployment.
+
+### Self-hosted (Docker)
+
+A production [`Dockerfile`](./Dockerfile) is included as an alternative for
+self-hosting. It runs `next build` and serves the self-contained standalone
+output (`output: "standalone"`) on port `3000`:
+
+```bash
+docker build -t baba-flats .
+docker run -p 3000:3000 --env-file .env baba-flats
+```
+
+Provide the same environment variables listed above (via `--env-file` or
+individual `-e` flags).
 
 ## 📄 License
 

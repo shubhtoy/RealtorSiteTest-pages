@@ -15,7 +15,7 @@
     "start": "npm run dev:stack",
     "start:dev": "npm run dev:stack",
     "start:local": "npm run dev:stack",
-    "build": "tsc -p tsconfig.vite.json && vite build",
+    "build": "next build",
     "vite:build": "tsc -p tsconfig.vite.json && vite build",
     "preview": "vite preview",
     "next:dev": "next dev",
