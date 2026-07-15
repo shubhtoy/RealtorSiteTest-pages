@@ -1,3 +1,5 @@
+"use client";
+
 import { Puck, fieldsPlugin, outlinePlugin } from "@puckeditor/core";
 import "@puckeditor/core/puck.css";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -188,7 +190,7 @@ interface ContactIntegrationsProps {
 }
 
 export default function StudioPage() {
-  const { draft, published, mode, setMode, updateDraft, publish, publishToGitHub, gitPublishStatus, revertDraft, exportDraftJson } = useEditableContent();
+  const { draft, published, mode, setMode, updateDraft, publish, publishToServer, publishStatus, revertDraft, exportDraftJson } = useEditableContent();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [editorPage, setEditorPage] = useState<"global" | "home" | "gallery" | "contact">("home");
   const [password, setPassword] = useState("");
@@ -1447,19 +1449,19 @@ export default function StudioPage() {
 
   const handlePublishDraft = async () => {
     setPublishDialogOpen(false);
-    const result = await publishToGitHub();
+    const result = await publishToServer();
     if (result.ok) {
       setSyncError(null);
       setAutosaveStatus("saved");
       setLastSavedAt(Date.now());
-      toast.success("Published to live site via GitHub");
+      toast.success("Published to live site");
     } else {
-      // Fallback: still publish locally
+      // Fallback: keep the in-memory publish so the canvas still reflects changes.
       publish();
-      setSyncError(result.error || "GitHub publish failed — saved locally only");
+      setSyncError(result.error || "Server publish failed — saved locally only");
       setAutosaveStatus("saved");
       setLastSavedAt(Date.now());
-      toast.warning("Published locally. GitHub sync failed: " + (result.error || "unknown error"));
+      toast.warning("Published locally. Server sync failed: " + (result.error || "unknown error"));
     }
   };
 
@@ -1663,7 +1665,7 @@ export default function StudioPage() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => window.open(import.meta.env.BASE_URL || "/", "_blank")}
+                onClick={() => window.open("/", "_blank")}
                 title="Preview in new tab"
               >
                 <ExternalLinkIcon className="size-3.5" />
@@ -1719,15 +1721,13 @@ export default function StudioPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Publish Changes</AlertDialogTitle>
             <AlertDialogDescription>
-              {GitHubCms.hasToken()
-                ? "This will commit content.json to GitHub and trigger a site rebuild. Visitors will see the updated content after deploy."
-                : "No GitHub token configured. Changes will be saved locally only. Configure a token in GitHub Settings to enable live publishing."}
+              This saves the current draft to the server and publishes it to the live site. Public pages are revalidated immediately, so visitors will see the updated content right away.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handlePublishDraft} disabled={gitPublishStatus === "publishing"}>
-              {gitPublishStatus === "publishing" ? "Publishing…" : "Publish"}
+            <AlertDialogAction onClick={handlePublishDraft} disabled={publishStatus === "publishing"}>
+              {publishStatus === "publishing" ? "Publishing…" : "Publish"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

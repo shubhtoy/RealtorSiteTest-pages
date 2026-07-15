@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { appEnv } from "@/config/env";
 import {
   coerceEditableSiteDocument,
   exportDraftAsJson,
@@ -11,12 +12,30 @@ import {
   resetDraftToPublished,
   writeDraftDocument,
 } from "@/lib/editable-content-store";
-import { GitHubCms } from "@/lib/github-cms";
 import type { EditableSiteDocument } from "@/types/editable-content";
 
 type EditableMode = "published" | "preview";
 
-type GitPublishStatus = "idle" | "publishing" | "success" | "error";
+type PublishStatus = "idle" | "publishing" | "success" | "error";
+
+/**
+ * Extract a human-readable error message from a failed API JSON response,
+ * falling back to the HTTP status when the body isn't the expected shape.
+ */
+async function readErrorMessage(response: Response): Promise<string> {
+  try {
+    const data = (await response.json()) as { message?: string; errors?: string[] };
+    if (Array.isArray(data.errors) && data.errors.length > 0) {
+      return data.errors.join("; ");
+    }
+    if (typeof data.message === "string" && data.message.length > 0) {
+      return data.message;
+    }
+  } catch {
+    // Response body wasn't JSON — fall through to the status code.
+  }
+  return `HTTP ${response.status}`;
+}
 
 type EditableContentContextValue = {
   mode: EditableMode;
@@ -26,8 +45,8 @@ type EditableContentContextValue = {
   current: EditableSiteDocument;
   updateDraft: (next: EditableSiteDocument) => void;
   publish: () => void;
-  publishToGitHub: () => Promise<{ ok: boolean; error?: string }>;
-  gitPublishStatus: GitPublishStatus;
+  publishToServer: () => Promise<{ ok: boolean; error?: string }>;
+  publishStatus: PublishStatus;
   revertDraft: () => void;
   resetAll: () => void;
   exportDraftJson: () => string;
@@ -56,16 +75,16 @@ export function EditableContentProvider({ children, initialContent }: Props) {
   const [draft, setDraft] = useState<EditableSiteDocument>(
     () => initialContent ?? readDraftDocument(),
   );
-  const [gitPublishStatus, setGitPublishStatus] = useState<GitPublishStatus>("idle");
+  const [publishStatus, setPublishStatus] = useState<PublishStatus>("idle");
 
-  // On mount, try to load content.json from the static build or GitHub.
+  // On mount, load the published content.json served from the app root.
   // Skipped when seeded with server-authoritative content so the server and the
   // client's first render are identical (no hydration mismatch).
   useEffect(() => {
     if (initialContent) return;
 
-    const base = (import.meta as unknown as { env?: { BASE_URL?: string } }).env?.BASE_URL || "/";
-    const url = `${base}content.json`;
+    // Next.js serves static assets from the root, so content.json lives at /.
+    const url = "/content.json";
     fetch(url, { cache: "no-store" })
       .then((res) => {
         if (!res.ok) return null;
@@ -106,21 +125,49 @@ export function EditableContentProvider({ children, initialContent }: Props) {
         publishDraftDocument(draft);
         setPublished(draft);
       },
-      publishToGitHub: async () => {
-        setGitPublishStatus("publishing");
-        // First persist locally
+      publishToServer: async () => {
+        setPublishStatus("publishing");
+        // Immediate in-memory feedback so the canvas reflects the publish at once.
         publishDraftDocument(draft);
         setPublished(draft);
 
-        // Then push to GitHub
-        const result = await GitHubCms.publish(draft);
-        setGitPublishStatus(result.ok ? "success" : "error");
-        if (result.ok) {
-          setTimeout(() => setGitPublishStatus("idle"), 3000);
+        const headers = {
+          "Content-Type": "application/json",
+          "x-studio-password": appEnv.studioPassword,
+        };
+
+        try {
+          // (a) Persist the current draft to the server. The publish step below
+          // publishes whatever draft is on disk, so this must land first.
+          const draftRes = await fetch(`${appEnv.apiOrigin}/api/content/draft`, {
+            method: "PUT",
+            headers,
+            body: JSON.stringify({ document: draft }),
+          });
+          if (!draftRes.ok) {
+            setPublishStatus("error");
+            return { ok: false, error: await readErrorMessage(draftRes) };
+          }
+
+          // (b) Publish the persisted draft; the server revalidates public pages.
+          const publishRes = await fetch(`${appEnv.apiOrigin}/api/content/publish`, {
+            method: "POST",
+            headers,
+          });
+          if (!publishRes.ok) {
+            setPublishStatus("error");
+            return { ok: false, error: await readErrorMessage(publishRes) };
+          }
+
+          setPublishStatus("success");
+          setTimeout(() => setPublishStatus("idle"), 3000);
+          return { ok: true };
+        } catch (e) {
+          setPublishStatus("error");
+          return { ok: false, error: e instanceof Error ? e.message : "Network error" };
         }
-        return result;
       },
-      gitPublishStatus,
+      publishStatus,
       revertDraft: () => {
         resetDraftToPublished();
         const next = readDraftDocument();
@@ -135,7 +182,7 @@ export function EditableContentProvider({ children, initialContent }: Props) {
       },
       exportDraftJson: () => exportDraftAsJson(),
     }),
-    [draft, mode, published, gitPublishStatus],
+    [draft, mode, published, publishStatus],
   );
 
   return <EditableContentContext.Provider value={value}>{children}</EditableContentContext.Provider>;
