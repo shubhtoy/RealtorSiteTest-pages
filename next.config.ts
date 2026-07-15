@@ -11,6 +11,20 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: projectRoot,
   },
+  // Baseline security headers applied to every route (ported from the Express
+  // server's global header middleware in server/index.mjs).
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

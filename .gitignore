@@ -13,6 +13,8 @@
 *.seed
 *.pid.lock
 /server/data
+# Contact form lead submissions (PII) persisted by the Next contact route.
+/.data
 
 # Coverage directory
 /coverage
