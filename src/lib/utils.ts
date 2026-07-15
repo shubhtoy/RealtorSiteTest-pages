@@ -6,18 +6,8 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function resolveAppHref(href: string) {
-  if (!href) return href
-
-  if (/^(?:[a-z]+:)?\/\//i.test(href) || href.startsWith("#") || href.startsWith("mailto:") || href.startsWith("tel:")) {
-    return href
-  }
-
-  const base = import.meta.env.BASE_URL || "/"
-  const normalizedBase = base.endsWith("/") ? base.slice(0, -1) : base
-
-  if (href.startsWith("/")) {
-    return normalizedBase ? `${normalizedBase}${href}` : href
-  }
-
-  return `${base.endsWith("/") ? base : `${base}/`}${href}`
+  // Next.js serves the app at the root and handles routing/basePath itself, so
+  // links resolve unchanged. (The Vite-only `import.meta.env.BASE_URL` prefixing
+  // is not used on the Next surface and would break SSR / Next routing.)
+  return href
 }

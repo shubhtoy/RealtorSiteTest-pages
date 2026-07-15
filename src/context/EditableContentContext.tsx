@@ -1,3 +1,5 @@
+"use client";
+
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import {
   coerceEditableSiteDocument,
@@ -35,17 +37,34 @@ const EditableContentContext = createContext<EditableContentContextValue | null>
 
 type Props = {
   children: React.ReactNode;
+  /**
+   * Server-authoritative content used to seed both published and draft state.
+   * When provided (e.g. from the Next.js server layout) the provider renders
+   * identically on the server and on the client's first paint: it does not read
+   * localStorage for the initial state and skips the client content.json fetch,
+   * so hydration matches. When omitted, the existing localStorage/draft behavior
+   * is preserved exactly (Studio).
+   */
+  initialContent?: EditableSiteDocument;
 };
 
-export function EditableContentProvider({ children }: Props) {
+export function EditableContentProvider({ children, initialContent }: Props) {
   const [mode, setMode] = useState<EditableMode>("published");
-  const [published, setPublished] = useState<EditableSiteDocument>(() => readPublishedDocument());
-  const [draft, setDraft] = useState<EditableSiteDocument>(() => readDraftDocument());
+  const [published, setPublished] = useState<EditableSiteDocument>(
+    () => initialContent ?? readPublishedDocument(),
+  );
+  const [draft, setDraft] = useState<EditableSiteDocument>(
+    () => initialContent ?? readDraftDocument(),
+  );
   const [gitPublishStatus, setGitPublishStatus] = useState<GitPublishStatus>("idle");
 
-  // On mount, try to load content.json from the static build or GitHub
+  // On mount, try to load content.json from the static build or GitHub.
+  // Skipped when seeded with server-authoritative content so the server and the
+  // client's first render are identical (no hydration mismatch).
   useEffect(() => {
-    const base = import.meta.env.BASE_URL || "/";
+    if (initialContent) return;
+
+    const base = (import.meta as unknown as { env?: { BASE_URL?: string } }).env?.BASE_URL || "/";
     const url = `${base}content.json`;
     fetch(url, { cache: "no-store" })
       .then((res) => {
@@ -70,7 +89,7 @@ export function EditableContentProvider({ children }: Props) {
       .catch(() => {
         // content.json not available yet — use localStorage/defaults
       });
-  }, []);
+  }, [initialContent]);
 
   const value = useMemo<EditableContentContextValue>(
     () => ({

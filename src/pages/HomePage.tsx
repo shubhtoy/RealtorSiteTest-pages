@@ -1,5 +1,7 @@
+"use client";
+
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { useInView } from "react-intersection-observer";
 import { setPageMeta } from "@/lib/seo";
 import { Reveal } from "@/lib/motion";
@@ -140,7 +142,7 @@ export default function HomePage() {
     "inline-flex items-center justify-center rounded-full border border-primary/45 px-5 py-2.5 min-h-[44px] text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-primary transition hover:-translate-y-0.5 hover:bg-primary/10 sm:px-6 sm:py-3 sm:text-[0.68rem] sm:tracking-[0.16em]";
 
   return (
-    <main id="main-content" className="bg-body-mesh pb-24 md:pb-0">
+    <div className="bg-body-mesh pb-24 md:pb-0">
       <section className="relative overflow-hidden bg-background pb-6">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-[24rem] bg-[radial-gradient(ellipse_at_top,hsl(var(--primary)/0.18),transparent_72%)]" />
         <div className="relative z-30 mx-auto w-[min(1140px,92vw)] pt-14 md:pt-20">
@@ -156,13 +158,13 @@ export default function HomePage() {
               </p>
               <div className="mt-6 flex flex-wrap justify-center gap-3">
                 <Link
-                  to={home.hero.primaryCta.link}
+                  href={home.hero.primaryCta.link}
                   className={primaryButtonClass}
                 >
                   {home.hero.primaryCta.text}
                 </Link>
                 <Link
-                  to={home.hero.secondaryCta.link}
+                  href={home.hero.secondaryCta.link}
                   className={secondaryButtonClass}
                 >
                   {home.hero.secondaryCta.text}
@@ -408,7 +410,7 @@ export default function HomePage() {
                   {home.ui.faqHelpPrimaryLabel}
                 </a>
                 <Link
-                  to={home.finalCta.secondary.link}
+                  href={home.finalCta.secondary.link}
                   className="inline-flex items-center justify-center rounded-full border border-primary/35 px-4 py-2 min-h-[44px] text-[0.64rem] font-semibold uppercase tracking-[0.14em] text-primary"
                 >
                   {home.ui.faqHelpSecondaryLabel}
@@ -493,7 +495,7 @@ export default function HomePage() {
                 {home.finalCta.primary.text}
               </a>
               <Link
-                to={home.finalCta.secondary.link}
+                href={home.finalCta.secondary.link}
                 className="inline-flex items-center justify-center rounded-full border border-primary/60 px-5 py-2.5 min-h-[44px] text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-primary transition hover:-translate-y-0.5 hover:bg-primary/8"
               >
                 {home.finalCta.secondary.text}
@@ -512,13 +514,13 @@ export default function HomePage() {
             {home.ui.mobilePrimaryLabel}
           </a>
           <Link
-            to={home.finalCta.secondary.link}
+            href={home.finalCta.secondary.link}
             className="flex-1 rounded-full border border-primary px-4 py-3 min-h-[44px] inline-flex items-center justify-center text-[0.66rem] font-semibold uppercase tracking-[0.14em] text-primary"
           >
             {home.ui.mobileSecondaryLabel}
           </Link>
         </div>
       </div> : null}
-    </main>
+    </div>
   );
 }

@@ -1,4 +1,10 @@
-const rawEnv = import.meta.env as Record<string, string | undefined>;
+// Vite injects `import.meta.env`; Next.js/Turbopack does not, so guard the
+// access. On the Next surface this resolves to `{}` and the values below fall
+// back to their defaults (they are only consumed by client-side Studio code).
+const rawEnv = ((import.meta as unknown as { env?: Record<string, string | undefined> }).env ?? {}) as Record<
+  string,
+  string | undefined
+>;
 
 function clean(value: string | undefined): string {
   return typeof value === "string" ? value.trim() : "";

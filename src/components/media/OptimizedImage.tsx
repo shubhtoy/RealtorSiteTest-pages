@@ -15,7 +15,7 @@ function resolveAssetPath(path: string): string {
     return path;
   }
 
-  const base = import.meta.env.BASE_URL || "/";
+  const base = (import.meta as unknown as { env?: { BASE_URL?: string } }).env?.BASE_URL || "/";
   const normalizedBase = base.endsWith("/") ? base.slice(0, -1) : base;
 
   if (path.startsWith("/")) {
@@ -26,7 +26,7 @@ function resolveAssetPath(path: string): string {
 }
 
 function stripBasePath(path: string): string {
-  const base = import.meta.env.BASE_URL || "/";
+  const base = (import.meta as unknown as { env?: { BASE_URL?: string } }).env?.BASE_URL || "/";
   if (base !== "/" && path.startsWith(base)) {
     return `/${path.slice(base.length).replace(/^\/+/, "")}`;
   }
