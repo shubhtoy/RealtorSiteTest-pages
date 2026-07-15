@@ -8,6 +8,9 @@ import { dirname } from "node:path";
 const projectRoot = dirname(fileURLToPath(import.meta.url));
 
 const nextConfig: NextConfig = {
+  // Emit a self-contained production server at .next/standalone/server.js for a
+  // slim container image. Server-only deploy — no static export / GitHub Pages.
+  output: "standalone",
   turbopack: {
     root: projectRoot,
   },
