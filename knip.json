@@ -3,7 +3,6 @@
   "entry": [
     "app/**/{page,layout,loading,error,global-error,not-found,route,template,default,sitemap,robots,manifest,icon,apple-icon,opengraph-image,twitter-image}.{ts,tsx}",
     "next.config.ts",
-    "eslint.config.mjs",
     "server/index.mjs"
   ],
   "project": ["app/**/*.{ts,tsx}", "server/**/*.{mjs,js}"],
@@ -15,5 +14,33 @@
     "tsconfig.vite.json",
     "tsconfig.node.json"
   ],
-  "ignoreBinaries": ["vite"]
+  "ignoreBinaries": ["vite"],
+  "ignoreDependencies": [
+    "server-only",
+    "@base-ui/react",
+    "@fontsource-variable/geist",
+    "@puckeditor/core",
+    "@radix-ui/react-accordion",
+    "@radix-ui/react-tabs",
+    "@tabler/icons-react",
+    "class-variance-authority",
+    "clsx",
+    "embla-carousel-autoplay",
+    "embla-carousel-fade",
+    "embla-carousel-react",
+    "lucide-react",
+    "motion",
+    "react-countup",
+    "react-intersection-observer",
+    "react-photo-album",
+    "react-router-dom",
+    "react-scroll-parallax",
+    "sonner",
+    "tailwind-merge",
+    "tw-animate-css",
+    "yet-another-react-lightbox",
+    "@fast-check/vitest",
+    "fast-check",
+    "shadcn"
+  ]
 }
