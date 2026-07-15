@@ -74,6 +74,40 @@ export const serverEnv: ServerEnv = {
   smtpTo: readString(process.env.SMTP_TO),
 };
 
+/**
+ * Fail-fast validation of required server secrets.
+ *
+ * Call this at the top of any server entrypoint that depends on a configured
+ * Studio password (content draft/publish, asset upload). Behavior by mode:
+ *
+ * - `NODE_ENV === "production"`: throws a descriptive {@link Error} when
+ *   `STUDIO_PASSWORD` is missing or empty, so a misconfigured deploy crashes
+ *   loudly instead of silently rejecting every Studio request with 401.
+ * - Non-production: logs a clear `console.warn` instead of throwing, so local
+ *   development still runs without a password configured.
+ *
+ * There is intentionally NO hardcoded password fallback anywhere in the server
+ * path — an unset `STUDIO_PASSWORD` must fail, never quietly authenticate.
+ */
+export function validateServerEnv(): void {
+  const isProduction = process.env.NODE_ENV === "production";
+
+  if (serverEnv.studioPassword.length === 0) {
+    const message =
+      "STUDIO_PASSWORD is not set. The Studio content endpoints " +
+      "(/api/content/draft, /api/content/publish, /api/assets/upload) cannot " +
+      "authenticate without it. Set STUDIO_PASSWORD in the server environment.";
+
+    if (isProduction) {
+      throw new Error(`[server-env] ${message}`);
+    }
+
+    console.warn(
+      `[server-env] ${message} Running in non-production mode; Studio requests will be rejected with 401 until it is set.`,
+    );
+  }
+}
+
 /** Whether the Google Apps Script lead webhook is configured. */
 export function isAppsScriptConfigured(): boolean {
   return serverEnv.contactAppsScriptUrl.length > 0;

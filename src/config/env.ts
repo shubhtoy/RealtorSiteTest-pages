@@ -21,8 +21,11 @@ export const appEnv = {
   // empty origin is the correct default (fetches like `/api/content/draft`
   // resolve against the current host). Override only to target a remote API.
   apiOrigin: clean(process.env.NEXT_PUBLIC_API_ORIGIN),
-  // Must match the server-only STUDIO_PASSWORD so the Studio can authenticate
-  // its content/draft/publish calls via the `x-studio-password` header.
+  // Shared-secret gate for the Studio, sent as the `x-studio-password` header
+  // on content draft/publish calls. This is NEXT_PUBLIC_* so it ships to the
+  // browser — treat it as a lightweight gate, NOT strong authentication. Its
+  // value MUST match the server-only STUDIO_PASSWORD, or the server rejects
+  // every Studio save/publish request with 401.
   studioPassword: clean(process.env.NEXT_PUBLIC_STUDIO_PASSWORD),
   apiTimeoutMs: toNumber(process.env.NEXT_PUBLIC_API_TIMEOUT_MS, 10000),
   githubRepo: clean(process.env.NEXT_PUBLIC_GITHUB_REPO) || "shubhtoy/RealtorSiteTest-pages",

@@ -2,7 +2,7 @@ import "server-only";
 
 import { NextResponse } from "next/server";
 
-import { serverEnv } from "@/lib/server-env";
+import { serverEnv, validateServerEnv } from "@/lib/server-env";
 
 /**
  * Studio authentication guard for the content/upload route handlers.
@@ -21,6 +21,11 @@ import { serverEnv } from "@/lib/server-env";
  * Studio endpoints (an empty configured password never authenticates).
  */
 export function requireStudioAuth(request: Request): NextResponse | null {
+  // Fail-fast on server misconfiguration: throws in production when
+  // STUDIO_PASSWORD is unset (surfaced as a 500), warns in development. Runs
+  // here so every protected route (draft/publish/upload) shares one check.
+  validateServerEnv();
+
   const provided = request.headers.get("x-studio-password") ?? "";
   const expected = serverEnv.studioPassword;
 
