@@ -81,12 +81,13 @@ export const HeroParallax = ({
         className=""
       >
         <motion.div className="flex flex-row-reverse space-x-reverse space-x-20 mb-20">
-          {firstRow.map((product) => (
+          {firstRow.map((product, index) => (
             <ProductCard
               product={product}
               translate={translateX}
               key={product.title}
               className={cardClassName}
+              priority={index === 0}
             />
           ))}
         </motion.div>
@@ -134,6 +135,7 @@ export const ProductCard = ({
   product,
   translate,
   className,
+  priority = false,
 }: {
   product: {
     title: string;
@@ -142,6 +144,7 @@ export const ProductCard = ({
   };
   translate: MotionValue<number>;
   className?: string;
+  priority?: boolean;
 }) => {
   return (
     <motion.div
@@ -165,6 +168,7 @@ export const ProductCard = ({
           className="absolute inset-0 h-full w-full object-cover object-left-top"
           alt={product.title}
           sizes="(min-width: 1024px) 28rem, 90vw"
+          priority={priority}
         />
       </a>
       <div className="pointer-events-none absolute inset-0 h-full w-full bg-black/45 opacity-0 group-hover/product:opacity-100"></div>

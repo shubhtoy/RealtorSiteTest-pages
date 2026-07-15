@@ -11,6 +11,11 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: projectRoot,
   },
+  images: {
+    // Serve modern formats via the built-in optimizer for local /public images.
+    // AVIF first (smaller), WebP fallback. Local images use the default loader.
+    formats: ["image/avif", "image/webp"],
+  },
   // Baseline security headers applied to every route (ported from the Express
   // server's global header middleware in server/index.mjs).
   async headers() {
