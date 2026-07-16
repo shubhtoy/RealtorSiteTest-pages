@@ -1,6 +1,6 @@
 "use client";
 
-import { Puck, fieldsPlugin, outlinePlugin } from "@puckeditor/core";
+import { Puck } from "@puckeditor/core";
 import "@puckeditor/core/puck.css";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
@@ -14,7 +14,7 @@ import {
   keyValueField,
   galleryManagerField,
 } from "@/components/studio/PuckCustomFields";
-import { LivePreview } from "@/components/studio/LivePreview";
+import { StudioWorkspace } from "@/components/studio/StudioWorkspace";
 import { AdminAuthService } from "@/lib/admin-auth";
 import { GitHubCms } from "@/lib/github-cms";
 import { STUDIO_PASSWORD, STUDIO_PASSWORD_ENV_HINT } from "@/config/studio-auth";
@@ -1152,7 +1152,6 @@ export default function StudioPage() {
   );
 
   const puckCanvasKey = `${editorPage}-${mode}`;
-  const plugins = useMemo(() => [outlinePlugin(), fieldsPlugin({ desktopSideBar: "right" })], []);
 
   const applyPuckData = (nextData: PuckIncomingData, errorPrefix: string) => {
     const globalEntry = PuckDataService.getEntryProps<GlobalBrandProps>(nextData, "GlobalBrand");
@@ -1802,7 +1801,7 @@ export default function StudioPage() {
 
         {/* Editor: native Puck field panel + outline, with the REAL page as the live preview. */}
         <div className="mb-2 text-xs text-muted-foreground">
-          Pick a section on the left to edit its fields. The preview updates live from your draft.
+          Click a section in the preview, or pick one from the list, to edit its fields. Changes update live from your draft.
           <span className="ml-2 text-muted-foreground/60">Ctrl+S to save • Ctrl+Shift+P to publish</span>
         </div>
         <div className="min-w-0 overflow-hidden rounded-xl border border-border shadow-soft">
@@ -1813,15 +1812,10 @@ export default function StudioPage() {
             data={data as Parameters<typeof Puck>[0]["data"]}
             onPublish={onPublish}
             onChange={onChange}
-            plugins={plugins as Parameters<typeof Puck>[0]["plugins"]}
             iframe={{ enabled: false }}
-            overrides={{
-              // Swap Puck's block canvas for the real, live-updating site page.
-              preview: () => <LivePreview page={editorPage} />,
-              // Sections are a fixed set for this site, so hide the add-component palette.
-              components: () => <></>,
-            }}
-          />
+          >
+            <StudioWorkspace page={editorPage} />
+          </Puck>
         </div>
       </div>
     </main>

@@ -21,10 +21,11 @@ const FALLBACK_SECTION: Record<StudioPage, string> = {
  * Live preview for the Studio canvas.
  *
  * Renders the ACTUAL public page for the section being edited, driven by the
- * same draft the editor writes to, so edits appear immediately. Clicking a
- * region selects the matching Puck component (via data-studio-section, falling
- * back to the page's main content panel) so its fields open in the panel —
- * i.e. click-to-edit on the real site.
+ * same draft the editor writes to, so edits appear immediately. It is rendered
+ * as a plain child of <Puck> (compositional layout, not Puck's canvas), so
+ * clicks here are ordinary DOM clicks: clicking a region selects the matching
+ * Puck component so its fields open in the panel — click-to-edit on the real
+ * site.
  */
 export function LivePreview({ page }: { page: StudioPage }) {
   const getPuck = useGetPuck();
@@ -38,18 +39,17 @@ export function LivePreview({ page }: { page: StudioPage }) {
 
       const puck = getPuck() as unknown as {
         appState?: { data?: { content?: Array<{ type?: string; props?: { id?: string } }> } };
-        getSelectorForId: (id: string) => { index: number; zone?: string } | undefined;
+        getSelectorForId?: (id: string) => { index: number; zone?: string } | undefined;
         dispatch: (action: { type: "setUi"; ui: { itemSelector: { index: number; zone?: string } } }) => void;
       };
 
-      const item = puck.appState?.data?.content?.find((entry) => entry?.type === type);
-      const id = item?.props?.id;
-      if (!id) return;
+      const content = puck.appState?.data?.content ?? [];
+      const index = content.findIndex((entry) => entry?.type === type);
+      if (index < 0) return;
 
-      const selector = puck.getSelectorForId(id);
-      if (selector) {
-        puck.dispatch({ type: "setUi", ui: { itemSelector: selector } });
-      }
+      const id = content[index]?.props?.id;
+      const selector = (id && puck.getSelectorForId?.(id)) || { index };
+      puck.dispatch({ type: "setUi", ui: { itemSelector: selector } });
     },
     [getPuck, page],
   );
