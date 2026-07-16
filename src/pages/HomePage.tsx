@@ -412,7 +412,7 @@ export default function HomePage() {
               {home.ui.faqDescription}
             </p>
           </Reveal>
-          <div className="grid items-start gap-8 md:grid-cols-[0.85fr_1.15fr] md:gap-10">
+          <div className="grid items-start gap-6 md:grid-cols-[0.85fr_1.15fr] md:gap-10">
             <div className="rounded-3xl bg-[linear-gradient(145deg,hsl(var(--primary)/0.14),transparent)] p-6 md:p-7">
               <p className="text-[0.64rem] font-semibold uppercase tracking-[0.14em] text-accent">{home.ui.faqHelpEyebrow}</p>
               <h3 className="mt-2 font-display text-2xl leading-tight">{home.ui.faqHelpTitle}</h3>
@@ -447,9 +447,9 @@ export default function HomePage() {
                   </button>
                 ))}
               </div>
-              <Accordion key={activeFaqCat} defaultValue={defaultFaqValue} className="border-t border-border/60">
+              <Accordion key={activeFaqCat} defaultValue={defaultFaqValue} className="border-t border-border">
                 {filteredFaq.map((item, index) => (
-                  <AccordionItem key={item.question} value={`item-${index}`} className="border-b border-border/60 py-1">
+                  <AccordionItem key={item.question} value={`item-${index}`} className="border-b border-border">
                     <AccordionTrigger className="py-4 text-base font-semibold leading-snug text-foreground hover:no-underline md:text-[1.02rem]">
                       <span className="text-left pr-2">{item.question}</span>
                     </AccordionTrigger>
