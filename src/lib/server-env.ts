@@ -52,6 +52,10 @@ export type ServerEnv = {
   smtpPass: string;
   smtpFrom: string;
   smtpTo: string;
+  /** Google Places API key for live Google reviews (server-only secret). */
+  googlePlacesApiKey: string;
+  /** Google Place ID whose reviews are displayed. */
+  googlePlaceId: string;
 };
 
 /**
@@ -72,6 +76,8 @@ export const serverEnv: ServerEnv = {
   smtpPass: readString(process.env.SMTP_PASS),
   smtpFrom: readString(process.env.SMTP_FROM),
   smtpTo: readString(process.env.SMTP_TO),
+  googlePlacesApiKey: readString(process.env.GOOGLE_PLACES_API_KEY),
+  googlePlaceId: readString(process.env.GOOGLE_PLACE_ID),
 };
 
 /**
@@ -116,4 +122,9 @@ export function isAppsScriptConfigured(): boolean {
 /** Whether an SMTP transport can be constructed from the current environment. */
 export function isSmtpConfigured(): boolean {
   return serverEnv.smtpHost.length > 0 && serverEnv.smtpPort > 0;
+}
+
+/** Whether live Google reviews (Places API) are configured. */
+export function isGoogleReviewsConfigured(): boolean {
+  return serverEnv.googlePlacesApiKey.length > 0 && serverEnv.googlePlaceId.length > 0;
 }
