@@ -14,6 +14,7 @@ import {
   keyValueField,
   galleryManagerField,
 } from "@/components/studio/PuckCustomFields";
+import { LivePreview } from "@/components/studio/LivePreview";
 import { AdminAuthService } from "@/lib/admin-auth";
 import { GitHubCms } from "@/lib/github-cms";
 import { STUDIO_PASSWORD, STUDIO_PASSWORD_ENV_HINT } from "@/config/studio-auth";
@@ -52,7 +53,6 @@ import {
   CopyIcon,
   LockIcon,
   ExternalLinkIcon,
-  Loader2Icon,
   AlertTriangleIcon,
   XIcon,
   RefreshCwIcon,
@@ -197,8 +197,6 @@ export default function StudioPage() {
   const [authError, setAuthError] = useState("");
   const [autosaveStatus, setAutosaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [lastSavedAt, setLastSavedAt] = useState<number | null>(null);
-  const [puckReady, setPuckReady] = useState(false);
-  const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [publishDialogOpen, setPublishDialogOpen] = useState(false);
   const [revertDialogOpen, setRevertDialogOpen] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -229,14 +227,6 @@ export default function StudioPage() {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [hasUnpublishedChanges]);
-
-  // Mark Puck as ready after a short delay (simulates initialization)
-  useEffect(() => {
-    if (!isUnlocked) return;
-    setPuckReady(false);
-    const timer = setTimeout(() => setPuckReady(true), 600);
-    return () => clearTimeout(timer);
-  }, [isUnlocked]);
 
   // Keyboard shortcuts: Ctrl+S to save draft, Ctrl+Shift+P to publish
   const handleSaveDraft = useCallback(() => {
@@ -1418,25 +1408,19 @@ export default function StudioPage() {
       return;
     }
 
-    setIsAuthenticating(true);
-    // Simulate brief auth delay for UX
-    setTimeout(() => {
-      if (!AdminAuthService.verifyPassword(password, STUDIO_PASSWORD)) {
-        setAuthError("Invalid password.");
-        toast.error("Studio unlock failed");
-        setIsAuthenticating(false);
-        return;
-      }
+    if (!AdminAuthService.verifyPassword(password, STUDIO_PASSWORD)) {
+      setAuthError("Invalid password.");
+      toast.error("Studio unlock failed");
+      return;
+    }
 
-      setAuthError("");
-      setPassword("");
-      setIsUnlocked(true);
-      setIsAuthenticating(false);
-      if (typeof window !== "undefined") {
-        window.localStorage.setItem(ADMIN_AUTH_STORAGE_KEY, AdminAuthService.buildToken(STUDIO_PASSWORD));
-      }
-      toast.success("Studio unlocked");
-    }, 400);
+    setAuthError("");
+    setPassword("");
+    setIsUnlocked(true);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(ADMIN_AUTH_STORAGE_KEY, AdminAuthService.buildToken(STUDIO_PASSWORD));
+    }
+    toast.success("Studio unlocked");
   };
 
   const handleLock = () => {
@@ -1543,7 +1527,6 @@ export default function StudioPage() {
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                   autoComplete="current-password"
-                  disabled={isAuthenticating}
                 />
               </label>
 
@@ -1551,11 +1534,9 @@ export default function StudioPage() {
 
               <button
                 type="submit"
-                disabled={isAuthenticating}
-                className="mt-1 inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-2.5 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-primary-foreground disabled:opacity-50"
+                className="mt-1 inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-2.5 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-primary-foreground"
               >
-                {isAuthenticating && <Loader2Icon className="size-3.5 animate-spin" />}
-                {isAuthenticating ? "Unlocking…" : "Unlock Studio"}
+                Unlock Studio
               </button>
             </form>
           </div>
@@ -1819,32 +1800,29 @@ export default function StudioPage() {
           </div>
         )}
 
-        {/* Loading skeleton while Puck initializes */}
-        {!puckReady ? (
-          <div className="flex flex-col items-center justify-center gap-4 rounded-xl border border-border bg-panel-gradient p-16">
-            <Loader2Icon className="size-8 animate-spin text-muted-foreground" />
-            <p className="text-sm text-muted-foreground">Loading editor…</p>
-          </div>
-        ) : (
-          <>
-            <div className="mb-2 text-xs text-muted-foreground">
-              Live canvas editing is enabled. Click a section on the page canvas to edit fields in the panel.
-              <span className="ml-2 text-muted-foreground/60">Ctrl+S to save • Ctrl+Shift+P to publish</span>
-            </div>
-            <div className="min-w-0 overflow-hidden rounded-xl border border-border shadow-soft">
-              {/* Puck's Config generic requires exact field type matching that doesn't align with our dynamic config shape */}
-              <Puck
-                key={puckCanvasKey}
-                config={config as Parameters<typeof Puck>[0]["config"]}
-                data={data as Parameters<typeof Puck>[0]["data"]}
-                onPublish={onPublish}
-                onChange={onChange}
-                plugins={plugins as Parameters<typeof Puck>[0]["plugins"]}
-                overrides={{ headerActions: ({ children }) => <>{children}<span className="text-xs text-muted-foreground ml-2">↑ saves to draft</span></> }}
-              />
-            </div>
-          </>
-        )}
+        {/* Editor: native Puck field panel + outline, with the REAL page as the live preview. */}
+        <div className="mb-2 text-xs text-muted-foreground">
+          Pick a section on the left to edit its fields. The preview updates live from your draft.
+          <span className="ml-2 text-muted-foreground/60">Ctrl+S to save • Ctrl+Shift+P to publish</span>
+        </div>
+        <div className="min-w-0 overflow-hidden rounded-xl border border-border shadow-soft">
+          {/* Puck's Config generic requires exact field type matching that doesn't align with our dynamic config shape */}
+          <Puck
+            key={puckCanvasKey}
+            config={config as Parameters<typeof Puck>[0]["config"]}
+            data={data as Parameters<typeof Puck>[0]["data"]}
+            onPublish={onPublish}
+            onChange={onChange}
+            plugins={plugins as Parameters<typeof Puck>[0]["plugins"]}
+            iframe={{ enabled: false }}
+            overrides={{
+              // Swap Puck's block canvas for the real, live-updating site page.
+              preview: () => <LivePreview page={editorPage} />,
+              // Sections are a fixed set for this site, so hide the add-component palette.
+              components: () => <></>,
+            }}
+          />
+        </div>
       </div>
     </main>
   );
