@@ -24,91 +24,57 @@ export const StickyScroll = ({
   const reduced = useReducedMotion();
   const cardLength = content.length;
 
-  // Reliable active-item detection: observe each text block and treat the block
-  // whose center is nearest the viewport center as active. A centered rootMargin
-  // band means a block only "activates" once it reaches the middle of the
-  // screen, and the observer fires while scrolling in BOTH directions. This
-  // replaces the fragile checkpoint / scroll-offset math entirely.
+  // Robust, simple active-item detection: on every scroll/resize (rAF-throttled)
+  // pick the text block whose vertical center is closest to the viewport center.
+  // This updates continuously in BOTH scroll directions and has no dead zones or
+  // "nothing in band" edge cases (the failure mode of the observer approach).
   useEffect(() => {
-    if (typeof window === "undefined" || typeof IntersectionObserver === "undefined") {
-      return;
-    }
+    if (typeof window === "undefined") return;
 
-    const nodes = itemRefs.current;
-    const indexByNode = new Map<Element, number>();
-    nodes.forEach((node, index) => {
-      if (node) {
-        indexByNode.set(node, index);
-      }
-    });
+    let frame = 0;
 
-    if (indexByNode.size === 0) {
-      return;
-    }
-
-    // Indices whose center currently sits inside the viewport's center band.
-    const inBand = new Set<number>();
-
-    const pickActive = () => {
-      // If nothing is in the band (e.g. a fast scroll skipped across a gap),
-      // keep the last active item rather than flickering to the wrong one.
-      if (inBand.size === 0) {
-        return;
-      }
-
+    const update = () => {
+      frame = 0;
       const viewportCenter = window.innerHeight / 2;
-      let best = -1;
+      let best = 0;
       let bestDistance = Number.POSITIVE_INFINITY;
 
-      inBand.forEach((index) => {
-        const node = nodes[index];
-        if (!node) {
-          return;
-        }
+      for (let i = 0; i < itemRefs.current.length; i += 1) {
+        const node = itemRefs.current[i];
+        if (!node) continue;
         const rect = node.getBoundingClientRect();
         const center = rect.top + rect.height / 2;
         const distance = Math.abs(center - viewportCenter);
         if (distance < bestDistance) {
           bestDistance = distance;
-          best = index;
+          best = i;
         }
-      });
-
-      if (best !== -1) {
-        setActiveIndex((prev) => (prev === best ? prev : best));
       }
+
+      setActiveIndex((prev) => (prev === best ? prev : best));
     };
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const index = indexByNode.get(entry.target);
-          if (index === undefined) {
-            return;
-          }
-          if (entry.isIntersecting) {
-            inBand.add(index);
-          } else {
-            inBand.delete(index);
-          }
-        });
-        pickActive();
-      },
-      // Shrink the observer root to a thin band at the vertical center so a
-      // block is only considered active while it passes through the middle.
-      { rootMargin: "-45% 0px -45% 0px", threshold: 0 },
-    );
+    const onScroll = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(update);
+    };
 
-    indexByNode.forEach((_index, node) => observer.observe(node));
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
 
-    return () => observer.disconnect();
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, [cardLength]);
 
-  const mediaTransition = reduced ? { duration: 0 } : { duration: 0.45, ease: EASE };
+  const mediaTransition = reduced ? { duration: 0 } : { duration: 0.5, ease: EASE };
   const textTransition = reduced ? { duration: 0 } : { duration: 0.3, ease: EASE };
 
-  // Crossfade stack: every item's media is layered; only the active one is
-  // fully opaque. Reused for the mobile (top) and desktop (right) panels.
+  // Crossfade stack: every item's media is layered; only the active one is fully
+  // opaque. Reused by the mobile (top, sticky) and desktop (right, sticky) panels.
   const renderMedia = (heightClass: string) => (
     <div
       className={cn(
@@ -117,22 +83,19 @@ export const StickyScroll = ({
         contentClassName,
       )}
     >
-      {content.map((item, index) => {
-        const isActive = index === activeIndex;
-        return (
-          <motion.div
-            key={item.title + index}
-            className="absolute inset-0"
-            initial={false}
-            animate={{ opacity: isActive ? 1 : 0 }}
-            transition={mediaTransition}
-            aria-hidden={!isActive}
-            style={{ pointerEvents: isActive ? "auto" : "none" }}
-          >
-            {item.content ?? null}
-          </motion.div>
-        );
-      })}
+      {content.map((item, index) => (
+        <motion.div
+          key={item.title + index}
+          className="absolute inset-0"
+          initial={false}
+          animate={{ opacity: index === activeIndex ? 1 : 0 }}
+          transition={mediaTransition}
+          aria-hidden={index !== activeIndex}
+          style={{ pointerEvents: index === activeIndex ? "auto" : "none" }}
+        >
+          {item.content ?? null}
+        </motion.div>
+      ))}
     </div>
   );
 
@@ -142,37 +105,35 @@ export const StickyScroll = ({
       <div>
         <div className="sticky top-20 z-10 mb-8 md:hidden">{renderMedia("h-56 sm:h-64")}</div>
 
-        <div>
-          {content.map((item, index) => {
-            const isActive = index === activeIndex;
-            return (
-              <div
-                key={item.title + index}
-                ref={(node) => {
-                  itemRefs.current[index] = node;
-                }}
-                className="flex min-h-[44vh] flex-col justify-center py-8 md:min-h-[55vh]"
+        {content.map((item, index) => {
+          const isActive = index === activeIndex;
+          return (
+            <div
+              key={item.title + index}
+              ref={(node) => {
+                itemRefs.current[index] = node;
+              }}
+              className="flex min-h-[48vh] flex-col justify-center py-8 md:min-h-[60vh]"
+            >
+              <motion.h3
+                initial={false}
+                animate={{ opacity: isActive ? 1 : 0.35 }}
+                transition={textTransition}
+                className="font-display text-2xl font-semibold text-foreground md:text-3xl"
               >
-                <motion.h3
-                  initial={false}
-                  animate={{ opacity: isActive ? 1 : 0.4 }}
-                  transition={textTransition}
-                  className="font-display text-2xl font-semibold text-foreground md:text-3xl"
-                >
-                  {item.title}
-                </motion.h3>
-                <motion.p
-                  initial={false}
-                  animate={{ opacity: isActive ? 1 : 0.4 }}
-                  transition={textTransition}
-                  className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground"
-                >
-                  {item.description}
-                </motion.p>
-              </div>
-            );
-          })}
-        </div>
+                {item.title}
+              </motion.h3>
+              <motion.p
+                initial={false}
+                animate={{ opacity: isActive ? 1 : 0.35 }}
+                transition={textTransition}
+                className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground"
+              >
+                {item.description}
+              </motion.p>
+            </div>
+          );
+        })}
       </div>
 
       {/* Sticky media panel (desktop). */}
