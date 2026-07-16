@@ -10,7 +10,7 @@ import { FocusCards } from "@/components/ui/focus-cards";
 import { AmenityShowcase } from "@/components/ui/amenity-showcase";
 import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
 import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards";
-import { GoogleReviews } from "@/components/ui/google-reviews";
+import { useGoogleReviewItems } from "@/lib/use-google-reviews";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -90,6 +90,16 @@ export default function HomePage() {
       })),
     [home.testimonials],
   );
+
+  const googleReviewItems = useGoogleReviewItems(
+    home.reviews?.source === "google",
+    home.reviews?.minRating ?? 4,
+    home.reviews?.maxCount ?? 8,
+  );
+  const testimonialItems =
+    home.reviews?.source === "google" && googleReviewItems && googleReviewItems.length > 0
+      ? googleReviewItems
+      : movingTestimonials;
 
   const heroRailProducts = useMemo(() => {
     const repeated = Array.from({ length: 15 }, (_, i) => {
@@ -389,11 +399,9 @@ export default function HomePage() {
               {home.ui.testimonialsDescription}
             </p>
           </Reveal>
-          <InfiniteMovingCards items={movingTestimonials} speed="normal" pauseOnHover className="max-w-none py-2" />
+          <InfiniteMovingCards items={testimonialItems} speed="normal" pauseOnHover className="max-w-none py-2" />
         </div>
       </section> : null}
-
-      <GoogleReviews />
 
       {home.sectionVisibility.faq ? <section data-studio-section="HomeFaq" className="bg-background py-12 md:py-24">
         <div className="mx-auto w-[min(760px,92vw)]">

@@ -619,6 +619,24 @@ export default function StudioPage() {
               { key: "name", label: "Name", type: "text" },
               { key: "designation", label: "Designation", type: "text" },
             ], () => ({ quote: "", name: "Resident", designation: "" })),
+            reviewsSource: {
+              type: "select",
+              label: "Testimonials source",
+              options: [
+                { label: "Manual (entries above)", value: "manual" },
+                { label: "Google reviews (live)", value: "google" },
+              ],
+            },
+            reviewsMinRating: {
+              type: "select",
+              label: "Google: minimum rating",
+              options: [
+                { label: "3★ and up", value: "3" },
+                { label: "4★ and up", value: "4" },
+                { label: "5★ only", value: "5" },
+              ],
+            },
+            reviewsMaxCount: { type: "number", label: "Google: max reviews shown" },
           },
           render: () => <></>,
         },
@@ -1111,6 +1129,9 @@ export default function StudioPage() {
             testimonialsTitle: draft.home.ui.testimonialsTitle,
             testimonialsDescription: draft.home.ui.testimonialsDescription,
             testimonialsJson: JSON.stringify(draft.home.testimonials, null, 2),
+            reviewsSource: draft.home.reviews?.source ?? "manual",
+            reviewsMinRating: String(draft.home.reviews?.minRating ?? 4),
+            reviewsMaxCount: draft.home.reviews?.maxCount ?? 8,
           },
         },
         {
@@ -1330,6 +1351,11 @@ export default function StudioPage() {
         amenityPanels: PuckDataService.parseArray(homeAmenitiesEntry?.amenityPanelsJson as string | undefined, draft.home.amenityPanels),
         whyCards: PuckDataService.parseArray(homeWhyEntry?.whyCardsJson as string | undefined, draft.home.whyCards),
         testimonials: PuckDataService.parseArray(homeTestimonialsEntry?.testimonialsJson as string | undefined, draft.home.testimonials),
+        reviews: {
+          source: (homeTestimonialsEntry?.reviewsSource === "google" ? "google" : "manual") as "manual" | "google",
+          minRating: Number(homeTestimonialsEntry?.reviewsMinRating) || draft.home.reviews?.minRating || 4,
+          maxCount: Number(homeTestimonialsEntry?.reviewsMaxCount) || draft.home.reviews?.maxCount || 8,
+        },
         faq: PuckDataService.parseArray(homeFaqEntry?.faqJson as string | undefined, draft.home.faq),
         neighborhood: {
           ...draft.home.neighborhood,

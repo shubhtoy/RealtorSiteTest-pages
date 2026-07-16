@@ -113,6 +113,14 @@ export type HomeLayer = {
     highlights: EditableNeighborhoodHighlight[];
   };
   testimonials: EditableTestimonial[];
+  reviews: {
+    /** Testimonials wall source: hand-written entries or live Google reviews. */
+    source: "manual" | "google";
+    /** Only Google reviews with at least this star rating are shown. */
+    minRating: number;
+    /** Max number of Google reviews to display. */
+    maxCount: number;
+  };
   faq: EditableFaq[];
   finalCta: {
     tagline: string;

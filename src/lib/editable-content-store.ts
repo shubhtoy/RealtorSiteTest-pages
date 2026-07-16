@@ -287,6 +287,10 @@ function hydrateDocument(partial: EditableSiteDocument): EditableSiteDocument {
         ...defaultEditableSiteDocument.home.ui,
         ...partial.home?.ui,
       },
+      reviews: {
+        ...defaultEditableSiteDocument.home.reviews,
+        ...partial.home?.reviews,
+      },
     },
     gallery: {
       ...defaultEditableSiteDocument.gallery,

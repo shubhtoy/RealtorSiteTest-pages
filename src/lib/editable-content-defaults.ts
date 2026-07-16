@@ -162,6 +162,11 @@ export const defaultEditableSiteDocument: EditableSiteDocument = {
       name: item.name,
       designation: item.designation,
     })),
+    reviews: {
+      source: "manual",
+      minRating: 4,
+      maxCount: 8,
+    },
     faq: faqContent.map((item) => ({
       question: item.question,
       answer: item.answer,
