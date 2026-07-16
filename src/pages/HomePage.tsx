@@ -144,7 +144,7 @@ export default function HomePage() {
 
   return (
     <div className="bg-body-mesh pb-24 md:pb-0">
-      <section className="relative overflow-hidden bg-background pb-6">
+      <section data-studio-section="HomeHero" className="relative overflow-hidden bg-background pb-6">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-[24rem] bg-[radial-gradient(ellipse_at_top,hsl(var(--primary)/0.18),transparent_72%)]" />
         <div className="relative z-30 mx-auto w-[min(1140px,92vw)] pt-14 md:pt-20">
           <Reveal>

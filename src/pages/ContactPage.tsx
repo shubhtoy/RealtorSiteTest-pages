@@ -160,7 +160,7 @@ export default function ContactPage() {
   return (
     <main id="main-content" className="bg-body-mesh">
       {/* Hero */}
-      {current.contact.sectionVisibility.hero ? <section ref={heroRef} className="relative min-h-[62svh] overflow-hidden md:min-h-[68svh]">
+      {current.contact.sectionVisibility.hero ? <section ref={heroRef} data-studio-section="ContactHero" className="relative min-h-[62svh] overflow-hidden md:min-h-[68svh]">
         <motion.div style={{ y: reduced ? 0 : heroY }} className="absolute inset-0 h-[115%] w-full">
           <OptimizedImage
             src={current.contact.heroImage}

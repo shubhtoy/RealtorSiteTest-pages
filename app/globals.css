@@ -136,3 +136,17 @@ a {
     scroll-behavior: auto !important;
   }
 }
+
+/* Studio live preview: sections are click-to-edit. Signal it with a pointer
+   cursor and a subtle outline on hover over a selectable section. */
+.studio-preview {
+  cursor: pointer;
+}
+.studio-preview [data-studio-section] {
+  outline: 2px solid transparent;
+  outline-offset: -2px;
+  transition: outline-color 0.15s ease;
+}
+.studio-preview [data-studio-section]:hover {
+  outline-color: hsl(var(--primary) / 0.6);
+}

@@ -62,7 +62,7 @@ export default function GalleryPage() {
 
   return (
     <div className="bg-body-mesh">
-      {current.gallery.sectionVisibility.hero ? <section ref={heroRef} className="relative min-h-[46svh] overflow-hidden md:min-h-[52svh]">
+      {current.gallery.sectionVisibility.hero ? <section ref={heroRef} data-studio-section="GalleryHero" className="relative min-h-[46svh] overflow-hidden md:min-h-[52svh]">
         <motion.div style={{ y: reducedMotion ? 0 : heroY }} className="absolute inset-0 h-[116%] w-full">
           <OptimizedImage
             src={current.gallery.heroImage}
