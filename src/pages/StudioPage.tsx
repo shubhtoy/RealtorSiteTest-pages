@@ -228,6 +228,11 @@ export default function StudioPage() {
     };
   }, [hasUnpublishedChanges]);
 
+  // The Studio previews the draft you are editing.
+  useEffect(() => {
+    if (isUnlocked) setMode("preview");
+  }, [isUnlocked, setMode]);
+
   // Keyboard shortcuts: Ctrl+S to save draft, Ctrl+Shift+P to publish
   const handleSaveDraft = useCallback(() => {
     if (!isUnlocked) return;
@@ -1153,7 +1158,7 @@ export default function StudioPage() {
 
   const puckCanvasKey = `${editorPage}-${mode}`;
 
-  const applyPuckData = (nextData: PuckIncomingData, errorPrefix: string) => {
+  const buildDoc = (nextData: PuckIncomingData) => {
     const globalEntry = PuckDataService.getEntryProps<GlobalBrandProps>(nextData, "GlobalBrand");
     const heroEntry = PuckDataService.getEntryProps<HomeHeroProps>(nextData, "HomeHero");
     const globalCollectionsEntry = PuckDataService.getEntryProps<GlobalCollectionsProps>(nextData, "GlobalCollections");
@@ -1328,6 +1333,11 @@ export default function StudioPage() {
       },
     };
 
+    return next;
+  };
+
+  const applyPuckData = (nextData: PuckIncomingData, errorPrefix: string) => {
+    const next = buildDoc(nextData);
     const validation = validateEditableSiteDocument(next);
     if (!validation.valid) {
       const msg = `${errorPrefix}: ${validation.errors[0]}`;
@@ -1349,10 +1359,12 @@ export default function StudioPage() {
     toast.success("Draft saved");
   };
 
-  const onChange = (_nextData: PuckIncomingData) => {
-    // Don't sync on every keystroke — it resets Puck's internal state (cursor, focus).
-    // Draft is synced when user clicks Puck's "Publish" (save) button (onPublish above).
-    if (autosaveStatus === "saved" || autosaveStatus === "idle") setAutosaveStatus("idle");
+  const onChange = (nextData: PuckIncomingData) => {
+    // Live-sync edits into the draft so the real-page preview updates as you
+    // type. The Puck data prop is keyed on page/mode (not draft), so this does
+    // not reset Puck's internal editor state.
+    updateDraft(buildDoc(nextData));
+    if (autosaveStatus === "saved") setAutosaveStatus("idle");
   };
 
   const downloadDraftJson = () => {
