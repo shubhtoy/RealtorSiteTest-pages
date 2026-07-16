@@ -1705,7 +1705,7 @@ export default function StudioPage() {
       <div className="mx-auto flex w-[min(1440px,96vw)] flex-col gap-3 py-3">
         <div className="rounded-xl border border-border bg-panel-gradient p-3 shadow-soft">
           {/* Top row: Logo + Section tabs (desktop) + Actions */}
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             {/* Left: Canvas mode toggle + autosave status */}
             <div className="flex items-center gap-2">
               <span className="hidden text-sm font-display text-foreground sm:inline">Studio</span>
