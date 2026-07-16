@@ -16,7 +16,6 @@ import {
 } from "@/components/studio/PuckCustomFields";
 import { StudioWorkspace } from "@/components/studio/StudioWorkspace";
 import { AdminAuthService } from "@/lib/admin-auth";
-import { GitHubCms } from "@/lib/github-cms";
 import { STUDIO_PASSWORD, STUDIO_PASSWORD_ENV_HINT } from "@/config/studio-auth";
 import { coerceEditableSiteDocument, validateEditableSiteDocument } from "@/lib/editable-content-store";
 import { PuckDataService } from "@/lib/puck-data";
@@ -202,8 +201,6 @@ export default function StudioPage() {
   const [validationError, setValidationError] = useState<string | null>(null);
   const [syncError, setSyncError] = useState<string | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
-  const [gitTokenDialogOpen, setGitTokenDialogOpen] = useState(false);
-  const [gitTokenInput, setGitTokenInput] = useState("");
   const [isUnlocked, setIsUnlocked] = useState(() => {
     if (typeof window === "undefined") return false;
     const stored = window.localStorage.getItem(ADMIN_AUTH_STORAGE_KEY);
@@ -1684,10 +1681,6 @@ export default function StudioPage() {
                     Copy JSON
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => { setGitTokenInput(GitHubCms.getToken()); setGitTokenDialogOpen(true); }}>
-                    <ExternalLinkIcon className="size-3.5" />
-                    GitHub Settings
-                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleLock}>
                     <LockIcon className="size-3.5" />
                     Lock Studio
@@ -1737,37 +1730,6 @@ export default function StudioPage() {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction variant="destructive" onClick={handleRevertDraft}>Revert</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {/* GitHub token dialog */}
-      <AlertDialog open={gitTokenDialogOpen} onOpenChange={setGitTokenDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>GitHub Settings</AlertDialogTitle>
-            <AlertDialogDescription>
-              Enter a GitHub Personal Access Token with <code className="rounded bg-secondary px-1 text-xs">repo</code> scope to enable publishing content directly to the repository.
-              {GitHubCms.hasToken() && <span className="mt-1 block text-xs text-emerald-600">✓ Token configured</span>}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <input
-            type="password"
-            className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm"
-            placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
-            value={gitTokenInput}
-            onChange={(e) => setGitTokenInput(e.target.value)}
-          />
-          <AlertDialogFooter>
-            {GitHubCms.hasToken() && (
-              <Button variant="outline" size="sm" onClick={() => { GitHubCms.clearToken(); setGitTokenInput(""); toast.success("Token removed"); setGitTokenDialogOpen(false); }}>
-                Remove Token
-              </Button>
-            )}
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => { GitHubCms.setToken(gitTokenInput); toast.success("GitHub token saved"); setGitTokenDialogOpen(false); }}>
-              Save Token
-            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

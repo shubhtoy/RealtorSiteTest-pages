@@ -28,7 +28,4 @@ export const appEnv = {
   // every Studio save/publish request with 401.
   studioPassword: clean(process.env.NEXT_PUBLIC_STUDIO_PASSWORD),
   apiTimeoutMs: toNumber(process.env.NEXT_PUBLIC_API_TIMEOUT_MS, 10000),
-  githubRepo: clean(process.env.NEXT_PUBLIC_GITHUB_REPO) || "shubhtoy/RealtorSiteTest-pages",
-  githubBranch: clean(process.env.NEXT_PUBLIC_GITHUB_BRANCH) || "main",
-  githubContentPath: clean(process.env.NEXT_PUBLIC_GITHUB_CONTENT_PATH) || "public/content.json",
 } as const;
