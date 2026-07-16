@@ -13,11 +13,13 @@ import {
   objectListField,
   keyValueField,
   galleryManagerField,
+  colorField,
 } from "@/components/studio/PuckCustomFields";
 import { StudioWorkspace } from "@/components/studio/StudioWorkspace";
 import { AdminAuthService } from "@/lib/admin-auth";
 import { STUDIO_PASSWORD, STUDIO_PASSWORD_ENV_HINT } from "@/config/studio-auth";
 import { coerceEditableSiteDocument, validateEditableSiteDocument } from "@/lib/editable-content-store";
+import { defaultTheme } from "@/lib/editable-content-defaults";
 import { PuckDataService } from "@/lib/puck-data";
 import { resolveAppHref } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -201,6 +203,9 @@ export default function StudioPage() {
   const [validationError, setValidationError] = useState<string | null>(null);
   const [syncError, setSyncError] = useState<string | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
+  // Bumped when the draft is replaced wholesale (reset/revert/import) so the
+  // Puck editor remounts and re-reads the new draft instead of stale field state.
+  const [dataNonce, setDataNonce] = useState(0);
   const [isUnlocked, setIsUnlocked] = useState(() => {
     if (typeof window === "undefined") return false;
     const stored = window.localStorage.getItem(ADMIN_AUTH_STORAGE_KEY);
@@ -614,6 +619,24 @@ export default function StudioPage() {
               { key: "name", label: "Name", type: "text" },
               { key: "designation", label: "Designation", type: "text" },
             ], () => ({ quote: "", name: "Resident", designation: "" })),
+            reviewsSource: {
+              type: "select",
+              label: "Testimonials source",
+              options: [
+                { label: "Manual (entries above)", value: "manual" },
+                { label: "Google reviews (live)", value: "google" },
+              ],
+            },
+            reviewsMinRating: {
+              type: "select",
+              label: "Google: minimum rating",
+              options: [
+                { label: "3★ and up", value: "3" },
+                { label: "4★ and up", value: "4" },
+                { label: "5★ only", value: "5" },
+              ],
+            },
+            reviewsMaxCount: { type: "number", label: "Google: max reviews shown" },
           },
           render: () => <></>,
         },
@@ -888,13 +911,13 @@ export default function StudioPage() {
         },
         Theme: {
           fields: {
-            primaryColor: { type: "text", label: "Primary Color (HSL)" },
-            accentColor: { type: "text", label: "Accent Color (HSL)" },
-            backgroundColor: { type: "text", label: "Background Color (HSL)" },
-            foregroundColor: { type: "text", label: "Foreground Color (HSL)" },
-            secondaryColor: { type: "text", label: "Secondary Color (HSL)" },
-            mutedColor: { type: "text", label: "Muted Color (HSL)" },
-            borderColor: { type: "text", label: "Border Color (HSL)" },
+            primaryColor: colorField("Primary Color"),
+            accentColor: colorField("Accent Color"),
+            backgroundColor: colorField("Background Color"),
+            foregroundColor: colorField("Foreground Color"),
+            secondaryColor: colorField("Secondary Color"),
+            mutedColor: colorField("Muted Color"),
+            borderColor: colorField("Border Color"),
             fontBody: { type: "text", label: "Body Font" },
             fontDisplay: { type: "text", label: "Display Font" },
             heroFontSize: { type: "text", label: "Hero Title Size" },
@@ -1106,6 +1129,9 @@ export default function StudioPage() {
             testimonialsTitle: draft.home.ui.testimonialsTitle,
             testimonialsDescription: draft.home.ui.testimonialsDescription,
             testimonialsJson: JSON.stringify(draft.home.testimonials, null, 2),
+            reviewsSource: draft.home.reviews?.source ?? "manual",
+            reviewsMinRating: String(draft.home.reviews?.minRating ?? 4),
+            reviewsMaxCount: draft.home.reviews?.maxCount ?? 8,
           },
         },
         {
@@ -1231,7 +1257,7 @@ export default function StudioPage() {
     [draft, editorPage],
   );
 
-  const puckCanvasKey = `${editorPage}-${mode}`;
+  const puckCanvasKey = `${editorPage}-${mode}-${dataNonce}`;
 
   const buildDoc = (nextData: PuckIncomingData) => {
     const globalEntry = PuckDataService.getEntryProps<GlobalBrandProps>(nextData, "GlobalBrand");
@@ -1325,6 +1351,11 @@ export default function StudioPage() {
         amenityPanels: PuckDataService.parseArray(homeAmenitiesEntry?.amenityPanelsJson as string | undefined, draft.home.amenityPanels),
         whyCards: PuckDataService.parseArray(homeWhyEntry?.whyCardsJson as string | undefined, draft.home.whyCards),
         testimonials: PuckDataService.parseArray(homeTestimonialsEntry?.testimonialsJson as string | undefined, draft.home.testimonials),
+        reviews: {
+          source: (homeTestimonialsEntry?.reviewsSource === "google" ? "google" : "manual") as "manual" | "google",
+          minRating: Number(homeTestimonialsEntry?.reviewsMinRating) || draft.home.reviews?.minRating || 4,
+          maxCount: Number(homeTestimonialsEntry?.reviewsMaxCount) || draft.home.reviews?.maxCount || 8,
+        },
         faq: PuckDataService.parseArray(homeFaqEntry?.faqJson as string | undefined, draft.home.faq),
         neighborhood: {
           ...draft.home.neighborhood,
@@ -1502,6 +1533,7 @@ export default function StudioPage() {
       setImportError(null);
       setAutosaveStatus("saved");
       setLastSavedAt(Date.now());
+      setDataNonce((n) => n + 1);
       toast.success("Draft imported successfully");
     } catch {
       const msg = "Import failed: unable to parse JSON file.";
@@ -1567,7 +1599,14 @@ export default function StudioPage() {
     setAutosaveStatus("idle");
     setValidationError(null);
     setRevertDialogOpen(false);
+    setDataNonce((n) => n + 1);
     toast.success("Draft reverted to published");
+  };
+
+  const handleResetTheme = () => {
+    updateDraft({ ...draft, theme: defaultTheme });
+    setDataNonce((n) => n + 1);
+    toast.success("Design reset to default");
   };
 
   const handleRetrySyncAction = async () => {
@@ -1666,7 +1705,7 @@ export default function StudioPage() {
       <div className="mx-auto flex w-[min(1440px,96vw)] flex-col gap-3 py-3">
         <div className="rounded-xl border border-border bg-panel-gradient p-3 shadow-soft">
           {/* Top row: Logo + Section tabs (desktop) + Actions */}
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             {/* Left: Canvas mode toggle + autosave status */}
             <div className="flex items-center gap-2">
               <span className="hidden text-sm font-display text-foreground sm:inline">Studio</span>
@@ -1786,6 +1825,10 @@ export default function StudioPage() {
                     Copy JSON
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleResetTheme}>
+                    <RefreshCwIcon className="size-3.5" />
+                    Reset design to default
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleLock}>
                     <LockIcon className="size-3.5" />
                     Lock Studio
