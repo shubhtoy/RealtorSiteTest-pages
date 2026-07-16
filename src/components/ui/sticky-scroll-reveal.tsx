@@ -1,261 +1,184 @@
 "use client";
+
 import React, { useEffect, useRef, useState } from "react";
-import { motion, useMotionValueEvent, useScroll } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
+
+type StickyScrollItem = {
+  title: string;
+  description: string;
+  content?: React.ReactNode;
+};
+
+const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
 
 export const StickyScroll = ({
   content,
   contentClassName,
 }: {
-  content: {
-    title: string;
-    description: string;
-    content?: React.ReactNode;
-  }[];
+  content: StickyScrollItem[];
   contentClassName?: string;
 }) => {
-  const [activeCard, setActiveCard] = React.useState(0);
-  const [activeIndexProgress, setActiveIndexProgress] = useState(0);
-  const ref = useRef<HTMLDivElement | null>(null);
-  const stickyMediaRef = useRef<HTMLDivElement | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
   const itemRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const reduced = useReducedMotion();
   const cardLength = content.length;
-  const checkpointsRef = useRef<number[]>([]);
-  const cardLengthRef = useRef(cardLength);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end start"],
-    trackContentSize: true,
-  });
 
+  // Reliable active-item detection: observe each text block and treat the block
+  // whose center is nearest the viewport center as active. A centered rootMargin
+  // band means a block only "activates" once it reaches the middle of the
+  // screen, and the observer fires while scrolling in BOTH directions. This
+  // replaces the fragile checkpoint / scroll-offset math entirely.
   useEffect(() => {
-    cardLengthRef.current = cardLength;
-  }, [cardLength]);
-
-  useEffect(() => {
-    itemRefs.current = itemRefs.current.slice(0, cardLength);
-
-    if (cardLength <= 1) {
-      setActiveCard(0);
-      checkpointsRef.current = [];
+    if (typeof window === "undefined" || typeof IntersectionObserver === "undefined") {
       return;
     }
 
-    const getIndexFromProgress = (latest: number, points: number[], length: number) => {
-      if (length <= 1) {
-        return 0;
-      }
-
-      if (points.length === length) {
-        let index = 0;
-        for (let i = 0; i < points.length; i += 1) {
-          if (latest >= points[i]) {
-            index = i;
-          } else {
-            break;
-          }
-        }
-        return Math.min(length - 1, Math.max(0, index));
-      }
-
-      return Math.min(length - 1, Math.max(0, Math.floor(latest * length)));
-    };
-
-    const recalculateCheckpoints = () => {
-      const container = ref.current;
-      if (!container) {
-        return;
-      }
-
-      // Require each card to travel a bit further before activation.
-      const triggerOffsetPx = 140;
-      const scrollRange = Math.max(1, container.offsetHeight);
-      const stickyMedia = stickyMediaRef.current;
-      const defaultActivationY = 96 + 160;
-      const activationY = stickyMedia
-        ? stickyMedia.offsetTop + stickyMedia.offsetHeight / 2
-        : defaultActivationY;
-
-      const nextCheckpoints = itemRefs.current.map((item) => {
-        if (!item) {
-          return 0;
-        }
-
-        const itemCenterInContainer = item.offsetTop + item.offsetHeight / 2;
-        const progressAtActivation = (itemCenterInContainer + triggerOffsetPx - activationY) / scrollRange;
-
-        return Math.min(1, Math.max(0, progressAtActivation));
-      });
-
-      checkpointsRef.current = nextCheckpoints;
-
-      const nextIndex = getIndexFromProgress(scrollYProgress.get(), nextCheckpoints, cardLengthRef.current);
-      setActiveCard((prev) => (prev === nextIndex ? prev : nextIndex));
-    };
-
-    recalculateCheckpoints();
-
-    const resizeObserver = new ResizeObserver(() => recalculateCheckpoints());
-    if (ref.current) {
-      resizeObserver.observe(ref.current);
-    }
-    if (stickyMediaRef.current) {
-      resizeObserver.observe(stickyMediaRef.current);
-    }
-    itemRefs.current.forEach((item) => {
-      if (item) {
-        resizeObserver.observe(item);
+    const nodes = itemRefs.current;
+    const indexByNode = new Map<Element, number>();
+    nodes.forEach((node, index) => {
+      if (node) {
+        indexByNode.set(node, index);
       }
     });
 
-    window.addEventListener("resize", recalculateCheckpoints);
-
-    return () => {
-      resizeObserver.disconnect();
-      window.removeEventListener("resize", recalculateCheckpoints);
-    };
-  }, [cardLength]);
-
-  useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    const length = cardLengthRef.current;
-    if (length <= 1) {
-      setActiveIndexProgress(0);
-      setActiveCard(0);
+    if (indexByNode.size === 0) {
       return;
     }
 
-    const points = checkpointsRef.current;
-    let nextIndexProgress = 0;
+    // Indices whose center currently sits inside the viewport's center band.
+    const inBand = new Set<number>();
 
-    if (points.length === length) {
-      if (latest <= points[0]) {
-        nextIndexProgress = 0;
-      } else if (latest >= points[length - 1]) {
-        nextIndexProgress = length - 1;
-      } else {
-        for (let i = 0; i < points.length - 1; i += 1) {
-          const start = points[i];
-          const end = points[i + 1];
-          if (latest >= start && latest <= end) {
-            const segmentSize = Math.max(0.0001, end - start);
-            const segmentProgress = (latest - start) / segmentSize;
-            nextIndexProgress = i + segmentProgress;
-            break;
-          }
-        }
+    const pickActive = () => {
+      // If nothing is in the band (e.g. a fast scroll skipped across a gap),
+      // keep the last active item rather than flickering to the wrong one.
+      if (inBand.size === 0) {
+        return;
       }
-    } else {
-      nextIndexProgress = latest * (length - 1);
-    }
 
-    nextIndexProgress = Math.min(length - 1, Math.max(0, nextIndexProgress));
-    const nextIndex = Math.min(length - 1, Math.max(0, Math.round(nextIndexProgress)));
+      const viewportCenter = window.innerHeight / 2;
+      let best = -1;
+      let bestDistance = Number.POSITIVE_INFINITY;
 
-    setActiveIndexProgress(nextIndexProgress);
-    setActiveCard((prev) => (prev === nextIndex ? prev : nextIndex));
-  });
+      inBand.forEach((index) => {
+        const node = nodes[index];
+        if (!node) {
+          return;
+        }
+        const rect = node.getBoundingClientRect();
+        const center = rect.top + rect.height / 2;
+        const distance = Math.abs(center - viewportCenter);
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          best = index;
+        }
+      });
 
-  const backgroundColors = [
-    "hsl(var(--card))",
-    "hsl(var(--secondary))",
-    "hsl(var(--background))",
-  ];
-  const linearGradients = [
-    "linear-gradient(to bottom right, hsl(var(--primary) / 0.45), hsl(var(--accent) / 0.35))",
-    "linear-gradient(to bottom right, hsl(var(--accent) / 0.45), hsl(var(--primary) / 0.28))",
-    "linear-gradient(to bottom right, hsl(var(--primary) / 0.38), hsl(var(--secondary-foreground) / 0.25))",
-  ];
+      if (best !== -1) {
+        setActiveIndex((prev) => (prev === best ? prev : best));
+      }
+    };
 
-  const activeGradient = linearGradients[activeCard % linearGradients.length] ?? linearGradients[0];
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const index = indexByNode.get(entry.target);
+          if (index === undefined) {
+            return;
+          }
+          if (entry.isIntersecting) {
+            inBand.add(index);
+          } else {
+            inBand.delete(index);
+          }
+        });
+        pickActive();
+      },
+      // Shrink the observer root to a thin band at the vertical center so a
+      // block is only considered active while it passes through the middle.
+      { rootMargin: "-45% 0px -45% 0px", threshold: 0 },
+    );
 
-  const syncTransition = { duration: 0.2, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] };
+    indexByNode.forEach((_index, node) => observer.observe(node));
 
-  const getBlendWeight = (index: number) => {
-    const distance = Math.abs(activeIndexProgress - index);
-    return Math.max(0, 1 - distance);
-  };
+    return () => observer.disconnect();
+  }, [cardLength]);
 
-  const renderStackedContent = () => {
-    if (cardLength === 0) {
-      return null;
-    }
+  const mediaTransition = reduced ? { duration: 0 } : { duration: 0.45, ease: EASE };
+  const textTransition = reduced ? { duration: 0 } : { duration: 0.3, ease: EASE };
 
-    return content.map((item, index) => (
-      <motion.div
-        key={item.title + index}
-        className="absolute inset-0"
-        initial={false}
-        animate={{ opacity: getBlendWeight(index) }}
-        transition={syncTransition}
-        style={{ pointerEvents: activeCard === index ? "auto" : "none" }}
-      >
-        {item.content ?? null}
-      </motion.div>
-    ));
-  };
+  // Crossfade stack: every item's media is layered; only the active one is
+  // fully opaque. Reused for the mobile (top) and desktop (right) panels.
+  const renderMedia = (heightClass: string) => (
+    <div
+      className={cn(
+        "relative w-full overflow-hidden rounded-2xl bg-muted shadow-soft ring-1 ring-border/50",
+        heightClass,
+        contentClassName,
+      )}
+    >
+      {content.map((item, index) => {
+        const isActive = index === activeIndex;
+        return (
+          <motion.div
+            key={item.title + index}
+            className="absolute inset-0"
+            initial={false}
+            animate={{ opacity: isActive ? 1 : 0 }}
+            transition={mediaTransition}
+            aria-hidden={!isActive}
+            style={{ pointerEvents: isActive ? "auto" : "none" }}
+          >
+            {item.content ?? null}
+          </motion.div>
+        );
+      })}
+    </div>
+  );
 
   return (
-    <motion.div
-      animate={{
-        backgroundColor: backgroundColors[activeCard % backgroundColors.length],
-      }}
-      className="relative rounded-2xl border border-border p-6 shadow-soft md:p-8"
-      ref={ref}
-    >
-      <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_20rem] md:gap-8 lg:grid-cols-[minmax(0,1fr)_24rem] lg:gap-10">
-        <div className="relative px-2">
-          <div
-            style={{ background: activeGradient }}
-            className={cn(
-              "relative mb-6 h-56 w-full overflow-hidden rounded-xl border border-border/60 bg-card md:hidden",
-              contentClassName,
-            )}
-          >
-            {renderStackedContent()}
-          </div>
-          {content.map((item, index) => (
-            <div
-              key={item.title + index}
-              className="my-10 md:my-16"
-              ref={(node) => {
-                itemRefs.current[index] = node;
-              }}
-            >
-              <motion.h2
-                initial={false}
-                animate={{
-                  opacity: 0.22 + getBlendWeight(index) * 0.78,
+    <div className="grid grid-cols-1 gap-x-10 md:grid-cols-2 lg:gap-x-16">
+      {/* Text column. On mobile a sticky media panel rides along at the top. */}
+      <div>
+        <div className="sticky top-20 z-10 mb-8 md:hidden">{renderMedia("h-56 sm:h-64")}</div>
+
+        <div>
+          {content.map((item, index) => {
+            const isActive = index === activeIndex;
+            return (
+              <div
+                key={item.title + index}
+                ref={(node) => {
+                  itemRefs.current[index] = node;
                 }}
-                transition={syncTransition}
-                className="text-2xl font-semibold text-foreground"
+                className="flex min-h-[44vh] flex-col justify-center py-8 md:min-h-[55vh]"
               >
-                {item.title}
-              </motion.h2>
-              <motion.p
-                initial={false}
-                animate={{
-                  opacity: 0.22 + getBlendWeight(index) * 0.78,
-                }}
-                transition={syncTransition}
-                className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground"
-              >
-                {item.description}
-              </motion.p>
-            </div>
-          ))}
-          <div className="h-8 md:h-12" />
-        </div>
-        <div
-          ref={stickyMediaRef}
-          style={{ background: activeGradient }}
-          className={cn(
-            "relative sticky top-24 hidden h-80 w-full overflow-hidden rounded-xl border border-border/60 bg-card md:block",
-            contentClassName,
-          )}
-        >
-          {renderStackedContent()}
+                <motion.h3
+                  initial={false}
+                  animate={{ opacity: isActive ? 1 : 0.4 }}
+                  transition={textTransition}
+                  className="font-display text-2xl font-semibold text-foreground md:text-3xl"
+                >
+                  {item.title}
+                </motion.h3>
+                <motion.p
+                  initial={false}
+                  animate={{ opacity: isActive ? 1 : 0.4 }}
+                  transition={textTransition}
+                  className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground"
+                >
+                  {item.description}
+                </motion.p>
+              </div>
+            );
+          })}
         </div>
       </div>
-    </motion.div>
+
+      {/* Sticky media panel (desktop). */}
+      <div className="hidden md:block">
+        <div className="sticky top-24">{renderMedia("h-80 lg:h-[26rem]")}</div>
+      </div>
+    </div>
   );
 };
