@@ -1,10 +1,19 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
+import { ChevronDown } from "lucide-react";
 import { useEditableContent } from "@/context/EditableContentContext";
 
 const WELCOME_SESSION_KEY = "baba.welcomeGate.seen";
+
+// Background photo for the hero, with a graceful fallback if it fails to load.
+const PRIMARY_BG = "/images/exterior.jpg";
+const FALLBACK_BG = "/images/aerial.jpg";
+
+// Minimum upward travel (px) of a touch gesture that counts as "swipe up to enter".
+const SWIPE_UP_THRESHOLD = 30;
 
 export default function WelcomeGate() {
   const { current } = useEditableContent();
@@ -12,6 +21,7 @@ export default function WelcomeGate() {
   const reduced = useReducedMotion();
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const previouslyFocused = useRef<HTMLElement | null>(null);
+  const [bgSrc, setBgSrc] = useState<string>(PRIMARY_BG);
 
   const [visible, setVisible] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
@@ -34,6 +44,9 @@ export default function WelcomeGate() {
     });
   }, []);
 
+  // While open: lock body scroll, trap + manage focus, and listen for every
+  // "enter the site" gesture (keyboard, wheel/scroll, touch swipe up). Clicks/
+  // taps are handled inline on the overlay and the scroll affordance.
   useEffect(() => {
     if (!visible) return;
 
@@ -52,14 +65,33 @@ export default function WelcomeGate() {
         event.preventDefault();
         dismiss();
       } else if (event.key === "Tab") {
+        // Modal: keep focus on the dialog surface itself.
         event.preventDefault();
         dialogRef.current?.focus();
       }
     };
 
+    const onWheel = () => dismiss();
+
+    let touchStartY = 0;
+    const onTouchStart = (event: TouchEvent) => {
+      touchStartY = event.touches[0]?.clientY ?? 0;
+    };
+    const onTouchMove = (event: TouchEvent) => {
+      const currentY = event.touches[0]?.clientY ?? 0;
+      if (touchStartY - currentY > SWIPE_UP_THRESHOLD) dismiss();
+    };
+
     window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("wheel", onWheel, { passive: true });
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
+
     return () => {
       window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("wheel", onWheel);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
       document.body.style.overflow = previousOverflow;
       previouslyFocused.current?.focus?.();
     };
@@ -67,6 +99,7 @@ export default function WelcomeGate() {
 
   const headingId = "welcome-gate-heading";
   const messageId = "welcome-gate-message";
+  const promptText = welcome.prompt || "Scroll to explore";
 
   return (
     <AnimatePresence>
@@ -79,44 +112,94 @@ export default function WelcomeGate() {
           aria-describedby={messageId}
           tabIndex={-1}
           onClick={dismiss}
-          className="welcome-gate fixed inset-0 z-[130] flex cursor-pointer items-center justify-center outline-none"
+          className="welcome-gate fixed inset-0 z-[130] h-[100svh] w-screen cursor-pointer overflow-hidden bg-overlay-dark outline-none"
           initial={{ opacity: 1 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: reduced ? 0 : 0.5, ease: "easeOut" } }}
+          exit={{
+            opacity: 0,
+            y: reduced ? 0 : -20,
+            transition: { duration: reduced ? 0 : 0.5, ease: "easeInOut" },
+          }}
         >
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_24%,hsl(var(--primary)/0.18),transparent_36%),radial-gradient(circle_at_84%_78%,hsl(var(--accent)/0.18),transparent_40%),linear-gradient(160deg,hsl(var(--overlay-dark)),hsl(var(--overlay-dark)/0.96))]" />
-
+          {/* Full-bleed background photo with a slow ken-burns zoom. */}
           <motion.div
-            className="relative z-10 flex w-[min(46rem,92vw)] flex-col items-center px-6 text-center"
-            initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0, transition: { duration: reduced ? 0 : 0.6, ease: [0.22, 1, 0.36, 1] } }}
-            exit={{ opacity: 0, transition: { duration: reduced ? 0 : 0.25 } }}
+            className="absolute inset-0"
+            initial={{ scale: 1 }}
+            animate={{ scale: reduced ? 1 : 1.06 }}
+            transition={reduced ? { duration: 0 } : { duration: 12, ease: "easeOut" }}
           >
-            <p className="mb-4 text-[0.6rem] font-semibold uppercase tracking-[0.26em] text-overlay-text/70 md:mb-6">
-              {current.global.siteName}
-            </p>
-            <h1
-              id={headingId}
-              className="font-display text-4xl leading-tight tracking-[-0.03em] text-overlay-text md:text-6xl"
-            >
-              {welcome.heading}
-            </h1>
-            <p id={messageId} className="mt-5 max-w-2xl text-base text-overlay-text/80 md:text-lg">
-              {welcome.message}
-            </p>
+            <Image
+              src={bgSrc}
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover"
+              onError={() => setBgSrc((prev) => (prev === PRIMARY_BG ? FALLBACK_BG : prev))}
+            />
+          </motion.div>
 
-            <motion.p
-              className="mt-10 inline-flex items-center gap-2 rounded-full border border-overlay-text/25 px-5 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-overlay-text/80 md:text-sm"
-              initial={{ opacity: reduced ? 1 : 0 }}
-              animate={
-                reduced
-                  ? { opacity: 1 }
-                  : { opacity: [0.55, 1, 0.55], transition: { duration: 2.4, repeat: Infinity, ease: "easeInOut" } }
+          {/* Legibility scrim: a slight overall darken + bottom-weighted gradient. */}
+          <div className="pointer-events-none absolute inset-0 bg-overlay-dark/30" />
+          <div className="pointer-events-none absolute inset-0 bg-hero-fade" />
+
+          {/* Reading content, anchored lower-left, sitting directly on the photo. */}
+          <motion.div
+            className="relative z-10 flex h-full flex-col justify-end px-6 pb-32 md:px-16 md:pb-28 lg:px-24"
+            initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            animate={{
+              opacity: 1,
+              y: 0,
+              transition: {
+                duration: reduced ? 0 : 0.7,
+                ease: [0.22, 1, 0.36, 1],
+                delay: reduced ? 0 : 0.1,
+              },
+            }}
+          >
+            <div className="max-w-2xl">
+              <p className="mb-3 text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-white/80 md:text-xs">
+                {current.global.siteName}
+              </p>
+              <h1
+                id={headingId}
+                className="font-display text-4xl font-semibold leading-[1.05] tracking-[-0.03em] text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.45)] sm:text-5xl md:text-6xl lg:text-7xl"
+              >
+                {welcome.heading}
+              </h1>
+              <p
+                id={messageId}
+                className="mt-5 max-w-xl text-base leading-relaxed text-white/85 drop-shadow-[0_1px_12px_rgba(0,0,0,0.4)] md:text-lg"
+              >
+                {welcome.message}
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Bottom-centered "scroll to explore" affordance with a looping chevron. */}
+          <motion.button
+            type="button"
+            onClick={dismiss}
+            className="absolute bottom-7 left-1/2 z-20 flex -translate-x-1/2 flex-col items-center gap-2 rounded-md px-4 py-2 text-white/85 outline-none transition-colors hover:text-white focus-visible:ring-2 focus-visible:ring-white/70"
+            initial={{ opacity: reduced ? 1 : 0 }}
+            animate={{
+              opacity: 1,
+              transition: { duration: reduced ? 0 : 0.6, delay: reduced ? 0 : 0.5 },
+            }}
+          >
+            <span className="text-[0.65rem] font-semibold uppercase tracking-[0.22em] md:text-xs">
+              {promptText}
+            </span>
+            <motion.span
+              className="flex"
+              animate={reduced ? { y: 0 } : { y: [0, 8, 0] }}
+              transition={
+                reduced ? { duration: 0 } : { duration: 1.6, repeat: Infinity, ease: "easeInOut" }
               }
             >
-              {welcome.prompt}
-            </motion.p>
-          </motion.div>
+              <ChevronDown className="h-5 w-5" strokeWidth={2} aria-hidden="true" />
+            </motion.span>
+          </motion.button>
         </motion.div>
       ) : null}
     </AnimatePresence>
