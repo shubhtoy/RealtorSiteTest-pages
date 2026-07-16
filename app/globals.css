@@ -7,8 +7,6 @@
  * keep it in sync with `src/index.css` until the Vite app is retired.
  */
 
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -49,6 +47,10 @@
   /* Section gradient backgrounds */
   --section-warm: 206 30% 93%;
   --section-cream: 210 34% 97%;
+
+  /* Typography — Plus Jakarta Sans is loaded via next/font (app/layout.tsx),
+     which sets --font-body on <html>. Headings reuse the same family. */
+  --font-display: var(--font-body);
 }
 
 /* ── Infinite scroll animation (for InfiniteMovingCards) ── */
