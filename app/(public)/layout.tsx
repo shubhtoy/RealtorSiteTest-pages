@@ -22,9 +22,9 @@ export default async function PublicLayout({
   return (
     <EditableContentProvider initialContent={content}>
       <SiteHeader />
-      <WelcomeGate />
       <main id="main-content">{children}</main>
       <SiteFooter />
+      <WelcomeGate />
     </EditableContentProvider>
   );
 }
