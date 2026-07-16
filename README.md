@@ -1,13 +1,13 @@
 # Baba Flats Apartment Website
 
-A modern apartment website built with Vite + React, TypeScript, and Tailwind CSS.
+A modern apartment website built with Next.js (App Router), React, TypeScript, and Tailwind CSS.
 
 ## 🚀 Features
 
-- **Modern Stack**: Vite + React 19 + TypeScript
+- **Modern Stack**: Next.js (App Router) + React 19 + TypeScript
 - **Styling**: Tailwind CSS with custom design system
-- **Routing**: React Router DOM for client-side routing
-- **Components**: Reusable UI components with Radix UI primitives
+- **Routing**: Next.js App Router with server-side rendering
+- **Components**: Reusable UI components with Base UI primitives
 - **Animations**: Framer Motion for smooth animations
 - **Media**: Optimized images and videos
 - **Editor**: Integrated content editor with Puck
@@ -15,20 +15,22 @@ A modern apartment website built with Vite + React, TypeScript, and Tailwind CSS
 ## 📁 Project Structure
 
 ```
-├── src/
+├── app/               # Next.js App Router (SSR pages, /api routes, studio)
+│   ├── (public)/      # Public site routes (home, gallery, contact)
+│   ├── api/           # API route handlers
+│   └── studio/        # Content editor route
+├── src/               # Shared modules consumed by app/ via the @/* alias
 │   ├── components/     # Reusable UI components
-│   │   ├── site/      # Site-specific components (Header, Footer, etc.)
+│   │   ├── layout/    # Site-specific components (Header, Footer, etc.)
 │   │   ├── ui/        # Generic UI components
 │   │   ├── media/     # Media-related components
 │   │   └── studio/    # Editor studio components
-│   ├── pages/         # Page components
+│   ├── pages/         # Page components (HomePage, GalleryPage, ContactPage, StudioPage)
 │   ├── config/        # Configuration files
 │   ├── context/       # React context providers
 │   ├── data/          # Static data and content
 │   ├── lib/           # Utility functions and libraries
-│   ├── types/         # TypeScript type definitions
-│   ├── App.tsx        # Main App component
-│   └── main.tsx       # Application entry point
+│   └── types/         # TypeScript type definitions
 ├── public/            # Static assets
 │   ├── images/        # Original images
 │   ├── images-optimized/ # Optimized images
@@ -53,52 +55,36 @@ cp .env.example .env
 
 Edit only .env for local development. .env.server is deprecated and kept only for backwards reference.
 
-### Development (Unified)
+### Development
 ```bash
-# canonical full-stack dev command (API + web)
 npm run dev
 ```
-This starts both services together using one command.
+Starts the Next.js dev server at `http://localhost:3000`, serving the SSR pages
+and the `/api/*` route handlers from a single process.
 
-```bash
-# explicit variants
-npm run dev:stack
-npm run dev:web
-npm run dev:api
-```
+### API Routes
 
-`npm start`, `npm run start:dev`, and `npm run start:local` are compatibility aliases for `npm run dev:stack`.
-
-### Basic Backend Server (No DB)
-```bash
-# start API server once
-npm run server
-
-# or start API server in watch mode
-npm run server:dev
-```
-
-The backend runs at `http://localhost:8787` and exposes:
+API endpoints are Next.js App Router route handlers under `app/api/*`, served by
+the same Next.js server (there is no separate backend process). Available routes:
 
 - `GET /api/health`
 - `GET /api/content/draft` (protected)
-- `GET /api/content/published` (protected)
-- `POST /api/content/bootstrap` (protected)
 - `PUT /api/content/draft` (protected)
 - `POST /api/content/publish` (protected)
-- `POST /api/contact/submit`
+- `POST /api/contact`
+- `POST /api/assets/upload` (protected)
 
-Protected content endpoints require header:
+Protected endpoints require the header:
 
 - `x-studio-password: <your STUDIO_PASSWORD>`
 
-Recommended unified env variables (`.env`):
+Recommended local env variables (`.env`):
 
-- `VITE_API_ORIGIN=http://localhost:8787`
-- `VITE_STUDIO_PASSWORD=shubh123`
-- `VITE_API_TIMEOUT_MS=10000`
-- `API_PORT=8787`
 - `STUDIO_PASSWORD=shubh123`
+- `NEXT_PUBLIC_STUDIO_PASSWORD=shubh123` (must equal `STUDIO_PASSWORD`)
+- `NEXT_PUBLIC_SITE_URL=http://localhost:3000`
+- `CONTACT_TO_EMAIL=`
+- `CONTACT_APPS_SCRIPT_URL=`
 - `SMTP_HOST=`
 - `SMTP_PORT=587`
 - `SMTP_SECURE=false`
@@ -111,13 +97,13 @@ Recommended unified env variables (`.env`):
 ```bash
 npm run build
 ```
-Builds the app for production to the `dist` folder.
+Builds the Next.js app for production (output in the `.next` folder).
 
 ### Preview
 ```bash
 npm run preview
 ```
-Preview the production build locally.
+Serves the production build locally via `next start` (run `npm run build` first).
 
 ### Media Optimization
 ```bash
@@ -140,15 +126,16 @@ The project uses a custom design system with Tailwind CSS. Key design tokens:
 
 - **Primary Color**: Orange (#D97706)
 - **Background**: Warm off-white
-- **Typography**: Geist variable font
+- **Typography**: Plus Jakarta Sans
 - **Spacing**: 4px base unit
 - **Border Radius**: 8px default
 
 ## 🔧 Configuration
 
-- `vite.config.ts` - Vite configuration with path aliases
+- `next.config.ts` - Next.js configuration
 - `tailwind.config.ts` - Tailwind CSS configuration
-- `tsconfig.json` - TypeScript configuration
+- `tsconfig.json` - TypeScript configuration (path alias `@/* -> ./src/*`)
+- `vitest.config.ts` - Vitest test configuration
 - `postcss.config.js` - PostCSS configuration
 - `components.json` - UI components configuration
 
@@ -171,19 +158,17 @@ The project uses a custom design system with Tailwind CSS. Key design tokens:
 ## 📦 Dependencies
 
 ### Core
+- Next.js (App Router)
 - React 19 + React DOM
-- React Router DOM 7
 - TypeScript
-- Vite
 
 ### UI & Styling
 - Tailwind CSS
-- Radix UI (Accordion, Tabs)
+- Base UI (Accordion, Tabs)
 - Framer Motion
 - Lucide React icons
 
 ### Media & Content
-- React Photo Album
 - Yet Another React Lightbox
 - Puck Editor
 
@@ -194,7 +179,45 @@ The project uses a custom design system with Tailwind CSS. Key design tokens:
 
 ## 🚀 Deployment
 
-The project is configured for static deployment. Build output is in the `dist` folder.
+This is a Next.js (App Router) application. It ships with SSR pages and `/api/*`
+route handlers, so it requires a Node.js server host (not static hosting).
+
+### Vercel (recommended)
+
+Vercel auto-detects Next.js from the Git repository — no `vercel.json` is needed.
+
+1. In the [Vercel dashboard](https://vercel.com), choose **Add New → Project** and
+   import this GitHub repository.
+2. Vercel detects the framework as **Next.js** and applies the defaults: build
+   command `next build`, with the build output managed automatically by Vercel.
+   Leave these as-is.
+3. Under **Project Settings → Environment Variables**, add:
+
+   | Variable | Required | Notes |
+   | --- | --- | --- |
+   | `STUDIO_PASSWORD` | Yes | Server-side Studio password used to authorize draft/publish API calls. |
+   | `NEXT_PUBLIC_STUDIO_PASSWORD` | Yes | Client-side Studio password — **must equal `STUDIO_PASSWORD`**, or the Studio's save/publish requests are rejected with 401. |
+   | `NEXT_PUBLIC_SITE_URL` | Recommended | Public site origin for SEO (canonical + Open Graph URLs, `sitemap.xml`, `robots.txt`), e.g. `https://babaflats.com`. Defaults to `https://babaflats.com`. |
+   | `CONTACT_TO_EMAIL` | Recommended | Recipient inbox for contact-form leads. Defaults to `Contact@babaflats.com`. |
+   | `CONTACT_APPS_SCRIPT_URL` | Optional | Google Apps Script Web App `/exec` URL for lead delivery (Google Sheet row + email). |
+   | `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`, `SMTP_TO` | Optional | Enable the contact form's SMTP email channel (nodemailer). |
+
+4. Deploy. Each push to the connected branch then triggers an automatic Vercel
+   build and deployment.
+
+### Self-hosted (Docker)
+
+A production [`Dockerfile`](./Dockerfile) is included as an alternative for
+self-hosting. It runs `next build` and serves the self-contained standalone
+output (`output: "standalone"`) on port `3000`:
+
+```bash
+docker build -t baba-flats .
+docker run -p 3000:3000 --env-file .env baba-flats
+```
+
+Provide the same environment variables listed above (via `--env-file` or
+individual `-e` flags).
 
 ## 📄 License
 

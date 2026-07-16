@@ -1,18 +1,25 @@
-import { Link, NavLink } from "react-router-dom";
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion, useReducedMotion } from "motion/react";
 import { Badge } from "@/components/ui/badge";
 import { useEditableContent } from "@/context/EditableContentContext";
 
-const navClass = ({ isActive }: { isActive: boolean }) =>
+const navClass = (isActive: boolean) =>
   `text-xs font-bold uppercase tracking-[0.14em] transition-colors ${isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"}`;
 
 export default function SiteHeader() {
   const { current } = useEditableContent();
   const reduced = useReducedMotion();
+  const pathname = usePathname() ?? "";
   const navLinks = current.global.navLinks.map((link) => ({
     ...link,
     end: link.to === "/",
   }));
+
+  const isLinkActive = (to: string, end: boolean) =>
+    end ? pathname === to : pathname === to || pathname.startsWith(`${to}/`);
 
   return (
     <motion.header
@@ -37,23 +44,31 @@ export default function SiteHeader() {
         Skip to content
       </a>
       <div className="mx-auto flex w-[min(1140px,92vw)] flex-wrap items-center justify-between gap-3 py-2.5 md:py-3">
-        <Link to="/" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2">
           <span data-prop="siteName" className="font-display text-xl tracking-tight text-primary sm:text-2xl">{current.global.siteName}</span>
           <Badge data-prop="cityLabel" variant="secondary" className="hidden md:inline-flex">{current.global.cityLabel}</Badge>
         </Link>
 
         <nav className="hidden items-center gap-7 md:flex" aria-label="Main navigation">
-          {navLinks.map((link) => (
-            <NavLink key={link.to} to={link.to} end={link.end} className={navClass}>
-              {link.label}
-            </NavLink>
-          ))}
+          {navLinks.map((link) => {
+            const active = isLinkActive(link.to, link.end);
+            return (
+              <Link
+                key={link.to}
+                href={link.to}
+                aria-current={active ? "page" : undefined}
+                className={navClass(active)}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="flex items-center gap-2">
           <Link
             data-prop="cta"
-            to={current.global.navCtaLink}
+            href={current.global.navCtaLink}
             className="inline-flex items-center justify-center rounded-full bg-primary px-3.5 py-2 min-h-[44px] whitespace-nowrap text-[0.6rem] font-extrabold uppercase tracking-[0.12em] text-primary-foreground shadow-soft transition hover:-translate-y-0.5 hover:shadow-soft-lg sm:px-4 sm:text-[0.65rem] sm:tracking-[0.14em]"
           >
             {current.global.navCtaText}
@@ -61,20 +76,21 @@ export default function SiteHeader() {
         </div>
 
         <nav className="flex w-full flex-wrap items-center justify-center gap-1.5 md:hidden" aria-label="Mobile navigation">
-          {navLinks.map((link) => (
-            <NavLink
-              key={`mobile-${link.to}`}
-              to={link.to}
-              end={link.end}
-              className={({ isActive }) =>
-                `rounded-full px-2.5 py-2.5 min-h-[44px] inline-flex items-center text-[0.58rem] font-semibold uppercase tracking-[0.1em] transition-colors sm:px-3 sm:text-[0.62rem] sm:tracking-[0.12em] ${
-                  isActive ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
-                }`
-              }
-            >
-              {link.label}
-            </NavLink>
-          ))}
+          {navLinks.map((link) => {
+            const active = isLinkActive(link.to, link.end);
+            return (
+              <Link
+                key={`mobile-${link.to}`}
+                href={link.to}
+                aria-current={active ? "page" : undefined}
+                className={`rounded-full px-2.5 py-2.5 min-h-[44px] inline-flex items-center text-[0.58rem] font-semibold uppercase tracking-[0.1em] transition-colors sm:px-3 sm:text-[0.62rem] sm:tracking-[0.12em] ${
+                  active ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
+                }`}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
         </nav>
       </div>
     </motion.header>

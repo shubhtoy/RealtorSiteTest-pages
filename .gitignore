@@ -13,6 +13,13 @@
 *.seed
 *.pid.lock
 /server/data
+# Contact form lead submissions (PII) persisted by the Next contact route.
+/.data
+
+# Studio runtime uploads: new uploads are not tracked, but keep the folder
+# (via .gitkeep) and any files already committed to the repo.
+/public/uploads/*
+!/public/uploads/.gitkeep
 
 # Coverage directory
 /coverage

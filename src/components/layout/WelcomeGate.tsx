@@ -1,119 +1,144 @@
+"use client";
+
 import { useCallback, useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { useEditableContent } from "@/context/EditableContentContext";
 
-const WELCOME_SESSION_KEY = "baba.welcomeGate.seen";
+// Full-bleed splash photo, with a graceful fallback if it fails to load.
+const PRIMARY_BG = "/images/exterior.jpg";
+const FALLBACK_BG = "/images/aerial.jpg";
 
+/**
+ * Welcome splash screen for the home page.
+ *
+ * A full-screen overlay (covering the nav) shown on every home-page load: the
+ * visitor clicks/taps anywhere — or presses a key — to enter the site. It is
+ * intentionally NOT persisted, so a refresh brings it back. There is no scroll
+ * interaction. Rendered on the home route only.
+ */
 export default function WelcomeGate() {
+  const pathname = usePathname();
   const { current } = useEditableContent();
   const welcome = current.welcome;
   const reduced = useReducedMotion();
-  const dialogRef = useRef<HTMLDivElement | null>(null);
-  const previouslyFocused = useRef<HTMLElement | null>(null);
+  const overlayRef = useRef<HTMLDivElement | null>(null);
+  const [bgSrc, setBgSrc] = useState<string>(PRIMARY_BG);
+  // Visible on first render (server + client) so there is no hydration jump and
+  // the splash reliably reappears on every refresh.
+  const [visible, setVisible] = useState<boolean>(true);
 
-  const [visible, setVisible] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    try {
-      return window.sessionStorage.getItem(WELCOME_SESSION_KEY) !== "1";
-    } catch {
-      return false;
-    }
-  });
+  const isHome = pathname === "/";
 
-  const dismiss = useCallback(() => {
-    setVisible((wasVisible) => {
-      if (!wasVisible) return wasVisible;
-      try {
-        window.sessionStorage.setItem(WELCOME_SESSION_KEY, "1");
-      } catch {
-        /* ignore storage errors (private mode / quota) */
-      }
-      return false;
-    });
-  }, []);
+  const dismiss = useCallback(() => setVisible(false), []);
 
+  // While the splash is up on the home page: lock body scroll, move focus to the
+  // overlay, and let any key dismiss it. Cleans up on dismiss/unmount.
   useEffect(() => {
-    if (!visible) return;
+    if (!isHome || !visible) return;
 
-    previouslyFocused.current = (document.activeElement as HTMLElement) ?? null;
-    const previousOverflow = document.body.style.overflow;
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousHtmlOverflow = document.documentElement.style.overflow;
     document.body.style.overflow = "hidden";
-    dialogRef.current?.focus();
+    document.documentElement.style.overflow = "hidden";
+    overlayRef.current?.focus();
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (
-        event.key === "Escape" ||
-        event.key === "Enter" ||
-        event.key === " " ||
-        event.key === "Spacebar"
-      ) {
-        event.preventDefault();
-        dismiss();
-      } else if (event.key === "Tab") {
-        event.preventDefault();
-        dialogRef.current?.focus();
-      }
+      event.preventDefault();
+      setVisible(false);
     };
-
     window.addEventListener("keydown", onKeyDown);
+
     return () => {
       window.removeEventListener("keydown", onKeyDown);
-      document.body.style.overflow = previousOverflow;
-      previouslyFocused.current?.focus?.();
+      document.body.style.overflow = previousBodyOverflow;
+      document.documentElement.style.overflow = previousHtmlOverflow;
     };
-  }, [visible, dismiss]);
+  }, [isHome, visible]);
 
-  const headingId = "welcome-gate-heading";
-  const messageId = "welcome-gate-message";
+  if (!isHome) return null;
+
+  const promptText = welcome.prompt || "Tap to enter";
+  const headingId = "welcome-splash-heading";
+  const messageId = "welcome-splash-message";
 
   return (
     <AnimatePresence>
       {visible ? (
         <motion.div
-          ref={dialogRef}
+          ref={overlayRef}
           role="dialog"
           aria-modal="true"
           aria-labelledby={headingId}
           aria-describedby={messageId}
           tabIndex={-1}
           onClick={dismiss}
-          className="welcome-gate fixed inset-0 z-[130] flex cursor-pointer items-center justify-center outline-none"
+          className="fixed inset-0 z-[130] flex h-[100svh] w-screen cursor-pointer flex-col justify-end overflow-hidden bg-overlay-dark outline-none"
           initial={{ opacity: 1 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: reduced ? 0 : 0.5, ease: "easeOut" } }}
+          exit={{ opacity: 0, transition: { duration: reduced ? 0 : 0.5, ease: "easeInOut" } }}
         >
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_24%,hsl(var(--primary)/0.18),transparent_36%),radial-gradient(circle_at_84%_78%,hsl(var(--accent)/0.18),transparent_40%),linear-gradient(160deg,hsl(var(--overlay-dark)),hsl(var(--overlay-dark)/0.96))]" />
-
+          {/* Full-bleed background photo with a slow ken-burns zoom. */}
           <motion.div
-            className="relative z-10 flex w-[min(46rem,92vw)] flex-col items-center px-6 text-center"
-            initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0, transition: { duration: reduced ? 0 : 0.6, ease: [0.22, 1, 0.36, 1] } }}
-            exit={{ opacity: 0, transition: { duration: reduced ? 0 : 0.25 } }}
+            className="absolute inset-0"
+            initial={{ scale: 1 }}
+            animate={{ scale: reduced ? 1 : 1.08 }}
+            transition={reduced ? { duration: 0 } : { duration: 18, ease: "easeOut" }}
           >
-            <p className="mb-4 text-[0.6rem] font-semibold uppercase tracking-[0.26em] text-overlay-text/70 md:mb-6">
-              {current.global.siteName}
-            </p>
-            <h1
-              id={headingId}
-              className="font-display text-4xl leading-tight tracking-[-0.03em] text-overlay-text md:text-6xl"
-            >
-              {welcome.heading}
-            </h1>
-            <p id={messageId} className="mt-5 max-w-2xl text-base text-overlay-text/80 md:text-lg">
-              {welcome.message}
-            </p>
+            <Image
+              src={bgSrc}
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover"
+              onError={() => setBgSrc((prev) => (prev === PRIMARY_BG ? FALLBACK_BG : prev))}
+            />
+          </motion.div>
 
-            <motion.p
-              className="mt-10 inline-flex items-center gap-2 rounded-full border border-overlay-text/25 px-5 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-overlay-text/80 md:text-sm"
-              initial={{ opacity: reduced ? 1 : 0 }}
-              animate={
-                reduced
-                  ? { opacity: 1 }
-                  : { opacity: [0.55, 1, 0.55], transition: { duration: 2.4, repeat: Infinity, ease: "easeInOut" } }
-              }
-            >
-              {welcome.prompt}
-            </motion.p>
+          {/* Legibility scrim. */}
+          <div className="pointer-events-none absolute inset-0 bg-overlay-dark/35" />
+          <div className="pointer-events-none absolute inset-0 bg-hero-fade" />
+
+          {/* Reading content, anchored lower-left. */}
+          <motion.div
+            className="relative z-10 px-6 pb-24 md:px-16 md:pb-24 lg:px-24"
+            initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={
+              reduced ? { duration: 0 } : { duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.1 }
+            }
+          >
+            <div className="max-w-2xl">
+              <p className="mb-3 text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-white/80 md:text-xs">
+                {current.global.siteName}
+              </p>
+              <h1
+                id={headingId}
+                className="font-display text-4xl font-semibold leading-[1.05] tracking-[-0.03em] text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.45)] sm:text-5xl md:text-6xl lg:text-7xl"
+              >
+                {welcome.heading}
+              </h1>
+              <p
+                id={messageId}
+                className="mt-5 max-w-xl text-base leading-relaxed text-white/85 drop-shadow-[0_1px_12px_rgba(0,0,0,0.4)] md:text-lg"
+              >
+                {welcome.message}
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Bottom-centered "tap to enter" affordance. */}
+          <motion.div
+            className="relative z-10 mb-8 flex justify-center"
+            initial={{ opacity: reduced ? 1 : 0 }}
+            animate={{ opacity: 1 }}
+            transition={reduced ? { duration: 0 } : { duration: 0.6, delay: 0.5 }}
+          >
+            <span className="rounded-full border border-white/40 bg-white/5 px-5 py-2 text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-white/90 backdrop-blur-sm md:text-xs">
+              {promptText}
+            </span>
           </motion.div>
         </motion.div>
       ) : null}

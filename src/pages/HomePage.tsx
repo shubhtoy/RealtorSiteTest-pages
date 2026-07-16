@@ -1,12 +1,16 @@
+"use client";
+
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { useInView } from "react-intersection-observer";
 import { setPageMeta } from "@/lib/seo";
 import { Reveal } from "@/lib/motion";
 import { HeroParallax } from "@/components/ui/hero-parallax";
 import { FocusCards } from "@/components/ui/focus-cards";
-import { StickyScroll } from "@/components/ui/sticky-scroll-reveal";
+import { AmenityShowcase } from "@/components/ui/amenity-showcase";
+import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
 import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards";
+import { GoogleReviews } from "@/components/ui/google-reviews";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -140,8 +144,8 @@ export default function HomePage() {
     "inline-flex items-center justify-center rounded-full border border-primary/45 px-5 py-2.5 min-h-[44px] text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-primary transition hover:-translate-y-0.5 hover:bg-primary/10 sm:px-6 sm:py-3 sm:text-[0.68rem] sm:tracking-[0.16em]";
 
   return (
-    <main id="main-content" className="bg-body-mesh pb-24 md:pb-0">
-      <section className="relative overflow-hidden bg-background pb-6">
+    <div className="bg-body-mesh pb-24 md:pb-0">
+      <section data-studio-section="HomeHero" className="relative overflow-hidden bg-background pb-6">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-[24rem] bg-[radial-gradient(ellipse_at_top,hsl(var(--primary)/0.18),transparent_72%)]" />
         <div className="relative z-30 mx-auto w-[min(1140px,92vw)] pt-14 md:pt-20">
           <Reveal>
@@ -156,13 +160,13 @@ export default function HomePage() {
               </p>
               <div className="mt-6 flex flex-wrap justify-center gap-3">
                 <Link
-                  to={home.hero.primaryCta.link}
+                  href={home.hero.primaryCta.link}
                   className={primaryButtonClass}
                 >
                   {home.hero.primaryCta.text}
                 </Link>
                 <Link
-                  to={home.hero.secondaryCta.link}
+                  href={home.hero.secondaryCta.link}
                   className={secondaryButtonClass}
                 >
                   {home.hero.secondaryCta.text}
@@ -183,7 +187,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {home.sectionVisibility.stats ? <section className="bg-background py-12 md:py-24">
+      {home.sectionVisibility.stats ? <section data-studio-section="HomeStats" className="bg-background py-12 md:py-24">
         <div className="mx-auto grid w-[min(1140px,92vw)] grid-cols-2 gap-8 md:grid-cols-4">
           {home.stats.map((item) => (
             <StatCounter key={item.label} value={item.value} suffix={item.suffix} label={item.label} />
@@ -191,7 +195,7 @@ export default function HomePage() {
         </div>
       </section> : null}
 
-      {home.sectionVisibility.residences ? <section className="bg-background py-12 md:py-24">
+      {home.sectionVisibility.residences ? <section data-studio-section="HomeResidences" className="bg-background py-12 md:py-24">
         <div className="mx-auto w-[min(1140px,92vw)]">
           <Reveal className="mb-10 text-center">
             <p className={eyebrowClass}>{home.ui.residencesEyebrow}</p>
@@ -204,7 +208,7 @@ export default function HomePage() {
         </div>
       </section> : null}
 
-      {home.sectionVisibility.unitExplorer ? <section className="bg-secondary/30 py-12 md:py-24">
+      {home.sectionVisibility.unitExplorer ? <section data-studio-section="HomeFloorPlans" className="bg-secondary/30 py-12 md:py-24">
         <div className="mx-auto w-[min(1140px,92vw)]">
           <Reveal className="mb-6 text-center">
             <p className={eyebrowClass}>{home.ui.unitExplorerEyebrow}</p>
@@ -215,9 +219,11 @@ export default function HomePage() {
           </Reveal>
           <div className="grid gap-5 md:grid-cols-3">
             {home.floorPlans.map((unit) => (
+              <CardContainer key={unit.title} containerClassName="py-0" className="w-full">
+                <CardBody className="h-auto w-full">
+                  <CardItem translateZ={50} className="w-full">
               <article
-                key={unit.title}
-                className="flex h-full flex-col overflow-hidden rounded-2xl border border-border/70 bg-card-gradient p-4 shadow-soft transition duration-200 hover:-translate-y-0.5 hover:shadow-soft-lg md:p-5"
+                className="flex h-full flex-col overflow-hidden rounded-2xl border border-border/70 bg-card-gradient p-4 shadow-soft transition duration-200 hover:shadow-soft-lg md:p-5"
               >
                 <OptimizedImage
                   src={unit.image}
@@ -248,12 +254,15 @@ export default function HomePage() {
                   {unit.priceRange}
                 </p>
               </article>
+                  </CardItem>
+                </CardBody>
+              </CardContainer>
             ))}
           </div>
         </div>
       </section> : null}
 
-      {home.sectionVisibility.amenities ? <section className="bg-background py-12 md:py-24">
+      {home.sectionVisibility.amenities ? <section data-studio-section="HomeAmenities" className="bg-background py-12 md:py-24">
         <div className="mx-auto w-[min(1140px,92vw)]">
           <Reveal className="mb-8 text-center">
             <p className={eyebrowClass}>{home.ui.amenitiesEyebrow}</p>
@@ -262,11 +271,11 @@ export default function HomePage() {
               {home.ui.amenitiesDescription}
             </p>
           </Reveal>
-          <StickyScroll content={amenitiesPanels} />
+          <AmenityShowcase items={amenitiesPanels} />
         </div>
       </section> : null}
 
-      {home.sectionVisibility.why ? <section className="bg-background py-12 md:py-24">
+      {home.sectionVisibility.why ? <section data-studio-section="HomeWhy" className="bg-background py-12 md:py-24">
         <div className="mx-auto w-[min(1140px,92vw)]">
           <Reveal className="mb-4 text-center">
             <p className={eyebrowClass}>{home.ui.whyEyebrow}</p>
@@ -314,7 +323,7 @@ export default function HomePage() {
         </div>
       </section> : null}
 
-      {home.sectionVisibility.neighborhood ? <section className="bg-secondary/30 py-12 md:py-24">
+      {home.sectionVisibility.neighborhood ? <section data-studio-section="HomeNeighborhood" className="bg-secondary/30 py-12 md:py-24">
         <div className="mx-auto w-[min(1140px,92vw)]">
           <Reveal className="mb-8 text-center">
             <p className={eyebrowClass}>{home.neighborhood.eyebrow}</p>
@@ -371,7 +380,7 @@ export default function HomePage() {
         </div>
       </section> : null}
 
-      {home.sectionVisibility.testimonials ? <section className="bg-background py-12 md:py-24">
+      {home.sectionVisibility.testimonials ? <section data-studio-section="HomeTestimonials" className="bg-background py-12 md:py-24">
         <div className="mx-auto w-[min(1140px,92vw)]">
           <Reveal className="mb-6 text-center">
             <p className={eyebrowClass}>{home.ui.testimonialsEyebrow}</p>
@@ -384,7 +393,9 @@ export default function HomePage() {
         </div>
       </section> : null}
 
-      {home.sectionVisibility.faq ? <section className="bg-background py-12 md:py-24">
+      <GoogleReviews />
+
+      {home.sectionVisibility.faq ? <section data-studio-section="HomeFaq" className="bg-background py-12 md:py-24">
         <div className="mx-auto w-[min(760px,92vw)]">
           <Reveal className="mb-8 text-center">
             <p className={eyebrowClass}>{home.ui.faqEyebrow}</p>
@@ -408,7 +419,7 @@ export default function HomePage() {
                   {home.ui.faqHelpPrimaryLabel}
                 </a>
                 <Link
-                  to={home.finalCta.secondary.link}
+                  href={home.finalCta.secondary.link}
                   className="inline-flex items-center justify-center rounded-full border border-primary/35 px-4 py-2 min-h-[44px] text-[0.64rem] font-semibold uppercase tracking-[0.14em] text-primary"
                 >
                   {home.ui.faqHelpSecondaryLabel}
@@ -493,7 +504,7 @@ export default function HomePage() {
                 {home.finalCta.primary.text}
               </a>
               <Link
-                to={home.finalCta.secondary.link}
+                href={home.finalCta.secondary.link}
                 className="inline-flex items-center justify-center rounded-full border border-primary/60 px-5 py-2.5 min-h-[44px] text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-primary transition hover:-translate-y-0.5 hover:bg-primary/8"
               >
                 {home.finalCta.secondary.text}
@@ -512,13 +523,13 @@ export default function HomePage() {
             {home.ui.mobilePrimaryLabel}
           </a>
           <Link
-            to={home.finalCta.secondary.link}
+            href={home.finalCta.secondary.link}
             className="flex-1 rounded-full border border-primary px-4 py-3 min-h-[44px] inline-flex items-center justify-center text-[0.66rem] font-semibold uppercase tracking-[0.14em] text-primary"
           >
             {home.ui.mobileSecondaryLabel}
           </Link>
         </div>
       </div> : null}
-    </main>
+    </div>
   );
 }

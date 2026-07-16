@@ -1,6 +1,8 @@
+"use client";
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import Lightbox from "yet-another-react-lightbox";
 import Captions from "yet-another-react-lightbox/plugins/captions";
 import Counter from "yet-another-react-lightbox/plugins/counter";
@@ -59,8 +61,8 @@ export default function GalleryPage() {
   );
 
   return (
-    <main id="main-content" className="bg-body-mesh">
-      {current.gallery.sectionVisibility.hero ? <section ref={heroRef} className="relative min-h-[46svh] overflow-hidden md:min-h-[52svh]">
+    <div className="bg-body-mesh">
+      {current.gallery.sectionVisibility.hero ? <section ref={heroRef} data-studio-section="GalleryHero" className="relative min-h-[46svh] overflow-hidden md:min-h-[52svh]">
         <motion.div style={{ y: reducedMotion ? 0 : heroY }} className="absolute inset-0 h-[116%] w-full">
           <OptimizedImage
             src={current.gallery.heroImage}
@@ -182,7 +184,7 @@ export default function GalleryPage() {
                   {current.gallery.cta.primary.text}
                 </a>
                 <Link
-                  to={current.gallery.cta.secondary.link}
+                  href={current.gallery.cta.secondary.link}
                   className="inline-flex items-center justify-center rounded-full border border-primary/60 px-5 py-2.5 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-primary transition hover:-translate-y-0.5 hover:bg-primary/8"
                 >
                   {current.gallery.cta.secondary.text}
@@ -204,6 +206,6 @@ export default function GalleryPage() {
         thumbnails={{ position: "bottom", border: 0, borderRadius: 10, gap: 10 }}
         zoom={{ maxZoomPixelRatio: 3, zoomInMultiplier: 2 }}
       />
-    </main>
+    </div>
   );
 }

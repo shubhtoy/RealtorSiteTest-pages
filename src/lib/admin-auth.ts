@@ -2,7 +2,11 @@ type PasswordEnvKey = `VITE_${string}`;
 
 export class AdminAuthService {
   static getPassword(keys: PasswordEnvKey[], fallback = ""): string {
-    const env = import.meta.env as Record<string, string | undefined>;
+    // Vite exposes `import.meta.env`; Next.js does not (it is `undefined`), so
+    // guard the access. On the Next surface this legacy VITE_* fallback simply
+    // resolves to `{}` and the provided `fallback` is used.
+    const env =
+      ((import.meta as unknown as { env?: Record<string, string | undefined> }).env) ?? {};
 
     for (const key of keys) {
       const value = env[key];

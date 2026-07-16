@@ -1,4 +1,6 @@
-import { Link } from "react-router-dom";
+"use client";
+
+import Link from "next/link";
 import { Phone, Mail, MapPin, Clock, Star } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
@@ -27,7 +29,7 @@ export default function SiteFooter() {
         <div className="grid gap-10 rounded-2xl border border-border/60 bg-card/80 p-6 shadow-soft md:grid-cols-3 md:p-8">
           {/* Brand */}
           <div>
-            <Link to="/" className="font-display text-2xl tracking-tight text-primary" data-prop="siteName">{global.siteName}</Link>
+            <Link href="/" className="font-display text-2xl tracking-tight text-primary" data-prop="siteName">{global.siteName}</Link>
             <div className="mt-2 flex flex-wrap gap-2" data-prop="footerBadges">
               {global.footerBadges.map((badge) => (
                 <Badge key={badge} variant="secondary">{badge}</Badge>
@@ -45,7 +47,7 @@ export default function SiteFooter() {
               {footerLinks.map((link) => (
                 <Link
                   key={link.to}
-                  to={link.to}
+                  href={link.to}
                   className="text-sm text-muted-foreground transition-colors hover:text-primary"
                 >
                   {link.label}

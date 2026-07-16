@@ -1,5 +1,6 @@
 import { useState, type ChangeEvent, type ReactElement } from "react";
 import { resolveAppHref } from "@/lib/utils";
+import { appEnv } from "@/config/env";
 
 const miniLabel = "mb-1 block text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500";
 const inputCls = "w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm";
@@ -327,25 +328,32 @@ export function galleryManagerField(label: string, categoriesJson?: string) {
         if (!files.length) return;
         setIsUploading(true);
         try {
-          const { GitHubCms } = await import("@/lib/github-cms");
-          if (!GitHubCms.hasToken()) {
-            alert("Configure GitHub token in Settings first");
+          const form = new FormData();
+          files.forEach((file) => form.append("files", file));
+          const res = await fetch(`${appEnv.apiOrigin}/api/assets/upload`, {
+            method: "POST",
+            headers: { "x-studio-password": appEnv.studioPassword },
+            body: form,
+          });
+          const json = (await res.json().catch(() => ({}))) as {
+            ok?: boolean;
+            message?: string;
+            files?: Array<{ url: string }>;
+          };
+          if (!res.ok || !json.ok) {
+            alert(json.message || "Upload failed");
             return;
           }
-          const results = await GitHubCms.uploadFiles(files);
-          const newItems: GalleryItem[] = results
-            .filter((r) => r.ok && r.url)
-            .map((r) => {
-              const isVideo = /\.(mp4|webm|ogg)$/i.test(r.url!);
-              const baseLabel = r.originalName.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ");
-              return { src: r.url!, alt: baseLabel, label: baseLabel, category: categories[0] || "", type: (isVideo ? "video" : "image") as "image" | "video", subcategory: "" };
-            });
+          const newItems: GalleryItem[] = (json.files ?? []).map(({ url }) => {
+            const isVideo = /\.(mp4|webm|ogg)$/i.test(url);
+            const baseLabel =
+              (url.split("/").pop() ?? "").replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ") || "New item";
+            return { src: url, alt: baseLabel, label: baseLabel, category: categories[0] || "", type: (isVideo ? "video" : "image") as "image" | "video", subcategory: "" };
+          });
           if (newItems.length) {
             commit([...items, ...newItems]);
             setExpandedIndex(items.length);
           }
-          const failed = results.filter((r) => !r.ok);
-          if (failed.length) alert(`${failed.length} file(s) failed: ${failed[0].error}`);
         } catch (e) {
           alert(e instanceof Error ? e.message : "Upload failed");
         } finally {

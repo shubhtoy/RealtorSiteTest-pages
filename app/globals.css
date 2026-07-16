@@ -1,0 +1,152 @@
+/*
+ * Global stylesheet for the Next.js (App Router) app.
+ *
+ * Design tokens and base styles are mirrored from `src/index.css` (the Vite
+ * app) so the migrated app renders with identical theming. During the
+ * incremental migration this file is the source of truth for the Next app;
+ * keep it in sync with `src/index.css` until the Vite app is retired.
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Core palette — cool slate / teal */
+  --background: 210 30% 97%;
+  --foreground: 218 24% 18%;
+  --card: 210 26% 99%;
+  --card-foreground: 218 24% 18%;
+  --primary: 198 65% 40%;
+  --primary-foreground: 210 30% 98%;
+  --secondary: 206 24% 92%;
+  --secondary-foreground: 216 18% 30%;
+  --muted: 208 16% 89%;
+  --muted-foreground: 216 12% 44%;
+  --border: 208 18% 82%;
+  --accent: 172 44% 36%;
+  --shadow: 214 30% 16%;
+
+  /* Overlay / hero */
+  --overlay-dark: 220 28% 13%;
+  --overlay-text: 210 24% 97%;
+
+  /* Extended tokens */
+  --primary-glow: 198 68% 52%;
+  --accent-warm: 172 48% 44%;
+  --gradient-start: 210 34% 97%;
+  --gradient-end: 206 26% 93%;
+  --ring: 198 65% 40%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --popover: 210 26% 99%;
+  --popover-foreground: 218 24% 18%;
+  --input: 208 18% 82%;
+  --radius: 0.75rem;
+
+  /* Section gradient backgrounds */
+  --section-warm: 206 30% 93%;
+  --section-cream: 210 34% 97%;
+
+  /* Typography — Plus Jakarta Sans is loaded via next/font (app/layout.tsx),
+     which sets --font-body on <html>. Headings reuse the same family. */
+  --font-display: var(--font-body);
+}
+
+/* ── Infinite scroll animation (for InfiniteMovingCards) ── */
+@keyframes scroll {
+  to {
+    transform: translateX(calc(-50% - 0.5rem));
+  }
+}
+.animate-scroll {
+  animation: scroll var(--animation-duration, 40s) var(--animation-direction, forwards) linear
+    infinite;
+}
+
+/* ── Subtle float animation ── */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+html,
+body {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+html {
+  scroll-padding-top: 5rem;
+}
+
+body {
+  @apply bg-background text-foreground antialiased;
+  margin: 0;
+  font-family: var(--font-body, "Plus Jakarta Sans", sans-serif);
+  font-size: var(--font-size-body, 1rem);
+  font-weight: 400;
+  line-height: 1.55;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display, "Plus Jakarta Sans", sans-serif);
+  letter-spacing: -0.02em;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.font-display {
+  font-family: var(--font-display, "Plus Jakarta Sans", sans-serif);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+/* Tone down overly heavy labels while preserving hierarchy. */
+.font-extrabold {
+  font-weight: 700;
+}
+
+.font-bold {
+  font-weight: 600;
+}
+
+a {
+  color: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Studio live preview: sections are click-to-edit. Signal it with a pointer
+   cursor and a subtle outline on hover over a selectable section. */
+.studio-preview {
+  cursor: pointer;
+}
+.studio-preview [data-studio-section] {
+  outline: 2px solid transparent;
+  outline-offset: -2px;
+  transition: outline-color 0.15s ease;
+}
+.studio-preview [data-studio-section]:hover {
+  outline-color: hsl(var(--primary) / 0.6);
+}

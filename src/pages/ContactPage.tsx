@@ -1,6 +1,8 @@
+"use client";
+
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "motion/react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { toast } from "sonner";
 import { Reveal } from "@/lib/motion";
 import { setPageMeta } from "@/lib/seo";
@@ -15,6 +17,16 @@ import { Separator } from "@/components/ui/separator";
 import { OptimizedImage } from "@/components/media/OptimizedImage";
 import { useEditableContent } from "@/context/EditableContentContext";
 
+const INITIAL_CONTACT_FORM = {
+  fullName: "",
+  email: "",
+  phone: "",
+  bedroom: "2BR",
+  moveIn: "Within 30 days",
+  tourType: "In-person",
+  message: "",
+};
+
 export default function ContactPage() {
   const { current } = useEditableContent();
   const heroRef = useRef<HTMLElement>(null);
@@ -22,10 +34,7 @@ export default function ContactPage() {
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "14%"]);
 
-  const [form, setForm] = useState({
-    fullName: "", email: "", phone: "", bedroom: "2BR",
-    moveIn: "Within 30 days", tourType: "In-person", message: "",
-  });
+  const [form, setForm] = useState(INITIAL_CONTACT_FORM);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fieldRules: Record<string, ReturnType<typeof validators.required>[]> = {
@@ -71,7 +80,7 @@ export default function ContactPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/contact/submit", {
+      const response = await fetch("/api/contact", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -81,23 +90,56 @@ export default function ContactPage() {
           submittedAt: new Date().toISOString(),
           page: "contact",
           siteName: current.global.siteName,
-          integrations: current.contact.integrations,
         }),
       });
 
-      const result = (await response.json().catch(() => ({}))) as { ok?: boolean; message?: string };
-      if (!response.ok || result.ok === false) {
-        toast.warning("Submission saved with delivery issues", {
-          description: result.message ?? "Some destination integrations failed.",
+      const result = (await response.json().catch(() => ({}))) as {
+        ok?: boolean;
+        message?: string;
+        errors?: Record<string, string>;
+      };
+
+      if (response.status === 200) {
+        // Persisted — delivered, or saved gracefully when no channel is configured.
+        toast.success("Tour request sent", {
+          description: "Leasing will follow up shortly to confirm availability.",
+        });
+        setForm(INITIAL_CONTACT_FORM);
+        setErrors({});
+        setTouched({});
+      } else if (response.status === 207) {
+        // Saved, but at least one delivery channel failed — the lead is still safe.
+        toast.warning("Request saved — delivery issue", {
+          description:
+            result.message ?? "We saved your request, but a delivery channel failed. Leasing will still receive it.",
+        });
+        setForm(INITIAL_CONTACT_FORM);
+        setErrors({});
+        setTouched({});
+      } else if (response.status === 429) {
+        toast.error("Too many requests", {
+          description: result.message ?? "You've sent several requests. Please wait a moment and try again.",
+        });
+      } else if (response.status === 400) {
+        // Surface any server-side field errors inline (mirrors client validation).
+        const fieldErrors = result.errors;
+        if (fieldErrors) {
+          setErrors((prev) => ({ ...prev, ...fieldErrors }));
+          const touchedUpdates: Record<string, boolean> = {};
+          for (const field of Object.keys(fieldErrors)) touchedUpdates[field] = true;
+          setTouched((prev) => ({ ...prev, ...touchedUpdates }));
+        }
+        toast.error("Please check your details", {
+          description: result.message ?? "Some fields need attention before we can send your request.",
         });
       } else {
-        toast.success("Tour request sent", { description: "Leasing will follow up shortly to confirm availability." });
+        toast.error("Unable to send request", {
+          description: result.message ?? "Something went wrong. Please try again later.",
+        });
       }
-
-      setForm({ fullName: "", email: "", phone: "", bedroom: "2BR", moveIn: "Within 30 days", tourType: "In-person", message: "" });
     } catch {
-      toast.error("Unable to send request", {
-        description: "API server is unavailable. Please try again later.",
+      toast.error("Server unavailable", {
+        description: "We couldn't reach the server. Please try again later.",
       });
     } finally {
       setIsSubmitting(false);
@@ -118,7 +160,7 @@ export default function ContactPage() {
   return (
     <main id="main-content" className="bg-body-mesh">
       {/* Hero */}
-      {current.contact.sectionVisibility.hero ? <section ref={heroRef} className="relative min-h-[62svh] overflow-hidden md:min-h-[68svh]">
+      {current.contact.sectionVisibility.hero ? <section ref={heroRef} data-studio-section="ContactHero" className="relative min-h-[62svh] overflow-hidden md:min-h-[68svh]">
         <motion.div style={{ y: reduced ? 0 : heroY }} className="absolute inset-0 h-[115%] w-full">
           <OptimizedImage
             src={current.contact.heroImage}
@@ -141,7 +183,7 @@ export default function ContactPage() {
               <p className="mt-3 text-sm text-overlay-text/85 md:text-base">{current.contact.heroDescription}</p>
               <div className="mt-5 flex flex-wrap gap-3">
                 <a href={`tel:${current.global.phone.replace(/\D/g, "")}`} className="inline-flex min-h-[44px] items-center justify-center rounded-full bg-overlay-text px-4 py-2 text-[0.64rem] font-extrabold uppercase tracking-[0.12em] text-overlay-dark shadow-soft transition hover:-translate-y-0.5 hover:shadow-soft-lg sm:px-5 sm:py-2.5 sm:text-[0.72rem] sm:tracking-[0.14em]">{current.contact.ui.callButtonPrefix} {current.global.phone}</a>
-                <Link to="/gallery" className="inline-flex min-h-[44px] items-center justify-center rounded-full border-[1.5px] border-overlay-text/40 px-4 py-2 text-[0.64rem] font-extrabold uppercase tracking-[0.12em] text-overlay-text transition hover:-translate-y-0.5 hover:bg-overlay-text/10 sm:px-5 sm:py-2.5 sm:text-[0.72rem] sm:tracking-[0.14em]">{current.contact.ui.browseButtonText}</Link>
+                <Link href="/gallery" className="inline-flex min-h-[44px] items-center justify-center rounded-full border-[1.5px] border-overlay-text/40 px-4 py-2 text-[0.64rem] font-extrabold uppercase tracking-[0.12em] text-overlay-text transition hover:-translate-y-0.5 hover:bg-overlay-text/10 sm:px-5 sm:py-2.5 sm:text-[0.72rem] sm:tracking-[0.14em]">{current.contact.ui.browseButtonText}</Link>
               </div>
             </div>
           </Reveal>
