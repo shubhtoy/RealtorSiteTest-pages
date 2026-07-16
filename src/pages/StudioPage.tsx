@@ -519,17 +519,33 @@ export default function StudioPage() {
             </section>
           ),
         },
-        HomeCollections: {
+        HomeStats: {
           fields: {
             statsJson: objectListField("Stat", [
               { key: "value", label: "Value", type: "number" },
               { key: "suffix", label: "Suffix", type: "text" },
               { key: "label", label: "Label", type: "text" },
             ], () => ({ value: 0, suffix: "+", label: "New Stat" })),
-            focusCardsJson: objectListField("Focus Card", [
+          },
+          render: () => <></>,
+        },
+        HomeResidences: {
+          fields: {
+            residencesEyebrow: { type: "text", label: "Eyebrow" },
+            residencesTitle: { type: "text", label: "Title" },
+            residencesDescription: { type: "textarea", label: "Description" },
+            focusCardsJson: objectListField("Residence Card", [
               { key: "title", label: "Title", type: "text" },
               { key: "src", label: "Image Path", type: "text" },
             ], () => ({ title: "New Card", src: "/images/" })),
+          },
+          render: () => <></>,
+        },
+        HomeFloorPlans: {
+          fields: {
+            unitExplorerEyebrow: { type: "text", label: "Eyebrow" },
+            unitExplorerTitle: { type: "text", label: "Title" },
+            unitExplorerDescription: { type: "textarea", label: "Description" },
             floorPlansJson: objectListField("Floor Plan", [
               { key: "title", label: "Title", type: "text" },
               { key: "bedrooms", label: "Bedrooms", type: "number" },
@@ -539,91 +555,99 @@ export default function StudioPage() {
               { key: "image", label: "Image Path", type: "text" },
               { key: "priceRange", label: "Price Range", type: "text" },
             ], () => ({ title: "New Plan", bedrooms: 1, bathrooms: 1, sqft: "600", description: "", image: "/images/", features: [], priceRange: "Contact for pricing" })),
+          },
+          render: () => <></>,
+        },
+        HomeAmenities: {
+          fields: {
+            amenitiesEyebrow: { type: "text", label: "Eyebrow" },
+            amenitiesTitle: { type: "text", label: "Title" },
+            amenitiesDescription: { type: "textarea", label: "Description" },
             amenityPanelsJson: objectListField("Amenity Panel", [
               { key: "title", label: "Title", type: "text" },
               { key: "description", label: "Description", type: "textarea" },
               { key: "image", label: "Image Path", type: "text" },
             ], () => ({ title: "New Amenity", description: "", image: "/images/" })),
+          },
+          render: () => <></>,
+        },
+        HomeWhy: {
+          fields: {
+            whyEyebrow: { type: "text", label: "Eyebrow" },
+            whyTitle: { type: "text", label: "Title" },
+            whyDescription: { type: "textarea", label: "Description" },
+            whyStickyEyebrow: { type: "text", label: "Sidebar Eyebrow" },
+            whyStickyTitle: { type: "text", label: "Sidebar Title" },
+            whyStickyDescription: { type: "textarea", label: "Sidebar Description" },
             whyCardsJson: objectListField("Why Card", [
               { key: "title", label: "Title", type: "text" },
               { key: "description", label: "Description", type: "textarea" },
               { key: "tag", label: "Tag", type: "text" },
               { key: "icon", label: "Icon", type: "select", options: ["building", "paw", "car", "map", "shield", "sparkles"] },
             ], () => ({ title: "New Card", description: "", tag: "Tag", icon: "building" })),
-            testimonialsJson: objectListField("Testimonial", [
-              { key: "quote", label: "Quote", type: "textarea" },
-              { key: "name", label: "Name", type: "text" },
-              { key: "designation", label: "Designation", type: "text" },
-            ], () => ({ quote: "", name: "Resident", designation: "" })),
-            faqJson: objectListField("FAQ", [
-              { key: "question", label: "Question", type: "text" },
-              { key: "answer", label: "Answer", type: "textarea" },
-              { key: "category", label: "Category", type: "text" },
-            ], () => ({ question: "New question?", answer: "", category: "General" })),
+          },
+          render: () => <></>,
+        },
+        HomeNeighborhood: {
+          fields: {
+            neighborhoodEyebrow: { type: "text", label: "Eyebrow" },
+            neighborhoodTitle: { type: "text", label: "Title" },
+            neighborhoodDescription: { type: "textarea", label: "Description" },
+            neighborhoodStickyEyebrow: { type: "text", label: "Sidebar Eyebrow" },
+            neighborhoodStickyTitle: { type: "text", label: "Sidebar Title" },
+            neighborhoodStickyDescription: { type: "textarea", label: "Sidebar Description" },
             neighborhoodHighlightsJson: objectListField("Highlight", [
               { key: "title", label: "Title", type: "text" },
               { key: "description", label: "Description", type: "textarea" },
               { key: "distance", label: "Distance", type: "text" },
             ], () => ({ title: "New Highlight", description: "", distance: "Nearby" })),
           },
-          render: (props: HomeCollectionsProps) => {
-            const stats = PuckDataService.parseArray(props?.statsJson, [] as Array<{ value: number; suffix: string; label: string }>);
-            const floorPlans = PuckDataService.parseArray(props?.floorPlansJson, [] as Array<{ title: string; sqft: string; image: string; priceRange: string }>);
-            const amenities = PuckDataService.parseArray(props?.amenityPanelsJson, [] as Array<{ title: string; image: string }>);
-            const testimonials = PuckDataService.parseArray(props?.testimonialsJson, [] as Array<{ quote: string; name: string }>);
-            const faq = PuckDataService.parseArray(props?.faqJson, [] as Array<{ question: string; category: string }>);
-
-            return (
-              <section className="rounded-2xl border border-border bg-panel-gradient p-5 shadow-soft">
-                <p className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-accent">Home Collections</p>
-                <div className="mt-3 grid gap-3 md:grid-cols-2">
-                  <div className="rounded-xl border border-border/70 bg-background/50 p-3">
-                    <p className="text-[0.62rem] font-extrabold uppercase tracking-[0.14em] text-muted-foreground">Stats ({stats.length})</p>
-                    <div className="mt-2 grid grid-cols-2 gap-2">
-                      {stats.slice(0, 4).map((item, idx) => (
-                        <div key={`${item.label}-${idx}`} className="rounded-lg border border-border/60 bg-background px-2 py-1.5 text-xs">
-                          <p className="font-semibold text-foreground">{item.value}{item.suffix}</p>
-                          <p className="truncate text-muted-foreground">{item.label}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="rounded-xl border border-border/70 bg-background/50 p-3">
-                    <p className="text-[0.62rem] font-extrabold uppercase tracking-[0.14em] text-muted-foreground">Floor Plans ({floorPlans.length})</p>
-                    <div className="mt-2 space-y-2">
-                      {floorPlans.slice(0, 2).map((item, idx) => (
-                        <div key={`${item.title}-${idx}`} className="flex items-center gap-2 rounded-lg border border-border/60 bg-background p-2">
-                          <div className="h-10 w-14 overflow-hidden rounded bg-secondary">
-                            {item.image ? <img src={resolveAppHref(item.image)} alt={item.title} className="h-full w-full object-cover" /> : null}
-                          </div>
-                          <div className="min-w-0 flex-1 text-xs">
-                            <p className="truncate font-semibold text-foreground">{item.title}</p>
-                            <p className="truncate text-muted-foreground">{item.sqft} • {item.priceRange}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-3 grid gap-3 md:grid-cols-3">
-                  <div className="rounded-xl border border-border/70 bg-background/50 p-3 text-xs">
-                    <p className="font-extrabold uppercase tracking-[0.14em] text-muted-foreground">Amenities</p>
-                    <p className="mt-1 text-foreground">{amenities.length} panels configured</p>
-                  </div>
-                  <div className="rounded-xl border border-border/70 bg-background/50 p-3 text-xs">
-                    <p className="font-extrabold uppercase tracking-[0.14em] text-muted-foreground">Testimonials</p>
-                    <p className="mt-1 text-foreground">{testimonials.length} entries configured</p>
-                  </div>
-                  <div className="rounded-xl border border-border/70 bg-background/50 p-3 text-xs">
-                    <p className="font-extrabold uppercase tracking-[0.14em] text-muted-foreground">FAQ</p>
-                    <p className="mt-1 text-foreground">{faq.length} entries configured</p>
-                  </div>
-                </div>
-              </section>
-            );
+          render: () => <></>,
+        },
+        HomeTestimonials: {
+          fields: {
+            testimonialsEyebrow: { type: "text", label: "Eyebrow" },
+            testimonialsTitle: { type: "text", label: "Title" },
+            testimonialsDescription: { type: "textarea", label: "Description" },
+            testimonialsJson: objectListField("Testimonial", [
+              { key: "quote", label: "Quote", type: "textarea" },
+              { key: "name", label: "Name", type: "text" },
+              { key: "designation", label: "Designation", type: "text" },
+            ], () => ({ quote: "", name: "Resident", designation: "" })),
           },
+          render: () => <></>,
+        },
+        HomeFaq: {
+          fields: {
+            faqEyebrow: { type: "text", label: "Eyebrow" },
+            faqTitle: { type: "text", label: "Title" },
+            faqDescription: { type: "textarea", label: "Description" },
+            faqHelpEyebrow: { type: "text", label: "Help Card Eyebrow" },
+            faqHelpTitle: { type: "text", label: "Help Card Title" },
+            faqHelpDescription: { type: "textarea", label: "Help Card Description" },
+            faqHelpPrimaryLabel: { type: "text", label: "Help Primary Button" },
+            faqHelpSecondaryLabel: { type: "text", label: "Help Secondary Button" },
+            faqJson: objectListField("FAQ", [
+              { key: "question", label: "Question", type: "text" },
+              { key: "answer", label: "Answer", type: "textarea" },
+              { key: "category", label: "Category", type: "text" },
+            ], () => ({ question: "New question?", answer: "", category: "General" })),
+          },
+          render: () => <></>,
+        },
+        HomeExtras: {
+          fields: {
+            mapEyebrow: { type: "text", label: "Map Eyebrow" },
+            mapTitle: { type: "text", label: "Map Title" },
+            mapDescription: { type: "textarea", label: "Map Description" },
+            mapCardOfficeLabel: { type: "text", label: "Map Card: Office Label" },
+            mapCardCallLabel: { type: "text", label: "Map Card: Call Label" },
+            mapCardHoursLabel: { type: "text", label: "Map Card: Hours Label" },
+            mobilePrimaryLabel: { type: "text", label: "Mobile Bar: Primary" },
+            mobileSecondaryLabel: { type: "text", label: "Mobile Bar: Secondary" },
+            mapEmbedUrl: { type: "text", label: "Map Embed URL" },
+          },
+          render: () => <></>,
         },
         HomeVisibility: {
           fields: {
@@ -644,33 +668,6 @@ export default function StudioPage() {
                     >
                       {key}
                     </span>
-                  ))}
-                </div>
-              </section>
-            );
-          },
-        },
-        HomeUi: {
-          fields: {
-            homeUiJson: keyValueField("Home UI Copy"),
-            mapEmbedUrl: { type: "text", label: "Home Map Embed URL" },
-          },
-          render: (props: HomeUiProps) => {
-            const homeUi = PuckDataService.parseObject(props?.homeUiJson, {} as Record<string, string>);
-            const entries = Object.entries(homeUi).slice(0, 6);
-            return (
-              <section className="rounded-xl border border-border bg-panel-gradient p-5 shadow-soft">
-                <p className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-accent">Home UI Copy</p>
-                <div className="mt-2 rounded-lg border border-border/70 bg-background/60 px-3 py-2">
-                  <p className="text-[0.62rem] font-extrabold uppercase tracking-[0.12em] text-muted-foreground">Map Embed URL</p>
-                  <p className="mt-1 truncate text-xs text-foreground">{String(props?.mapEmbedUrl ?? "") || "(not set)"}</p>
-                </div>
-                <div className="mt-3 grid gap-2">
-                  {entries.map(([key, value]) => (
-                    <div key={key} className="rounded-lg border border-border/70 bg-background/60 px-3 py-2">
-                      <p className="text-[0.62rem] font-extrabold uppercase tracking-[0.12em] text-muted-foreground">{key}</p>
-                      <p className="mt-1 truncate text-xs text-foreground">{value}</p>
-                    </div>
                   ))}
                 </div>
               </section>
@@ -1039,17 +1036,106 @@ export default function StudioPage() {
           },
         },
         {
-          type: "HomeCollections",
+          type: "HomeStats",
           props: {
-            id: "home-collections",
+            id: "home-stats",
             statsJson: JSON.stringify(draft.home.stats, null, 2),
+          },
+        },
+        {
+          type: "HomeResidences",
+          props: {
+            id: "home-residences",
+            residencesEyebrow: draft.home.ui.residencesEyebrow,
+            residencesTitle: draft.home.ui.residencesTitle,
+            residencesDescription: draft.home.ui.residencesDescription,
             focusCardsJson: JSON.stringify(draft.home.focusCards, null, 2),
+          },
+        },
+        {
+          type: "HomeFloorPlans",
+          props: {
+            id: "home-floorplans",
+            unitExplorerEyebrow: draft.home.ui.unitExplorerEyebrow,
+            unitExplorerTitle: draft.home.ui.unitExplorerTitle,
+            unitExplorerDescription: draft.home.ui.unitExplorerDescription,
             floorPlansJson: JSON.stringify(draft.home.floorPlans, null, 2),
+          },
+        },
+        {
+          type: "HomeAmenities",
+          props: {
+            id: "home-amenities",
+            amenitiesEyebrow: draft.home.ui.amenitiesEyebrow,
+            amenitiesTitle: draft.home.ui.amenitiesTitle,
+            amenitiesDescription: draft.home.ui.amenitiesDescription,
             amenityPanelsJson: JSON.stringify(draft.home.amenityPanels, null, 2),
+          },
+        },
+        {
+          type: "HomeWhy",
+          props: {
+            id: "home-why",
+            whyEyebrow: draft.home.ui.whyEyebrow,
+            whyTitle: draft.home.ui.whyTitle,
+            whyDescription: draft.home.ui.whyDescription,
+            whyStickyEyebrow: draft.home.ui.whyStickyEyebrow,
+            whyStickyTitle: draft.home.ui.whyStickyTitle,
+            whyStickyDescription: draft.home.ui.whyStickyDescription,
             whyCardsJson: JSON.stringify(draft.home.whyCards, null, 2),
-            testimonialsJson: JSON.stringify(draft.home.testimonials, null, 2),
-            faqJson: JSON.stringify(draft.home.faq, null, 2),
+          },
+        },
+        {
+          type: "HomeNeighborhood",
+          props: {
+            id: "home-neighborhood",
+            neighborhoodEyebrow: draft.home.neighborhood.eyebrow,
+            neighborhoodTitle: draft.home.neighborhood.title,
+            neighborhoodDescription: draft.home.neighborhood.description,
+            neighborhoodStickyEyebrow: draft.home.ui.neighborhoodStickyEyebrow,
+            neighborhoodStickyTitle: draft.home.ui.neighborhoodStickyTitle,
+            neighborhoodStickyDescription: draft.home.ui.neighborhoodStickyDescription,
             neighborhoodHighlightsJson: JSON.stringify(draft.home.neighborhood.highlights, null, 2),
+          },
+        },
+        {
+          type: "HomeTestimonials",
+          props: {
+            id: "home-testimonials",
+            testimonialsEyebrow: draft.home.ui.testimonialsEyebrow,
+            testimonialsTitle: draft.home.ui.testimonialsTitle,
+            testimonialsDescription: draft.home.ui.testimonialsDescription,
+            testimonialsJson: JSON.stringify(draft.home.testimonials, null, 2),
+          },
+        },
+        {
+          type: "HomeFaq",
+          props: {
+            id: "home-faq",
+            faqEyebrow: draft.home.ui.faqEyebrow,
+            faqTitle: draft.home.ui.faqTitle,
+            faqDescription: draft.home.ui.faqDescription,
+            faqHelpEyebrow: draft.home.ui.faqHelpEyebrow,
+            faqHelpTitle: draft.home.ui.faqHelpTitle,
+            faqHelpDescription: draft.home.ui.faqHelpDescription,
+            faqHelpPrimaryLabel: draft.home.ui.faqHelpPrimaryLabel,
+            faqHelpSecondaryLabel: draft.home.ui.faqHelpSecondaryLabel,
+            faqJson: JSON.stringify(draft.home.faq, null, 2),
+          },
+        },
+        {
+          type: "HomeExtras",
+          props: {
+            id: "home-extras",
+            mapEyebrow: draft.home.ui.mapEyebrow,
+            mapTitle: draft.home.ui.mapTitle,
+            mapDescription: draft.home.ui.mapDescription,
+            mapCardOfficeLabel: draft.home.ui.mapCardOfficeLabel,
+            mapCardCallLabel: draft.home.ui.mapCardCallLabel,
+            mapCardHoursLabel: draft.home.ui.mapCardHoursLabel,
+            mobilePrimaryLabel: draft.home.ui.mobilePrimaryLabel,
+            mobileSecondaryLabel: draft.home.ui.mobileSecondaryLabel,
+            mapEmbedUrl: draft.contact.mapEmbedUrl,
           },
         },
         {
@@ -1057,14 +1143,6 @@ export default function StudioPage() {
           props: {
             id: "home-visibility",
             sectionVisibilityJson: JSON.stringify(draft.home.sectionVisibility, null, 2),
-          },
-        },
-        {
-          type: "HomeUi",
-          props: {
-            id: "home-ui",
-            homeUiJson: JSON.stringify(draft.home.ui, null, 2),
-            mapEmbedUrl: draft.contact.mapEmbedUrl,
           },
         },
         {
@@ -1138,7 +1216,7 @@ export default function StudioPage() {
 
       const sectionTypeMap: Record<typeof editorPage, string[]> = {
         global: ["GlobalBrand", "GlobalCollections", "Theme"],
-        home: ["GlobalBrand", "GlobalCollections", "HomeHero", "HomeCollections", "HomeVisibility", "HomeUi"],
+        home: ["GlobalBrand", "GlobalCollections", "HomeHero", "HomeStats", "HomeResidences", "HomeFloorPlans", "HomeAmenities", "HomeWhy", "HomeNeighborhood", "HomeTestimonials", "HomeFaq", "HomeExtras", "HomeVisibility"],
         gallery: ["GlobalBrand", "GlobalCollections", "GalleryHero", "GalleryCollections", "GalleryVisibility", "GalleryCta"],
         contact: ["GlobalBrand", "GlobalCollections", "ContactHero", "ContactCollections", "ContactVisibility", "ContactFormMeta", "ContactUi", "ContactIntegrations"],
       };
@@ -1163,9 +1241,16 @@ export default function StudioPage() {
     const galleryCtaEntry = PuckDataService.getEntryProps<GalleryCtaProps>(nextData, "GalleryCta");
     const contactHeroEntry = PuckDataService.getEntryProps<ContactHeroProps>(nextData, "ContactHero");
     const contactFormEntry = PuckDataService.getEntryProps<ContactFormMetaProps>(nextData, "ContactFormMeta");
-    const homeCollectionsEntry = PuckDataService.getEntryProps<HomeCollectionsProps>(nextData, "HomeCollections");
+    const homeStatsEntry = PuckDataService.getEntryProps<Record<string, unknown>>(nextData, "HomeStats");
+    const homeResidencesEntry = PuckDataService.getEntryProps<Record<string, unknown>>(nextData, "HomeResidences");
+    const homeFloorPlansEntry = PuckDataService.getEntryProps<Record<string, unknown>>(nextData, "HomeFloorPlans");
+    const homeAmenitiesEntry = PuckDataService.getEntryProps<Record<string, unknown>>(nextData, "HomeAmenities");
+    const homeWhyEntry = PuckDataService.getEntryProps<Record<string, unknown>>(nextData, "HomeWhy");
+    const homeNeighborhoodEntry = PuckDataService.getEntryProps<Record<string, unknown>>(nextData, "HomeNeighborhood");
+    const homeTestimonialsEntry = PuckDataService.getEntryProps<Record<string, unknown>>(nextData, "HomeTestimonials");
+    const homeFaqEntry = PuckDataService.getEntryProps<Record<string, unknown>>(nextData, "HomeFaq");
+    const homeExtrasEntry = PuckDataService.getEntryProps<Record<string, unknown>>(nextData, "HomeExtras");
     const homeVisibilityEntry = PuckDataService.getEntryProps<HomeVisibilityProps>(nextData, "HomeVisibility");
-    const homeUiEntry = PuckDataService.getEntryProps<HomeUiProps>(nextData, "HomeUi");
     const galleryCollectionsEntry = PuckDataService.getEntryProps<GalleryCollectionsProps>(nextData, "GalleryCollections");
     const galleryVisibilityEntry = PuckDataService.getEntryProps<GalleryVisibilityProps>(nextData, "GalleryVisibility");
     const contactCollectionsEntry = PuckDataService.getEntryProps<ContactCollectionsProps>(nextData, "ContactCollections");
@@ -1234,16 +1319,19 @@ export default function StudioPage() {
             link: heroEntry?.secondaryCtaLink ?? draft.home.hero.secondaryCta.link,
           },
         },
-        stats: PuckDataService.parseArray(homeCollectionsEntry?.statsJson as string | undefined, draft.home.stats),
-        focusCards: PuckDataService.parseArray(homeCollectionsEntry?.focusCardsJson as string | undefined, draft.home.focusCards),
-        floorPlans: PuckDataService.parseArray(homeCollectionsEntry?.floorPlansJson as string | undefined, draft.home.floorPlans),
-        amenityPanels: PuckDataService.parseArray(homeCollectionsEntry?.amenityPanelsJson as string | undefined, draft.home.amenityPanels),
-        whyCards: PuckDataService.parseArray(homeCollectionsEntry?.whyCardsJson as string | undefined, draft.home.whyCards),
-        testimonials: PuckDataService.parseArray(homeCollectionsEntry?.testimonialsJson as string | undefined, draft.home.testimonials),
-        faq: PuckDataService.parseArray(homeCollectionsEntry?.faqJson as string | undefined, draft.home.faq),
+        stats: PuckDataService.parseArray(homeStatsEntry?.statsJson as string | undefined, draft.home.stats),
+        focusCards: PuckDataService.parseArray(homeResidencesEntry?.focusCardsJson as string | undefined, draft.home.focusCards),
+        floorPlans: PuckDataService.parseArray(homeFloorPlansEntry?.floorPlansJson as string | undefined, draft.home.floorPlans),
+        amenityPanels: PuckDataService.parseArray(homeAmenitiesEntry?.amenityPanelsJson as string | undefined, draft.home.amenityPanels),
+        whyCards: PuckDataService.parseArray(homeWhyEntry?.whyCardsJson as string | undefined, draft.home.whyCards),
+        testimonials: PuckDataService.parseArray(homeTestimonialsEntry?.testimonialsJson as string | undefined, draft.home.testimonials),
+        faq: PuckDataService.parseArray(homeFaqEntry?.faqJson as string | undefined, draft.home.faq),
         neighborhood: {
           ...draft.home.neighborhood,
-          highlights: PuckDataService.parseArray(homeCollectionsEntry?.neighborhoodHighlightsJson as string | undefined, draft.home.neighborhood.highlights),
+          eyebrow: (homeNeighborhoodEntry?.neighborhoodEyebrow as string) ?? draft.home.neighborhood.eyebrow,
+          title: (homeNeighborhoodEntry?.neighborhoodTitle as string) ?? draft.home.neighborhood.title,
+          description: (homeNeighborhoodEntry?.neighborhoodDescription as string) ?? draft.home.neighborhood.description,
+          highlights: PuckDataService.parseArray(homeNeighborhoodEntry?.neighborhoodHighlightsJson as string | undefined, draft.home.neighborhood.highlights),
         },
         sectionVisibility: {
           ...draft.home.sectionVisibility,
@@ -1251,7 +1339,24 @@ export default function StudioPage() {
         },
         ui: {
           ...draft.home.ui,
-          ...PuckDataService.parseObject(homeUiEntry?.homeUiJson as string | undefined, draft.home.ui),
+          // Each split section carries its own heading copy under the real
+          // home.ui key names; merge back any string field whose key is a ui key.
+          ...Object.fromEntries(
+            [
+              homeResidencesEntry,
+              homeFloorPlansEntry,
+              homeAmenitiesEntry,
+              homeWhyEntry,
+              homeNeighborhoodEntry,
+              homeTestimonialsEntry,
+              homeFaqEntry,
+              homeExtrasEntry,
+            ].flatMap((entry) =>
+              Object.entries(entry ?? {}).filter(
+                ([key, val]) => key in draft.home.ui && typeof val === "string",
+              ),
+            ),
+          ),
         },
       },
       gallery: {
@@ -1287,7 +1392,7 @@ export default function StudioPage() {
         heroDescription: contactHeroEntry?.heroDescription ?? draft.contact.heroDescription,
         heroImage: contactHeroEntry?.heroImage ?? draft.contact.heroImage,
         mapEmbedUrl:
-          homeUiEntry?.mapEmbedUrl ??
+          (homeExtrasEntry?.mapEmbedUrl as string | undefined) ??
           contactHeroEntry?.mapEmbedUrl ??
           draft.contact.mapEmbedUrl,
         officeHoursTitle: contactHeroEntry?.officeHoursTitle ?? draft.contact.officeHoursTitle,

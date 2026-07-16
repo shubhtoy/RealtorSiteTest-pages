@@ -186,7 +186,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {home.sectionVisibility.stats ? <section className="bg-background py-12 md:py-24">
+      {home.sectionVisibility.stats ? <section data-studio-section="HomeStats" className="bg-background py-12 md:py-24">
         <div className="mx-auto grid w-[min(1140px,92vw)] grid-cols-2 gap-8 md:grid-cols-4">
           {home.stats.map((item) => (
             <StatCounter key={item.label} value={item.value} suffix={item.suffix} label={item.label} />
@@ -194,7 +194,7 @@ export default function HomePage() {
         </div>
       </section> : null}
 
-      {home.sectionVisibility.residences ? <section className="bg-background py-12 md:py-24">
+      {home.sectionVisibility.residences ? <section data-studio-section="HomeResidences" className="bg-background py-12 md:py-24">
         <div className="mx-auto w-[min(1140px,92vw)]">
           <Reveal className="mb-10 text-center">
             <p className={eyebrowClass}>{home.ui.residencesEyebrow}</p>
@@ -207,7 +207,7 @@ export default function HomePage() {
         </div>
       </section> : null}
 
-      {home.sectionVisibility.unitExplorer ? <section className="bg-secondary/30 py-12 md:py-24">
+      {home.sectionVisibility.unitExplorer ? <section data-studio-section="HomeFloorPlans" className="bg-secondary/30 py-12 md:py-24">
         <div className="mx-auto w-[min(1140px,92vw)]">
           <Reveal className="mb-6 text-center">
             <p className={eyebrowClass}>{home.ui.unitExplorerEyebrow}</p>
@@ -261,7 +261,7 @@ export default function HomePage() {
         </div>
       </section> : null}
 
-      {home.sectionVisibility.amenities ? <section className="bg-background py-12 md:py-24">
+      {home.sectionVisibility.amenities ? <section data-studio-section="HomeAmenities" className="bg-background py-12 md:py-24">
         <div className="mx-auto w-[min(1140px,92vw)]">
           <Reveal className="mb-8 text-center">
             <p className={eyebrowClass}>{home.ui.amenitiesEyebrow}</p>
@@ -274,7 +274,7 @@ export default function HomePage() {
         </div>
       </section> : null}
 
-      {home.sectionVisibility.why ? <section className="bg-background py-12 md:py-24">
+      {home.sectionVisibility.why ? <section data-studio-section="HomeWhy" className="bg-background py-12 md:py-24">
         <div className="mx-auto w-[min(1140px,92vw)]">
           <Reveal className="mb-4 text-center">
             <p className={eyebrowClass}>{home.ui.whyEyebrow}</p>
@@ -322,7 +322,7 @@ export default function HomePage() {
         </div>
       </section> : null}
 
-      {home.sectionVisibility.neighborhood ? <section className="bg-secondary/30 py-12 md:py-24">
+      {home.sectionVisibility.neighborhood ? <section data-studio-section="HomeNeighborhood" className="bg-secondary/30 py-12 md:py-24">
         <div className="mx-auto w-[min(1140px,92vw)]">
           <Reveal className="mb-8 text-center">
             <p className={eyebrowClass}>{home.neighborhood.eyebrow}</p>
@@ -379,7 +379,7 @@ export default function HomePage() {
         </div>
       </section> : null}
 
-      {home.sectionVisibility.testimonials ? <section className="bg-background py-12 md:py-24">
+      {home.sectionVisibility.testimonials ? <section data-studio-section="HomeTestimonials" className="bg-background py-12 md:py-24">
         <div className="mx-auto w-[min(1140px,92vw)]">
           <Reveal className="mb-6 text-center">
             <p className={eyebrowClass}>{home.ui.testimonialsEyebrow}</p>
@@ -392,7 +392,7 @@ export default function HomePage() {
         </div>
       </section> : null}
 
-      {home.sectionVisibility.faq ? <section className="bg-background py-12 md:py-24">
+      {home.sectionVisibility.faq ? <section data-studio-section="HomeFaq" className="bg-background py-12 md:py-24">
         <div className="mx-auto w-[min(760px,92vw)]">
           <Reveal className="mb-8 text-center">
             <p className={eyebrowClass}>{home.ui.faqEyebrow}</p>

@@ -11,7 +11,7 @@ type StudioPage = "global" | "home" | "gallery" | "contact";
 // Fallback Puck component (type) to select when a clicked area isn't tagged with
 // a more specific data-studio-section. Maps a page to its main content panel.
 const FALLBACK_SECTION: Record<StudioPage, string> = {
-  home: "HomeCollections",
+  home: "HomeHero",
   gallery: "GalleryCollections",
   contact: "ContactFormMeta",
   global: "GlobalBrand",
