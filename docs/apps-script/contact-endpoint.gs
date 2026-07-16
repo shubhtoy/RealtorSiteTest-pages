@@ -26,6 +26,19 @@ function doPost(e) {
 
     // 1. Append a timestamped row to the active sheet.
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    // Write a labeled header row once, while the sheet is still empty.
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow([
+        "Submitted At",
+        "Full Name",
+        "Email",
+        "Phone",
+        "Bedroom",
+        "Move-In",
+        "Tour Type",
+        "Message",
+      ]);
+    }
     sheet.appendRow([
       submittedAt,
       form.fullName || "",
