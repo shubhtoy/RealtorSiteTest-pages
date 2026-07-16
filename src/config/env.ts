@@ -28,4 +28,8 @@ export const appEnv = {
   // every Studio save/publish request with 401.
   studioPassword: clean(process.env.NEXT_PUBLIC_STUDIO_PASSWORD),
   apiTimeoutMs: toNumber(process.env.NEXT_PUBLIC_API_TIMEOUT_MS, 10000),
+  // Optional keyless Google-reviews widget embed URL (an iframe src from a free
+  // provider like Featurable / Trustindex / Elfsight). When set, the reviews
+  // section renders this widget instead of calling the Places API.
+  reviewsEmbedUrl: clean(process.env.NEXT_PUBLIC_REVIEWS_EMBED_URL),
 } as const;

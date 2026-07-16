@@ -44,10 +44,16 @@ function Stars({ value }: { value: number }) {
  */
 export function GoogleReviews() {
   const { current } = useEditableContent();
+  const embedUrl = appEnv.reviewsEmbedUrl;
   const [data, setData] = useState<ReviewsResponse | null>(null);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
+    // A keyless widget embed is configured — no API fetch needed.
+    if (embedUrl) {
+      setLoaded(true);
+      return;
+    }
     let active = true;
     fetch(`${appEnv.apiOrigin}/api/reviews`)
       .then((res) => res.json())
@@ -63,7 +69,39 @@ export function GoogleReviews() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [embedUrl]);
+
+  // Preferred keyless path: render a free Google-reviews widget in an iframe.
+  if (embedUrl) {
+    return (
+      <section className="bg-background py-12 md:py-24">
+        <div className="mx-auto w-[min(1140px,92vw)]">
+          <Reveal className="mb-8 text-center">
+            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-accent">Google Reviews</p>
+            <h2 className="mt-2 font-display text-[1.9rem] leading-[1.08] md:text-5xl">What residents say on Google</h2>
+          </Reveal>
+          <iframe
+            src={embedUrl}
+            title="Google reviews"
+            loading="lazy"
+            className="h-[560px] w-full rounded-2xl border border-border/60 bg-background"
+          />
+          {current.global.reviewsUrl ? (
+            <div className="mt-8 text-center">
+              <a
+                href={current.global.reviewsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center rounded-full border border-primary/45 px-6 py-3 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-primary transition hover:-translate-y-0.5 hover:bg-primary/10"
+              >
+                Read all reviews on Google
+              </a>
+            </div>
+          ) : null}
+        </div>
+      </section>
+    );
+  }
 
   const reviews = data?.reviews ?? [];
   if (!loaded || reviews.length === 0) return null;
