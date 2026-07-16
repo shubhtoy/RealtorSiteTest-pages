@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "description": "Modern apartment website for Baba Flats - Built with Next.js + React + TypeScript",
   "scripts": {
     "dev": "next dev",

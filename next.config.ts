@@ -9,8 +9,9 @@ const projectRoot = dirname(fileURLToPath(import.meta.url));
 
 const nextConfig: NextConfig = {
   // Emit a self-contained production server at .next/standalone/server.js for a
-  // slim container image. Server-only deploy — no static export / GitHub Pages.
-  output: "standalone",
+  // slim container image (Docker / self-host). On Vercel this is unnecessary
+  // (Vercel builds Next natively), so we skip it there to avoid any friction.
+  output: process.env.VERCEL ? undefined : "standalone",
   turbopack: {
     root: projectRoot,
   },
