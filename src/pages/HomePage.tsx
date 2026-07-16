@@ -7,7 +7,7 @@ import { setPageMeta } from "@/lib/seo";
 import { Reveal } from "@/lib/motion";
 import { HeroParallax } from "@/components/ui/hero-parallax";
 import { FocusCards } from "@/components/ui/focus-cards";
-import { StickyScroll } from "@/components/ui/sticky-scroll-reveal";
+import { AmenityShowcase } from "@/components/ui/amenity-showcase";
 import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -264,7 +264,7 @@ export default function HomePage() {
               {home.ui.amenitiesDescription}
             </p>
           </Reveal>
-          <StickyScroll content={amenitiesPanels} />
+          <AmenityShowcase items={amenitiesPanels} />
         </div>
       </section> : null}
 
