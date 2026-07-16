@@ -47,6 +47,90 @@ function commitJson<T>(onChange: (v: string) => void, next: T) {
   onChange(JSON.stringify(next, null, 2));
 }
 
+// The theme stores colors as HSL triplets ("H S% L%", consumed as
+// `hsl(var(--token))`). A native <input type="color"> works in hex, so we
+// convert between the two to offer a real picker while keeping the stored format.
+function hslTripletToHex(triplet: string): string {
+  const match = triplet.trim().match(/^(-?[\d.]+)\s+([\d.]+)%\s+([\d.]+)%$/);
+  if (!match) return "#000000";
+  const h = ((parseFloat(match[1]) % 360) + 360) % 360;
+  const s = Math.min(1, Math.max(0, parseFloat(match[2]) / 100));
+  const l = Math.min(1, Math.max(0, parseFloat(match[3]) / 100));
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+  const m = l - c / 2;
+  let r = 0;
+  let g = 0;
+  let b = 0;
+  if (h < 60) [r, g, b] = [c, x, 0];
+  else if (h < 120) [r, g, b] = [x, c, 0];
+  else if (h < 180) [r, g, b] = [0, c, x];
+  else if (h < 240) [r, g, b] = [0, x, c];
+  else if (h < 300) [r, g, b] = [x, 0, c];
+  else [r, g, b] = [c, 0, x];
+  const toHex = (v: number) => Math.round((v + m) * 255).toString(16).padStart(2, "0");
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+
+function hexToHslTriplet(hex: string): string {
+  const match = hex.replace("#", "").match(/^([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+  if (!match) return "0 0% 0%";
+  const r = parseInt(match[1], 16) / 255;
+  const g = parseInt(match[2], 16) / 255;
+  const b = parseInt(match[3], 16) / 255;
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const delta = max - min;
+  const l = (max + min) / 2;
+  let h = 0;
+  let s = 0;
+  if (delta !== 0) {
+    s = delta / (1 - Math.abs(2 * l - 1));
+    if (max === r) h = ((g - b) / delta) % 6;
+    else if (max === g) h = (b - r) / delta + 2;
+    else h = (r - g) / delta + 4;
+    h *= 60;
+    if (h < 0) h += 360;
+  }
+  return `${Math.round(h)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
+}
+
+export function colorField(label: string) {
+  return {
+    type: "custom" as const,
+    label,
+    render: ({ value, onChange }: CustomFieldRenderer): ReactElement => {
+      const raw = value || "";
+      return (
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <input
+            type="color"
+            value={hslTripletToHex(raw)}
+            onChange={(event) => onChange(hexToHslTriplet(event.target.value))}
+            aria-label={`${label} picker`}
+            style={{
+              width: 40,
+              height: 34,
+              padding: 0,
+              border: "1px solid #cbd5e1",
+              borderRadius: 6,
+              background: "none",
+              cursor: "pointer",
+              flexShrink: 0,
+            }}
+          />
+          <input
+            className={inputCls}
+            value={raw}
+            onChange={(event) => onChange(event.target.value)}
+            placeholder="H S% L%"
+          />
+        </div>
+      );
+    },
+  };
+}
+
 export function stringListField(label: string) {
   return {
     type: "custom" as const,
