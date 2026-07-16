@@ -8,6 +8,7 @@ import { Reveal } from "@/lib/motion";
 import { HeroParallax } from "@/components/ui/hero-parallax";
 import { FocusCards } from "@/components/ui/focus-cards";
 import { AmenityShowcase } from "@/components/ui/amenity-showcase";
+import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
 import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -217,9 +218,11 @@ export default function HomePage() {
           </Reveal>
           <div className="grid gap-5 md:grid-cols-3">
             {home.floorPlans.map((unit) => (
+              <CardContainer key={unit.title} containerClassName="py-0" className="w-full">
+                <CardBody className="h-auto w-full">
+                  <CardItem translateZ={50} className="w-full">
               <article
-                key={unit.title}
-                className="flex h-full flex-col overflow-hidden rounded-2xl border border-border/70 bg-card-gradient p-4 shadow-soft transition duration-200 hover:-translate-y-0.5 hover:shadow-soft-lg md:p-5"
+                className="flex h-full flex-col overflow-hidden rounded-2xl border border-border/70 bg-card-gradient p-4 shadow-soft transition duration-200 hover:shadow-soft-lg md:p-5"
               >
                 <OptimizedImage
                   src={unit.image}
@@ -250,6 +253,9 @@ export default function HomePage() {
                   {unit.priceRange}
                 </p>
               </article>
+                  </CardItem>
+                </CardBody>
+              </CardContainer>
             ))}
           </div>
         </div>
