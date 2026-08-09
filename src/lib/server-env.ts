@@ -56,6 +56,12 @@ export type ServerEnv = {
   googlePlacesApiKey: string;
   /** Google Place ID whose reviews are displayed. */
   googlePlaceId: string;
+  /** GitHub token (contents:write) used to commit published content in prod. */
+  githubToken: string;
+  /** Target repository in "owner/name" form for content commits. */
+  githubRepo: string;
+  /** Branch that Vercel deploys from (commits land here to trigger a redeploy). */
+  githubBranch: string;
 };
 
 /**
@@ -78,6 +84,9 @@ export const serverEnv: ServerEnv = {
   smtpTo: readString(process.env.SMTP_TO),
   googlePlacesApiKey: readString(process.env.GOOGLE_PLACES_API_KEY),
   googlePlaceId: readString(process.env.GOOGLE_PLACE_ID),
+  githubToken: readString(process.env.GITHUB_TOKEN),
+  githubRepo: readString(process.env.GITHUB_REPO),
+  githubBranch: readString(process.env.GITHUB_BRANCH, "main"),
 };
 
 /**
@@ -127,4 +136,12 @@ export function isSmtpConfigured(): boolean {
 /** Whether live Google reviews (Places API) are configured. */
 export function isGoogleReviewsConfigured(): boolean {
   return serverEnv.googlePlacesApiKey.length > 0 && serverEnv.googlePlaceId.length > 0;
+}
+
+/**
+ * Whether committing published content back to GitHub is configured. When false
+ * (e.g. local development) the content store falls back to writing to disk.
+ */
+export function isGitHubSyncConfigured(): boolean {
+  return serverEnv.githubToken.length > 0 && serverEnv.githubRepo.includes("/");
 }

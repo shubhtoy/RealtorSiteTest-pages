@@ -10,6 +10,10 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(dirname, "./src"),
+      // The server-only/client-only marker packages throw when imported outside
+      // their intended bundle; under Node-based tests they resolve to a no-op.
+      "server-only": path.resolve(dirname, "./src/test/empty-module.ts"),
+      "client-only": path.resolve(dirname, "./src/test/empty-module.ts"),
     },
   },
 });

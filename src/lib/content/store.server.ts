@@ -5,6 +5,8 @@ import path from "node:path";
 
 import { resolveSiteContent } from "@/lib/content/resolve-site-content";
 import { coerceEditableSiteDocument } from "@/lib/editable-content-store";
+import { commitFileToRepo } from "@/lib/content/github-sync.server";
+import { isGitHubSyncConfigured } from "@/lib/server-env";
 import type { EditableSiteDocument } from "@/types/editable-content";
 
 /**
@@ -22,6 +24,8 @@ import type { EditableSiteDocument } from "@/types/editable-content";
 
 const DRAFT_FILE = path.join(process.cwd(), ".data", "draft.json");
 const PUBLISHED_FILE = path.join(process.cwd(), "public", "content.json");
+/** Repo-relative path of the published document (used for GitHub commits). */
+const PUBLISHED_REPO_PATH = "public/content.json";
 
 /** Thrown when an incoming document fails validation; routes map this to 400. */
 export class ContentValidationError extends Error {
@@ -124,8 +128,46 @@ export async function getPublished(): Promise<EditableSiteDocument> {
 }
 
 /**
- * Publish the current draft to `public/content.json`, validating it first so the
- * server-authoritative document is never left invalid.
+ * Persist a published document. Dual-mode:
+ *
+ * - GitHub sync configured (production): commit `public/content.json` to the
+ *   deploy branch, which triggers a Vercel rebuild that serves the new content.
+ *   The serverless filesystem is ephemeral, so a disk write would be lost.
+ * - Not configured (local development): write to disk so `next dev`/`next start`
+ *   pick up the publish immediately without a rebuild.
+ */
+async function persistPublished(document: EditableSiteDocument): Promise<void> {
+  const serialized = `${JSON.stringify(document, null, 2)}\n`;
+
+  if (isGitHubSyncConfigured()) {
+    await commitFileToRepo({
+      repoPath: PUBLISHED_REPO_PATH,
+      content: serialized,
+      message: "chore(content): publish site content via Studio",
+    });
+    return;
+  }
+
+  await mkdir(path.dirname(PUBLISHED_FILE), { recursive: true });
+  await writeFile(PUBLISHED_FILE, serialized, "utf8");
+}
+
+/**
+ * Validate and publish a caller-supplied document. This is the self-contained
+ * publish path used by the Studio: the client sends the full document, so the
+ * publish does not depend on any cross-request draft state (which does not
+ * survive on a serverless platform).
+ *
+ * @throws {ContentValidationError} when the document fails validation.
+ */
+export async function publishDocument(input: unknown): Promise<EditableSiteDocument> {
+  const document = assertValidDocument(input);
+  await persistPublished(document);
+  return document;
+}
+
+/**
+ * Publish the current on-disk draft (local-development / back-compat path).
  *
  * @throws {DraftNotFoundError} when no (valid) draft exists.
  * @throws {ContentValidationError} when the draft fails validation.
@@ -135,9 +177,5 @@ export async function publishDraft(): Promise<EditableSiteDocument> {
   if (!draft) {
     throw new DraftNotFoundError();
   }
-
-  // `getDraft` already coerces; re-assert so the published file is guaranteed valid.
-  const document = assertValidDocument(draft);
-  await writeDocument(PUBLISHED_FILE, document);
-  return document;
+  return publishDocument(draft);
 }

@@ -138,21 +138,27 @@ export function EditableContentProvider({ children, initialContent }: Props) {
 
         try {
           // (a) Persist the current draft to the server. The publish step below
-          // publishes whatever draft is on disk, so this must land first.
-          const draftRes = await fetch(`${appEnv.apiOrigin}/api/content/draft`, {
-            method: "PUT",
-            headers,
-            body: JSON.stringify({ document: draft }),
-          });
-          if (!draftRes.ok) {
-            setPublishStatus("error");
-            return { ok: false, error: await readErrorMessage(draftRes) };
+          // (a) Best-effort: persist the draft server-side for local dev. On a
+          // serverless host this disk write does not survive to the publish
+          // request, so a failure here is non-fatal — publish carries the
+          // document itself below.
+          try {
+            await fetch(`${appEnv.apiOrigin}/api/content/draft`, {
+              method: "PUT",
+              headers,
+              body: JSON.stringify({ document: draft }),
+            });
+          } catch {
+            // Ignore — the publish request below is self-contained.
           }
 
-          // (b) Publish the persisted draft; the server revalidates public pages.
+          // (b) Self-contained publish: send the full document so it does not
+          // depend on cross-request draft state. The server commits it to
+          // GitHub (prod) or writes disk (local) and revalidates public pages.
           const publishRes = await fetch(`${appEnv.apiOrigin}/api/content/publish`, {
             method: "POST",
             headers,
+            body: JSON.stringify({ document: draft }),
           });
           if (!publishRes.ok) {
             setPublishStatus("error");
