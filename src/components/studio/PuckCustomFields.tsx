@@ -469,13 +469,21 @@ export function galleryManagerField(label: string, categoriesJson?: string) {
         <div style={{ display: "grid", gap: 8 }}>
           {/* Actions bar */}
           <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
-            <label className={btnAdd} style={{ cursor: isUploading ? "wait" : "pointer" }}>
-              {isUploading ? "Uploading…" : "📁 Upload Files"}
+            <label
+              className="rounded-md bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-700"
+              style={{ cursor: isUploading ? "wait" : "pointer" }}
+            >
+              {isUploading ? "Uploading…" : "⬆ Upload images / videos"}
               <input type="file" accept="image/*,video/*" multiple style={{ display: "none" }} onChange={handleUpload} disabled={isUploading} />
             </label>
-            <button type="button" className={btnAdd} onClick={() => add("image")}>+ Image</button>
-            <button type="button" className={btnAdd} onClick={() => add("video")}>+ Video</button>
-            <span style={{ fontSize: 11, color: "#64748b" }}>{items.length} items</span>
+            <button type="button" className={btnAdd} onClick={() => add("image")}>+ Image URL</button>
+            <button type="button" className={btnAdd} onClick={() => add("video")}>+ Video URL</button>
+            <span style={{ marginLeft: "auto", fontSize: 11, color: "#64748b" }}>
+              {items.length} item{items.length === 1 ? "" : "s"}
+              {items.length > 0
+                ? ` · ${items.filter((i) => i.type === "image").length} img · ${items.filter((i) => i.type === "video").length} video`
+                : ""}
+            </span>
           </div>
 
           {/* Items list */}
@@ -535,7 +543,12 @@ export function galleryManagerField(label: string, categoriesJson?: string) {
                     </div>
                     <div style={{ minWidth: 0 }}>
                       <p style={{ margin: 0, fontSize: 12, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.label || "Untitled"}</p>
-                      <p style={{ margin: 0, fontSize: 10, color: "#64748b" }}>{item.category}{item.subcategory ? ` › ${item.subcategory}` : ""} • {item.type}</p>
+                      <p style={{ margin: 0, fontSize: 10, color: "#64748b" }}>
+                        {item.category}{item.subcategory ? ` › ${item.subcategory}` : ""} • {item.type}
+                        {!item.src && (
+                          <span style={{ marginLeft: 6, color: "#b45309", fontWeight: 600 }}>⚠ needs source</span>
+                        )}
+                      </p>
                     </div>
                     <div style={{ display: "flex", gap: 4 }}>
                       <button type="button" className={btnAdd} onClick={(e) => { e.stopPropagation(); move(index, -1); }} disabled={index === 0}>↑</button>
