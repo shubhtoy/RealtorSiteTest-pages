@@ -380,6 +380,7 @@ export function galleryManagerField(label: string, categoriesJson?: string) {
       const commit = (next: GalleryItem[]) => commitJson(onChange, next);
       const [isUploading, setIsUploading] = useState(false);
       const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+      const [dragIndex, setDragIndex] = useState<number | null>(null);
 
       const add = (type: "image" | "video") => {
         const next = [...items, { src: "", alt: "", label: "New item", category: categories[0] || "", type, subcategory: "" }];
@@ -407,6 +408,24 @@ export function galleryManagerField(label: string, categoriesJson?: string) {
         setExpandedIndex(to);
       };
 
+      /** Move an item from one index to another (used by drag-and-drop). */
+      const reorder = (from: number, to: number) => {
+        if (from === to || from < 0 || to < 0 || from >= items.length || to >= items.length) return;
+        const next = [...items];
+        const [moved] = next.splice(from, 1);
+        next.splice(to, 0, moved);
+        commit(next);
+        setExpandedIndex(to);
+      };
+
+      /** Insert a copy of an item directly after it. */
+      const duplicate = (index: number) => {
+        const next = [...items];
+        next.splice(index + 1, 0, { ...items[index] });
+        commit(next);
+        setExpandedIndex(index + 1);
+      };
+
       const handleUpload = async (event: ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(event.target.files || []);
         if (!files.length) return;
@@ -429,7 +448,7 @@ export function galleryManagerField(label: string, categoriesJson?: string) {
             return;
           }
           const newItems: GalleryItem[] = (json.files ?? []).map(({ url }) => {
-            const isVideo = /\.(mp4|webm|ogg)$/i.test(url);
+            const isVideo = /\.(mp4|webm|ogg|mov)$/i.test(url);
             const baseLabel =
               (url.split("/").pop() ?? "").replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ") || "New item";
             return { src: url, alt: baseLabel, label: baseLabel, category: categories[0] || "", type: (isVideo ? "video" : "image") as "image" | "video", subcategory: "" };
@@ -469,12 +488,33 @@ export function galleryManagerField(label: string, categoriesJson?: string) {
             {items.map((item, index) => {
               const isExpanded = expandedIndex === index;
               return (
-                <div key={`${item.src}-${index}`} style={{ border: "1px solid #e2e8f0", borderRadius: 8, overflow: "hidden" }}>
+                <div
+                  key={`${item.src}-${index}`}
+                  draggable
+                  onDragStart={(e) => {
+                    setDragIndex(index);
+                    e.dataTransfer.effectAllowed = "move";
+                  }}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    if (dragIndex !== null) reorder(dragIndex, index);
+                    setDragIndex(null);
+                  }}
+                  onDragEnd={() => setDragIndex(null)}
+                  style={{
+                    border: dragIndex === index ? "1px solid #38bdf8" : "1px solid #e2e8f0",
+                    borderRadius: 8,
+                    overflow: "hidden",
+                    opacity: dragIndex === index ? 0.5 : 1,
+                  }}
+                >
                   {/* Collapsed row */}
                   <div
-                    style={{ display: "grid", gridTemplateColumns: "48px 1fr auto", gap: 8, padding: 6, alignItems: "center", cursor: "pointer", background: isExpanded ? "#f0f9ff" : "white" }}
+                    style={{ display: "grid", gridTemplateColumns: "16px 48px 1fr auto", gap: 8, padding: 6, alignItems: "center", cursor: "pointer", background: isExpanded ? "#f0f9ff" : "white" }}
                     onClick={() => setExpandedIndex(isExpanded ? null : index)}
                   >
+                    <span title="Drag to reorder" style={{ cursor: "grab", color: "#94a3b8", fontSize: 14, lineHeight: 1, userSelect: "none" }}>⠿</span>
                     <div style={{ width: 48, height: 36, borderRadius: 4, overflow: "hidden", background: "#f1f5f9", position: "relative" }}>
                       {item.type === "video" ? (
                         item.poster ? (
@@ -500,6 +540,7 @@ export function galleryManagerField(label: string, categoriesJson?: string) {
                     <div style={{ display: "flex", gap: 4 }}>
                       <button type="button" className={btnAdd} onClick={(e) => { e.stopPropagation(); move(index, -1); }} disabled={index === 0}>↑</button>
                       <button type="button" className={btnAdd} onClick={(e) => { e.stopPropagation(); move(index, 1); }} disabled={index === items.length - 1}>↓</button>
+                      <button type="button" className={btnAdd} title="Duplicate" onClick={(e) => { e.stopPropagation(); duplicate(index); }}>⧉</button>
                       <button type="button" className={btnAdd} onClick={(e) => { e.stopPropagation(); remove(index); }}>✕</button>
                     </div>
                   </div>
