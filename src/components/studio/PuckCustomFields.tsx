@@ -5,6 +5,7 @@ import { appEnv } from "@/config/env";
 const miniLabel = "mb-1 block text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500";
 const inputCls = "w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm";
 const btnAdd = "rounded-md border border-slate-300 px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100";
+const iconBtn = "flex h-6 w-6 items-center justify-center rounded border border-slate-300 text-xs text-slate-600 hover:bg-slate-100 disabled:opacity-40";
 
 type CustomFieldRenderer = {
   value: string;
@@ -519,11 +520,11 @@ export function galleryManagerField(label: string, categoriesJson?: string) {
                 >
                   {/* Collapsed row */}
                   <div
-                    style={{ display: "grid", gridTemplateColumns: "16px 48px 1fr auto", gap: 8, padding: 6, alignItems: "center", cursor: "pointer", background: isExpanded ? "#f0f9ff" : "white" }}
+                    style={{ display: "grid", gridTemplateColumns: "18px 44px minmax(0,1fr) auto", gap: 8, padding: "7px 8px", alignItems: "center", cursor: "pointer", background: isExpanded ? "#f0f9ff" : "white" }}
                     onClick={() => setExpandedIndex(isExpanded ? null : index)}
                   >
                     <span title="Drag to reorder" style={{ cursor: "grab", color: "#94a3b8", fontSize: 14, lineHeight: 1, userSelect: "none" }}>⠿</span>
-                    <div style={{ width: 48, height: 36, borderRadius: 4, overflow: "hidden", background: "#f1f5f9", position: "relative" }}>
+                    <div style={{ width: 44, height: 44, borderRadius: 6, overflow: "hidden", background: "#f1f5f9", position: "relative" }}>
                       {item.type === "video" ? (
                         item.poster ? (
                           <img src={resolveAppHref(item.poster)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
@@ -542,19 +543,19 @@ export function galleryManagerField(label: string, categoriesJson?: string) {
                       )}
                     </div>
                     <div style={{ minWidth: 0 }}>
-                      <p style={{ margin: 0, fontSize: 12, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.label || "Untitled"}</p>
-                      <p style={{ margin: 0, fontSize: 10, color: "#64748b" }}>
+                      <p style={{ margin: 0, fontSize: 13, fontWeight: 600, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.label || "Untitled"}</p>
+                      <p style={{ margin: 0, fontSize: 11, color: "#64748b", lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                         {item.category}{item.subcategory ? ` › ${item.subcategory}` : ""} • {item.type}
                         {!item.src && (
                           <span style={{ marginLeft: 6, color: "#b45309", fontWeight: 600 }}>⚠ needs source</span>
                         )}
                       </p>
                     </div>
-                    <div style={{ display: "flex", gap: 4 }}>
-                      <button type="button" className={btnAdd} onClick={(e) => { e.stopPropagation(); move(index, -1); }} disabled={index === 0}>↑</button>
-                      <button type="button" className={btnAdd} onClick={(e) => { e.stopPropagation(); move(index, 1); }} disabled={index === items.length - 1}>↓</button>
-                      <button type="button" className={btnAdd} title="Duplicate" onClick={(e) => { e.stopPropagation(); duplicate(index); }}>⧉</button>
-                      <button type="button" className={btnAdd} onClick={(e) => { e.stopPropagation(); remove(index); }}>✕</button>
+                    <div style={{ display: "flex", gap: 3 }}>
+                      <button type="button" title="Move up" className={iconBtn} onClick={(e) => { e.stopPropagation(); move(index, -1); }} disabled={index === 0}>↑</button>
+                      <button type="button" title="Move down" className={iconBtn} onClick={(e) => { e.stopPropagation(); move(index, 1); }} disabled={index === items.length - 1}>↓</button>
+                      <button type="button" title="Duplicate" className={iconBtn} onClick={(e) => { e.stopPropagation(); duplicate(index); }}>⧉</button>
+                      <button type="button" title="Remove" className={iconBtn} onClick={(e) => { e.stopPropagation(); remove(index); }}>✕</button>
                     </div>
                   </div>
 
