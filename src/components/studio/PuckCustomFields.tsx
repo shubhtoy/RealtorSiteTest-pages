@@ -461,6 +461,11 @@ export function galleryManagerField(label: string, categoriesJson?: string) {
 
           {/* Items list */}
           <div style={{ display: "grid", gap: 6, maxHeight: 500, overflow: "auto" }}>
+            {items.length === 0 && (
+              <div style={{ border: "1px dashed #cbd5e1", borderRadius: 8, padding: 16, textAlign: "center", color: "#64748b", fontSize: 12 }}>
+                No media yet. Use <strong>Upload Files</strong> to add images or videos, or add an item and paste a URL.
+              </div>
+            )}
             {items.map((item, index) => {
               const isExpanded = expandedIndex === index;
               return (
@@ -470,12 +475,23 @@ export function galleryManagerField(label: string, categoriesJson?: string) {
                     style={{ display: "grid", gridTemplateColumns: "48px 1fr auto", gap: 8, padding: 6, alignItems: "center", cursor: "pointer", background: isExpanded ? "#f0f9ff" : "white" }}
                     onClick={() => setExpandedIndex(isExpanded ? null : index)}
                   >
-                    <div style={{ width: 48, height: 36, borderRadius: 4, overflow: "hidden", background: "#f1f5f9" }}>
+                    <div style={{ width: 48, height: 36, borderRadius: 4, overflow: "hidden", background: "#f1f5f9", position: "relative" }}>
                       {item.type === "video" ? (
-                        <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>🎬</div>
+                        item.poster ? (
+                          <img src={resolveAppHref(item.poster)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        ) : item.src ? (
+                          <video src={resolveAppHref(item.src)} muted preload="metadata" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        ) : (
+                          <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>🎬</div>
+                        )
                       ) : item.src ? (
                         <img src={resolveAppHref(item.src)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                      ) : null}
+                      ) : (
+                        <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, color: "#94a3b8" }}>🖼️</div>
+                      )}
+                      {item.type === "video" && (
+                        <span style={{ position: "absolute", right: 2, bottom: 2, fontSize: 9, background: "rgba(0,0,0,0.6)", color: "#fff", borderRadius: 3, padding: "0 3px" }}>▶</span>
+                      )}
                     </div>
                     <div style={{ minWidth: 0 }}>
                       <p style={{ margin: 0, fontSize: 12, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.label || "Untitled"}</p>
@@ -528,6 +544,18 @@ export function galleryManagerField(label: string, categoriesJson?: string) {
                         <div>
                           <span className={miniLabel}>Poster (thumbnail)</span>
                           <input className={inputCls} value={item.poster || ""} onChange={(e) => update(index, { poster: e.target.value })} placeholder="/uploads/thumb.jpg" />
+                        </div>
+                      )}
+                      {item.src && (
+                        <div>
+                          <span className={miniLabel}>Preview</span>
+                          <div style={{ borderRadius: 6, overflow: "hidden", background: "#0f172a", maxHeight: 180, display: "flex", justifyContent: "center" }}>
+                            {item.type === "video" ? (
+                              <video src={resolveAppHref(item.src)} poster={item.poster ? resolveAppHref(item.poster) : undefined} controls muted preload="metadata" style={{ maxHeight: 180, maxWidth: "100%" }} />
+                            ) : (
+                              <img src={resolveAppHref(item.src)} alt={item.alt || ""} style={{ maxHeight: 180, maxWidth: "100%", objectFit: "contain" }} />
+                            )}
+                          </div>
                         </div>
                       )}
                     </div>
