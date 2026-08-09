@@ -67,6 +67,15 @@ function countDigits(value: string): number {
   return (value.match(/\d/g) ?? []).length;
 }
 
+/**
+ * Strip CR/LF and control characters so a value can be safely placed in an email
+ * header (Subject, Reply-To). Prevents header/SMTP injection via crafted input
+ * (e.g. a name containing "\r\nBcc: attacker@evil.com").
+ */
+function sanitizeHeaderValue(value: string): string {
+  return value.replace(/[\r\n\u0000-\u001f\u007f]+/g, " ").trim();
+}
+
 function validateForm(raw: unknown): { form: ContactForm } | { errors: FieldErrors } {
   const source = isRecord(raw) ? raw : {};
   const fullName = typeof source.fullName === "string" ? source.fullName.trim() : "";
@@ -164,8 +173,8 @@ async function deliverViaSmtp(submission: ContactSubmission): Promise<DeliveryRe
     await transporter.sendMail({
       from,
       to: serverEnv.contactToEmail,
-      replyTo: form.email,
-      subject: `New Tour Request - ${form.fullName}`,
+      replyTo: sanitizeHeaderValue(form.email),
+      subject: sanitizeHeaderValue(`New Tour Request - ${form.fullName}`),
       text: [
         `Submitted: ${submission.submittedAt}`,
         `Site: ${submission.siteName}`,

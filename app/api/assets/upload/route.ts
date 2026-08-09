@@ -14,6 +14,21 @@ export const dynamic = "force-dynamic";
 
 const MAX_FILE_SIZE = 12 * 1024 * 1024; // 12MB
 const ALLOWED_MIME = /^(image|video)\//;
+// Allowlist of safe, non-executable media extensions. SVG is deliberately
+// excluded: it is an XML document that can carry inline <script>, so serving an
+// uploaded .svg from our own origin (public/uploads) would be stored XSS.
+const ALLOWED_EXT = new Set([
+  ".jpg",
+  ".jpeg",
+  ".png",
+  ".gif",
+  ".webp",
+  ".avif",
+  ".mp4",
+  ".webm",
+  ".mov",
+  ".ogg",
+]);
 const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
 
 /** Sanitize an untrusted upload filename into a safe `base` + `ext` pair. */
@@ -66,6 +81,13 @@ export async function POST(request: Request) {
     if (!ALLOWED_MIME.test(file.type)) {
       return NextResponse.json(
         { ok: false, message: `Unsupported file type: ${file.type || "unknown"}` },
+        { status: 415 },
+      );
+    }
+    const fileExt = path.extname(file.name || "").toLowerCase();
+    if (!ALLOWED_EXT.has(fileExt)) {
+      return NextResponse.json(
+        { ok: false, message: `Unsupported file extension: ${fileExt || "none"}` },
         { status: 415 },
       );
     }
