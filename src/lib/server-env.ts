@@ -62,6 +62,14 @@ export type ServerEnv = {
   githubRepo: string;
   /** Branch that Vercel deploys from (commits land here to trigger a redeploy). */
   githubBranch: string;
+  /** Google Sheets spreadsheet ID for the lead funnel (server-only). */
+  googleSheetsId: string;
+  /** Worksheet/tab title leads are appended to. */
+  googleSheetsTab: string;
+  /** Service-account client email with edit access to the sheet. */
+  googleServiceAccountEmail: string;
+  /** Service-account private key (PEM). \n escapes are normalized at read. */
+  googlePrivateKey: string;
 };
 
 /**
@@ -87,6 +95,12 @@ export const serverEnv: ServerEnv = {
   githubToken: readString(process.env.GITHUB_TOKEN),
   githubRepo: readString(process.env.GITHUB_REPO),
   githubBranch: readString(process.env.GITHUB_BRANCH, "main"),
+  googleSheetsId: readString(process.env.GOOGLE_SHEETS_ID),
+  googleSheetsTab: readString(process.env.GOOGLE_SHEETS_TAB, "Leads"),
+  googleServiceAccountEmail: readString(process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL),
+  // Env vars can't hold real newlines, so PEM keys are stored with literal \n
+  // escapes; convert them back to newlines for the crypto library.
+  googlePrivateKey: readString(process.env.GOOGLE_PRIVATE_KEY).replace(/\\n/g, "\n"),
 };
 
 /**
@@ -144,4 +158,13 @@ export function isGoogleReviewsConfigured(): boolean {
  */
 export function isGitHubSyncConfigured(): boolean {
   return serverEnv.githubToken.length > 0 && serverEnv.githubRepo.includes("/");
+}
+
+/** Whether the Google Sheets lead funnel is configured (service account + sheet). */
+export function isGoogleSheetsConfigured(): boolean {
+  return (
+    serverEnv.googleSheetsId.length > 0 &&
+    serverEnv.googleServiceAccountEmail.length > 0 &&
+    serverEnv.googlePrivateKey.length > 0
+  );
 }

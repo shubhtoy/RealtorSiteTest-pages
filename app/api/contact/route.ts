@@ -6,7 +6,15 @@ import path from "node:path";
 import { NextResponse } from "next/server";
 
 import { rateLimit } from "@/lib/rate-limit";
-import { isAppsScriptConfigured, isSmtpConfigured, serverEnv } from "@/lib/server-env";
+import { getSiteContent } from "@/lib/content/get-site-content";
+import { renderSubject } from "@/lib/contact/subject";
+import { appendSubmissionToSheet } from "@/lib/contact/google-sheets.server";
+import {
+  isAppsScriptConfigured,
+  isGoogleSheetsConfigured,
+  isSmtpConfigured,
+  serverEnv,
+} from "@/lib/server-env";
 
 // nodemailer and node:fs require the Node.js runtime (not Edge).
 export const runtime = "nodejs";
@@ -43,7 +51,7 @@ type ContactSubmission = {
 type FieldErrors = Partial<Record<"fullName" | "email" | "phone", string>>;
 
 type DeliveryResult = {
-  channel: "apps-script" | "smtp";
+  channel: "apps-script" | "smtp" | "google-sheets";
   ok: boolean;
   error?: string;
 };
@@ -74,6 +82,20 @@ function countDigits(value: string): number {
  */
 function sanitizeHeaderValue(value: string): string {
   return value.replace(/[\r\n\u0000-\u001f\u007f]+/g, " ").trim();
+}
+
+/** Deliver the lead as a new row in the configured Google Sheet. */
+async function deliverToSheet(submission: ContactSubmission): Promise<DeliveryResult> {
+  try {
+    await appendSubmissionToSheet(submission);
+    return { channel: "google-sheets", ok: true };
+  } catch (error) {
+    return {
+      channel: "google-sheets",
+      ok: false,
+      error: error instanceof Error ? error.message : "Google Sheets append failed",
+    };
+  }
 }
 
 function validateForm(raw: unknown): { form: ContactForm } | { errors: FieldErrors } {
@@ -147,7 +169,10 @@ async function deliverToAppsScript(submission: ContactSubmission): Promise<Deliv
 }
 
 /** Send the lead via SMTP (nodemailer), replying to the submitter. */
-async function deliverViaSmtp(submission: ContactSubmission): Promise<DeliveryResult> {
+async function deliverViaSmtp(
+  submission: ContactSubmission,
+  options: { toEmail: string; subject: string },
+): Promise<DeliveryResult> {
   try {
     const { default: nodemailer } = await import("nodemailer");
     const transporter = nodemailer.createTransport({
@@ -172,9 +197,9 @@ async function deliverViaSmtp(submission: ContactSubmission): Promise<DeliveryRe
     const { form } = submission;
     await transporter.sendMail({
       from,
-      to: serverEnv.contactToEmail,
+      to: options.toEmail,
       replyTo: sanitizeHeaderValue(form.email),
-      subject: sanitizeHeaderValue(`New Tour Request - ${form.fullName}`),
+      subject: sanitizeHeaderValue(options.subject),
       text: [
         `Submitted: ${submission.submittedAt}`,
         `Site: ${submission.siteName}`,
@@ -257,10 +282,26 @@ export async function POST(request: Request) {
     console.error("[contact] Failed to persist submission:", error);
   }
 
-  // 5. Deliver to every configured channel (best effort, in parallel).
+  // 5. Resolve editable delivery settings from published site content (Studio),
+  //    falling back to the non-secret env default. Transport credentials (SMTP,
+  //    service account) always come from the environment, never from content.
+  let recipient = serverEnv.contactToEmail;
+  let subject = `New Tour Request - ${submission.form.fullName}`;
+  try {
+    const content = await getSiteContent();
+    const emailCfg = content.contact.integrations.smtp;
+    if (emailCfg.toEmail.trim()) recipient = emailCfg.toEmail.trim();
+    subject = renderSubject(emailCfg.subjectTemplate, submission.form);
+  } catch (error) {
+    console.error("[contact] Failed to read editable email settings:", error);
+  }
+
+  // 6. Deliver to every configured channel (best effort, in parallel).
   const deliveries: Promise<DeliveryResult>[] = [];
   if (isAppsScriptConfigured()) deliveries.push(deliverToAppsScript(submission));
-  if (isSmtpConfigured()) deliveries.push(deliverViaSmtp(submission));
+  if (isSmtpConfigured())
+    deliveries.push(deliverViaSmtp(submission, { toEmail: recipient, subject }));
+  if (isGoogleSheetsConfigured()) deliveries.push(deliverToSheet(submission));
   const results = await Promise.all(deliveries);
 
   // 6. Build the response.
