@@ -19,6 +19,14 @@ const nextConfig: NextConfig = {
     // Serve modern formats via the built-in optimizer for local /public images.
     // AVIF first (smaller), WebP fallback. Local images use the default loader.
     formats: ["image/avif", "image/webp"],
+    // Uploaded media is committed to the repo and served from GitHub's raw CDN
+    // (portable across hosts). Allow next/image to load from that host.
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "raw.githubusercontent.com",
+      },
+    ],
   },
   // Baseline security headers applied to every route (ported from the Express
   // server's global header middleware in server/index.mjs).

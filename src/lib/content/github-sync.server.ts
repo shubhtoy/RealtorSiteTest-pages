@@ -29,6 +29,17 @@ function repoParts(): { owner: string; repo: string } {
   return { owner, repo };
 }
 
+/**
+ * Public raw-CDN URL for a committed file. Served by GitHub immediately after a
+ * commit (no site redeploy needed), so it is used as the live URL for uploaded
+ * media. Portable across hosts because it depends only on GitHub, not on the
+ * platform serving the site.
+ */
+export function rawContentUrl(repoPath: string): string {
+  const { owner, repo } = repoParts();
+  return `https://raw.githubusercontent.com/${owner}/${repo}/${serverEnv.githubBranch}/${repoPath}`;
+}
+
 function authHeaders(): Record<string, string> {
   return {
     Authorization: `Bearer ${serverEnv.githubToken}`,
