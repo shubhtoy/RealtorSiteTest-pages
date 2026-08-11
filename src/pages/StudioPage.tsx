@@ -188,6 +188,7 @@ interface ContactIntegrationsProps {
   [key: string]: unknown;
   smtpJson?: string;
   submitHooksJson?: string;
+  email?: Record<string, unknown>;
 }
 
 export default function StudioPage() {
@@ -876,6 +877,25 @@ export default function StudioPage() {
               sendFormData: "true",
               headersJson: "{}",
             })),
+            email: {
+              type: "object",
+              label:
+                "Emails — placeholders: {{fullName}} {{email}} {{phone}} {{bedroom}} {{moveIn}} {{tourType}} {{message}}",
+              objectFields: {
+                ackEnabled: {
+                  type: "radio",
+                  label: "Send acknowledgement to the submitter",
+                  options: [
+                    { label: "On", value: "true" },
+                    { label: "Off", value: "false" },
+                  ],
+                },
+                ackSubjectTemplate: { type: "text", label: "Acknowledgement subject" },
+                ackBodyTemplate: { type: "textarea", label: "Acknowledgement body" },
+                internalSubjectTemplate: { type: "text", label: "Internal notification subject" },
+                internalBodyTemplate: { type: "textarea", label: "Internal notification body" },
+              },
+            },
           },
           render: (props: ContactIntegrationsProps) => {
             const smtp = PuckDataService.parseObject(props?.smtpJson, {} as Record<string, unknown>);
@@ -1215,6 +1235,13 @@ export default function StudioPage() {
             id: "contact-integrations",
             smtpJson: JSON.stringify(draft.contact.integrations.smtp, null, 2),
             submitHooksJson: JSON.stringify(draft.contact.integrations.submitHooks, null, 2),
+            email: {
+              ackEnabled: String(draft.contact.email.ackEnabled),
+              ackSubjectTemplate: draft.contact.email.ackSubjectTemplate,
+              ackBodyTemplate: draft.contact.email.ackBodyTemplate,
+              internalSubjectTemplate: draft.contact.email.internalSubjectTemplate,
+              internalBodyTemplate: draft.contact.email.internalBodyTemplate,
+            },
           },
         },
         {
@@ -1439,6 +1466,29 @@ export default function StudioPage() {
         sectionVisibility: {
           ...draft.contact.sectionVisibility,
           ...PuckDataService.parseObject(contactVisibilityEntry?.contactSectionVisibilityJson as string | undefined, draft.contact.sectionVisibility),
+        },
+        email: {
+          ackEnabled:
+            String(
+              (contactIntegrationsEntry?.email as Record<string, unknown> | undefined)?.ackEnabled ??
+                draft.contact.email.ackEnabled,
+            ) === "true",
+          ackSubjectTemplate: String(
+            (contactIntegrationsEntry?.email as Record<string, unknown> | undefined)
+              ?.ackSubjectTemplate ?? draft.contact.email.ackSubjectTemplate,
+          ),
+          ackBodyTemplate: String(
+            (contactIntegrationsEntry?.email as Record<string, unknown> | undefined)
+              ?.ackBodyTemplate ?? draft.contact.email.ackBodyTemplate,
+          ),
+          internalSubjectTemplate: String(
+            (contactIntegrationsEntry?.email as Record<string, unknown> | undefined)
+              ?.internalSubjectTemplate ?? draft.contact.email.internalSubjectTemplate,
+          ),
+          internalBodyTemplate: String(
+            (contactIntegrationsEntry?.email as Record<string, unknown> | undefined)
+              ?.internalBodyTemplate ?? draft.contact.email.internalBodyTemplate,
+          ),
         },
         integrations: {
           smtp: {
