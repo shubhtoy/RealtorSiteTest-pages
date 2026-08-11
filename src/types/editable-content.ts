@@ -217,6 +217,13 @@ export type ContactLayer = {
     tourType: string[];
   };
   submitText: string;
+  email: {
+    ackEnabled: boolean;
+    ackSubjectTemplate: string;
+    ackBodyTemplate: string;
+    internalSubjectTemplate: string;
+    internalBodyTemplate: string;
+  };
   integrations: {
     smtp: {
       enabled: boolean;

@@ -319,21 +319,17 @@ export async function POST(request: Request) {
     if (emailCfg.toEmail.trim()) recipient = emailCfg.toEmail.trim();
     if (content.global.email?.trim()) recipient = content.global.email.trim();
     subject = renderSubject(emailCfg.subjectTemplate, submission.form);
-    // Optional Studio-editable ack/internal templates (content.contact.email),
-    // read defensively so any missing field falls back to the defaults above.
-    const editable = (content.contact as unknown as { email?: Partial<typeof emailTemplates> })
-      .email;
-    if (editable) {
-      emailTemplates.ackEnabled = editable.ackEnabled ?? emailTemplates.ackEnabled;
-      emailTemplates.ackSubjectTemplate =
-        editable.ackSubjectTemplate?.trim() || emailTemplates.ackSubjectTemplate;
-      emailTemplates.ackBodyTemplate =
-        editable.ackBodyTemplate?.trim() || emailTemplates.ackBodyTemplate;
-      emailTemplates.internalSubjectTemplate =
-        editable.internalSubjectTemplate?.trim() || emailTemplates.internalSubjectTemplate;
-      emailTemplates.internalBodyTemplate =
-        editable.internalBodyTemplate?.trim() || emailTemplates.internalBodyTemplate;
-    }
+    // Studio-editable ack/internal templates (content.contact.email).
+    const editable = content.contact.email;
+    emailTemplates.ackEnabled = editable.ackEnabled;
+    emailTemplates.ackSubjectTemplate =
+      editable.ackSubjectTemplate?.trim() || emailTemplates.ackSubjectTemplate;
+    emailTemplates.ackBodyTemplate =
+      editable.ackBodyTemplate?.trim() || emailTemplates.ackBodyTemplate;
+    emailTemplates.internalSubjectTemplate =
+      editable.internalSubjectTemplate?.trim() || emailTemplates.internalSubjectTemplate;
+    emailTemplates.internalBodyTemplate =
+      editable.internalBodyTemplate?.trim() || emailTemplates.internalBodyTemplate;
   } catch (error) {
     console.error("[contact] Failed to read editable email settings:", error);
   }

@@ -159,6 +159,20 @@ export function validateEditableSiteDocument(document: EditableSiteDocument): { 
   if (!isObject(document.contact.formOptions) || !isStringArray(document.contact.formOptions.bedroom) || !isStringArray(document.contact.formOptions.moveIn) || !isStringArray(document.contact.formOptions.tourType)) {
     errors.push("contact.formOptions must contain string arrays");
   }
+  if (!isObject(document.contact.email)) {
+    errors.push("contact.email is required");
+  } else {
+    if (!isBoolean(document.contact.email.ackEnabled))
+      errors.push("contact.email.ackEnabled must be a boolean");
+    if (!isString(document.contact.email.ackSubjectTemplate))
+      errors.push("contact.email.ackSubjectTemplate must be a string");
+    if (!isString(document.contact.email.ackBodyTemplate))
+      errors.push("contact.email.ackBodyTemplate must be a string");
+    if (!isString(document.contact.email.internalSubjectTemplate))
+      errors.push("contact.email.internalSubjectTemplate must be a string");
+    if (!isString(document.contact.email.internalBodyTemplate))
+      errors.push("contact.email.internalBodyTemplate must be a string");
+  }
   if (!isObject(document.contact.integrations) || !isObject(document.contact.integrations.smtp)) {
     errors.push("contact.integrations.smtp is required");
   } else {
@@ -310,6 +324,10 @@ function hydrateDocument(partial: EditableSiteDocument): EditableSiteDocument {
       sectionVisibility: {
         ...defaultEditableSiteDocument.contact.sectionVisibility,
         ...partial.contact?.sectionVisibility,
+      },
+      email: {
+        ...defaultEditableSiteDocument.contact.email,
+        ...partial.contact?.email,
       },
       formOptions: {
         ...defaultEditableSiteDocument.contact.formOptions,
