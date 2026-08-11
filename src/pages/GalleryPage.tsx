@@ -8,6 +8,7 @@ import Captions from "yet-another-react-lightbox/plugins/captions";
 import Counter from "yet-another-react-lightbox/plugins/counter";
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
+import Video from "yet-another-react-lightbox/plugins/video";
 import { Reveal } from "@/lib/motion";
 import { setPageMeta } from "@/lib/seo";
 import { OptimizedImage } from "@/components/media/OptimizedImage";
@@ -51,12 +52,28 @@ export default function GalleryPage() {
 
   const lightboxSlides = useMemo(
     () =>
-      filteredItems.map((item) => ({
-        src: resolveAppHref(item.src),
-        alt: item.alt,
-        title: item.label,
-        description: item.category,
-      })),
+      filteredItems.map((item) => {
+        const src = resolveAppHref(item.src);
+        const isVideo = item.type === "video" || /\.(mp4|webm|ogg)$/i.test(item.src);
+        if (isVideo) {
+          const ext = (item.src.split(".").pop() || "mp4").toLowerCase();
+          const mime = ext === "webm" ? "video/webm" : ext === "ogg" ? "video/ogg" : "video/mp4";
+          const poster = (item as { poster?: string }).poster;
+          return {
+            type: "video" as const,
+            poster: poster ? resolveAppHref(poster) : undefined,
+            sources: [{ src, type: mime }],
+            title: item.label,
+            description: item.category,
+          };
+        }
+        return {
+          src,
+          alt: item.alt,
+          title: item.label,
+          description: item.category,
+        };
+      }),
     [filteredItems],
   );
 
@@ -118,9 +135,9 @@ export default function GalleryPage() {
                   role="button"
                   tabIndex={0}
                   aria-label={`View ${item.label} in lightbox`}
-                  onClick={() => !isVideo && setLightboxIndex(index)}
+                  onClick={() => setLightboxIndex(index)}
                   onKeyDown={(e) => {
-                    if ((e.key === "Enter" || e.key === " ") && !isVideo) {
+                    if (e.key === "Enter" || e.key === " ") {
                       e.preventDefault();
                       setLightboxIndex(index);
                     }
@@ -200,7 +217,8 @@ export default function GalleryPage() {
         close={() => setLightboxIndex(-1)}
         index={lightboxIndex >= 0 ? lightboxIndex : 0}
         slides={lightboxSlides}
-        plugins={[Captions, Counter, Thumbnails, Zoom]}
+        plugins={[Captions, Counter, Thumbnails, Zoom, Video]}
+        video={{ controls: true, playsInline: true, autoPlay: true }}
         captions={{ descriptionTextAlign: "center" }}
         counter={{ container: { style: { top: 18, left: 18 } } }}
         thumbnails={{ position: "bottom", border: 0, borderRadius: 10, gap: 10 }}
