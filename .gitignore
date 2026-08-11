@@ -94,3 +94,6 @@ pnpm-lock.yaml
 # Misc
 .svelte-kit
 .astro
+
+# Live CMS content is written at runtime (disk-mode) and persists on the server volume; not tracked.
+/public/content.json
