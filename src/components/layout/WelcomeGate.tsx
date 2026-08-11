@@ -9,6 +9,12 @@ import { useEditableContent } from "@/context/EditableContentContext";
 // Full-bleed splash photo, with a graceful fallback if it fails to load.
 const PRIMARY_BG = "/images/exterior.jpg";
 const FALLBACK_BG = "/images/aerial.jpg";
+// Aerial drone flyover used as the splash background. Falls back to the photo
+// on reduced-motion or load error. Served from the persisted uploads directory.
+const AERIAL_VIDEO = "/uploads/ariel-view-1779388979231.mp4";
+// Property location + contact shown on the splash.
+const PROPERTY_ADDRESS = "1204 Veterans Memorial Hwy SW, Mableton, GA 30126";
+const CONTACT_EMAIL = "Contact@babaflats.com";
 
 /**
  * Welcome splash screen for the home page.
@@ -25,6 +31,7 @@ export default function WelcomeGate() {
   const reduced = useReducedMotion();
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const [bgSrc, setBgSrc] = useState<string>(PRIMARY_BG);
+  const [videoFailed, setVideoFailed] = useState<boolean>(false);
   // Visible on first render (server + client) so there is no hydration jump and
   // the splash reliably reappears on every refresh.
   const [visible, setVisible] = useState<boolean>(true);
@@ -79,23 +86,40 @@ export default function WelcomeGate() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0, transition: { duration: reduced ? 0 : 0.5, ease: "easeInOut" } }}
         >
-          {/* Full-bleed background photo with a slow ken-burns zoom. */}
-          <motion.div
-            className="absolute inset-0"
-            initial={{ scale: 1 }}
-            animate={{ scale: reduced ? 1 : 1.08 }}
-            transition={reduced ? { duration: 0 } : { duration: 18, ease: "easeOut" }}
-          >
-            <Image
-              src={bgSrc}
-              alt=""
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover"
-              onError={() => setBgSrc((prev) => (prev === PRIMARY_BG ? FALLBACK_BG : prev))}
-            />
-          </motion.div>
+          {/* Full-bleed aerial video background; poster + reduced-motion/error fallback to the photo. */}
+          <div className="absolute inset-0">
+            {!reduced && !videoFailed ? (
+              <video
+                className="h-full w-full object-cover"
+                autoPlay
+                muted
+                loop
+                playsInline
+                poster={FALLBACK_BG}
+                aria-hidden
+                onError={() => setVideoFailed(true)}
+              >
+                <source src={AERIAL_VIDEO} type="video/mp4" />
+              </video>
+            ) : (
+              <motion.div
+                className="absolute inset-0"
+                initial={{ scale: 1 }}
+                animate={{ scale: reduced ? 1 : 1.08 }}
+                transition={reduced ? { duration: 0 } : { duration: 18, ease: "easeOut" }}
+              >
+                <Image
+                  src={bgSrc}
+                  alt=""
+                  fill
+                  priority
+                  sizes="100vw"
+                  className="object-cover"
+                  onError={() => setBgSrc((prev) => (prev === PRIMARY_BG ? FALLBACK_BG : prev))}
+                />
+              </motion.div>
+            )}
+          </div>
 
           {/* Legibility scrim. */}
           <div className="pointer-events-none absolute inset-0 bg-overlay-dark/35" />
@@ -126,6 +150,24 @@ export default function WelcomeGate() {
               >
                 {welcome.message}
               </p>
+              <div
+                className="mt-8 flex flex-col gap-1.5 text-sm text-white/85 md:text-base"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <p className="flex items-start gap-2 font-semibold text-white/90">
+                  <span aria-hidden>📍</span>
+                  <span>{PROPERTY_ADDRESS}</span>
+                </p>
+                <p className="flex items-center gap-2">
+                  <span aria-hidden>✉️</span>
+                  <a
+                    href={`mailto:${CONTACT_EMAIL}`}
+                    className="underline-offset-2 hover:underline"
+                  >
+                    {CONTACT_EMAIL}
+                  </a>
+                </p>
+              </div>
             </div>
           </motion.div>
 
