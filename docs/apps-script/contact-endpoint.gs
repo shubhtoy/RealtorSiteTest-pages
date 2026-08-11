@@ -50,28 +50,50 @@ function doPost(e) {
       form.message || "",
     ]);
 
-    // 2. Email the lead details to the leasing inbox.
-    var lines = [
-      "New tour request from " + (body && body.siteName ? body.siteName : "Website"),
-      "",
-      "Submitted: " + submittedAt,
-      "Full name: " + (form.fullName || ""),
-      "Email: " + (form.email || ""),
-      "Phone: " + (form.phone || ""),
-      "Bedroom: " + (form.bedroom || ""),
-      "Move-in: " + (form.moveIn || ""),
-      "Tour type: " + (form.tourType || ""),
-      "",
-      "Message:",
-      form.message || "(none)",
-    ];
+    // 2. Send email(s). Prefer the messages rendered by the website server
+    //    (acknowledgement to the submitter + internal notification, each with
+    //    its own cc / replyTo). Fall back to a single internal email for older
+    //    callers that don't send an `emails` array.
+    // NOTE: after pasting this file into the Apps Script editor you MUST create
+    //    a new Web App deployment (or "Manage deployments" → edit → Deploy) for
+    //    the change to take effect.
+    var emails = (body && body.emails) || [];
+    if (emails.length) {
+      for (var i = 0; i < emails.length; i++) {
+        var m = emails[i];
+        if (!m || !m.to) continue;
+        var opts = {
+          to: m.to,
+          subject: m.subject || "Baba Flats",
+          body: m.body || "",
+        };
+        if (m.cc) opts.cc = m.cc;
+        if (m.replyTo) opts.replyTo = m.replyTo;
+        MailApp.sendEmail(opts);
+      }
+    } else {
+      var lines = [
+        "New tour request from " + (body && body.siteName ? body.siteName : "Website"),
+        "",
+        "Submitted: " + submittedAt,
+        "Full name: " + (form.fullName || ""),
+        "Email: " + (form.email || ""),
+        "Phone: " + (form.phone || ""),
+        "Bedroom: " + (form.bedroom || ""),
+        "Move-in: " + (form.moveIn || ""),
+        "Tour type: " + (form.tourType || ""),
+        "",
+        "Message:",
+        form.message || "(none)",
+      ];
 
-    MailApp.sendEmail({
-      to: CONTACT_TO_EMAIL,
-      replyTo: form.email || undefined,
-      subject: "New Tour Request - " + (form.fullName || "Website lead"),
-      body: lines.join("\n"),
-    });
+      MailApp.sendEmail({
+        to: CONTACT_TO_EMAIL,
+        replyTo: form.email || undefined,
+        subject: "New Tour Request - " + (form.fullName || "Website lead"),
+        body: lines.join("\n"),
+      });
+    }
 
     return ContentService.createTextOutput(
       JSON.stringify({ ok: true }),

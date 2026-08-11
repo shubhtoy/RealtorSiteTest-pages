@@ -3,6 +3,7 @@ import { EditableContentProvider } from "@/context/EditableContentContext";
 import SiteHeader from "@/components/layout/SiteHeader";
 import SiteFooter from "@/components/layout/SiteFooter";
 import WelcomeGate from "@/components/layout/WelcomeGate";
+import { LocalBusinessJsonLd } from "@/components/seo/LocalBusinessJsonLd";
 
 /**
  * Server layout for the public site.
@@ -21,6 +22,7 @@ export default async function PublicLayout({
 
   return (
     <EditableContentProvider initialContent={content}>
+      <LocalBusinessJsonLd />
       <SiteHeader />
       <main id="main-content">{children}</main>
       <SiteFooter />

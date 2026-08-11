@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     template: "%s | Baba Flats",
   },
   description:
-    "Modern apartment living at Baba Flats — thoughtfully designed homes with premium amenities.",
+    "Modern apartment living at Baba Flats — thoughtfully designed 1BR, 2BR, and 3BR homes with premium amenities at 1204 Veterans Memorial Hwy SW, Mableton, GA 30126. Call (770) 726-8907.",
 };
 
 export default function RootLayout({
