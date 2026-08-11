@@ -1,4 +1,5 @@
 import { readFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { defaultEditableSiteDocument } from "@/lib/editable-content-defaults";
@@ -39,13 +40,19 @@ describe("resolveSiteContent", () => {
     expect(resolveSiteContent(JSON.stringify("a string, not an object"))).toEqual(defaultEditableSiteDocument);
   });
 
-  it("accepts the real published public/content.json (smoke check)", async () => {
-    const raw = await readFile(path.join(process.cwd(), "public", "content.json"), "utf8");
+  // content.json is runtime data (disk-mode, gitignored) and may be absent in a
+  // fresh checkout/CI. Only smoke-check it when a runtime file is present.
+  const contentPath = path.join(process.cwd(), "public", "content.json");
+  it.skipIf(!existsSync(contentPath))(
+    "accepts the real published public/content.json (smoke check)",
+    async () => {
+      const raw = await readFile(contentPath, "utf8");
 
-    const result = resolveSiteContent(raw);
+      const result = resolveSiteContent(raw);
 
-    expect(typeof result.global.siteName).toBe("string");
-    expect(result.global.siteName.length).toBeGreaterThan(0);
-    expect(typeof result.version).toBe("number");
-  });
+      expect(typeof result.global.siteName).toBe("string");
+      expect(result.global.siteName.length).toBeGreaterThan(0);
+      expect(typeof result.version).toBe("number");
+    },
+  );
 });

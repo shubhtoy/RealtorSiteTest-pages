@@ -12,9 +12,6 @@ const FALLBACK_BG = "/images/aerial.jpg";
 // Aerial drone flyover used as the splash background. Falls back to the photo
 // on reduced-motion or load error. Served from the persisted uploads directory.
 const AERIAL_VIDEO = "/uploads/ariel-view-1779388979231.mp4";
-// Property location + contact shown on the splash.
-const PROPERTY_ADDRESS = "1204 Veterans Memorial Hwy SW, Mableton, GA 30126";
-const CONTACT_EMAIL = "Contact@babaflats.com";
 
 /**
  * Welcome splash screen for the home page.
@@ -156,15 +153,22 @@ export default function WelcomeGate() {
               >
                 <p className="flex items-start gap-2 font-semibold text-white/90">
                   <span aria-hidden>📍</span>
-                  <span>{PROPERTY_ADDRESS}</span>
+                  <span>{current.global.addressLine}</span>
                 </p>
-                <p className="flex items-center gap-2">
-                  <span aria-hidden>✉️</span>
+                <p className="flex flex-wrap items-center gap-x-5 gap-y-1.5">
                   <a
-                    href={`mailto:${CONTACT_EMAIL}`}
-                    className="underline-offset-2 hover:underline"
+                    href={`tel:${current.global.phone.replace(/[^+\d]/g, "")}`}
+                    className="flex items-center gap-2 underline-offset-2 hover:underline"
                   >
-                    {CONTACT_EMAIL}
+                    <span aria-hidden>📞</span>
+                    {current.global.phone}
+                  </a>
+                  <a
+                    href={`mailto:${current.global.email}`}
+                    className="flex items-center gap-2 underline-offset-2 hover:underline"
+                  >
+                    <span aria-hidden>✉️</span>
+                    {current.global.email}
                   </a>
                 </p>
               </div>

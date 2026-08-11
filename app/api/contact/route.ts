@@ -8,6 +8,13 @@ import { NextResponse } from "next/server";
 import { rateLimit } from "@/lib/rate-limit";
 import { getSiteContent } from "@/lib/content/get-site-content";
 import { renderSubject } from "@/lib/contact/subject";
+import {
+  renderTemplate,
+  DEFAULT_ACK_SUBJECT,
+  DEFAULT_ACK_BODY,
+  DEFAULT_INTERNAL_SUBJECT,
+  DEFAULT_INTERNAL_BODY,
+} from "@/lib/contact/template";
 import { appendSubmissionToSheet } from "@/lib/contact/google-sheets.server";
 import {
   isAppsScriptConfigured,
@@ -30,6 +37,15 @@ const SUBMISSIONS_FILE = path.join(SUBMISSIONS_DIR, "contact-submissions.json");
 
 // Mirrors the client contact form validator in src/pages/ContactPage.tsx.
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// A rendered email handed to the Apps Script relay to send via MailApp.
+type EmailMessage = {
+  to: string;
+  cc?: string;
+  replyTo?: string;
+  subject: string;
+  body: string;
+};
 
 type ContactForm = {
   fullName: string;
@@ -144,12 +160,15 @@ async function persistSubmission(submission: ContactSubmission): Promise<void> {
 }
 
 /** POST the raw submission JSON to the Google Apps Script Web App. */
-async function deliverToAppsScript(submission: ContactSubmission): Promise<DeliveryResult> {
+async function deliverToAppsScript(
+  submission: ContactSubmission,
+  emails: EmailMessage[] = [],
+): Promise<DeliveryResult> {
   try {
     const response = await fetch(serverEnv.contactAppsScriptUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(submission),
+      body: JSON.stringify({ ...submission, emails }),
     });
     if (!response.ok) {
       return {
@@ -287,18 +306,61 @@ export async function POST(request: Request) {
   //    service account) always come from the environment, never from content.
   let recipient = serverEnv.contactToEmail;
   let subject = `New Tour Request - ${submission.form.fullName}`;
+  const emailTemplates = {
+    ackEnabled: true,
+    ackSubjectTemplate: DEFAULT_ACK_SUBJECT,
+    ackBodyTemplate: DEFAULT_ACK_BODY,
+    internalSubjectTemplate: DEFAULT_INTERNAL_SUBJECT,
+    internalBodyTemplate: DEFAULT_INTERNAL_BODY,
+  };
   try {
     const content = await getSiteContent();
     const emailCfg = content.contact.integrations.smtp;
     if (emailCfg.toEmail.trim()) recipient = emailCfg.toEmail.trim();
+    if (content.global.email?.trim()) recipient = content.global.email.trim();
     subject = renderSubject(emailCfg.subjectTemplate, submission.form);
+    // Optional Studio-editable ack/internal templates (content.contact.email),
+    // read defensively so any missing field falls back to the defaults above.
+    const editable = (content.contact as unknown as { email?: Partial<typeof emailTemplates> })
+      .email;
+    if (editable) {
+      emailTemplates.ackEnabled = editable.ackEnabled ?? emailTemplates.ackEnabled;
+      emailTemplates.ackSubjectTemplate =
+        editable.ackSubjectTemplate?.trim() || emailTemplates.ackSubjectTemplate;
+      emailTemplates.ackBodyTemplate =
+        editable.ackBodyTemplate?.trim() || emailTemplates.ackBodyTemplate;
+      emailTemplates.internalSubjectTemplate =
+        editable.internalSubjectTemplate?.trim() || emailTemplates.internalSubjectTemplate;
+      emailTemplates.internalBodyTemplate =
+        editable.internalBodyTemplate?.trim() || emailTemplates.internalBodyTemplate;
+    }
   } catch (error) {
     console.error("[contact] Failed to read editable email settings:", error);
   }
 
+  // Build the acknowledgement email (to the submitter, cc + reply-to the leasing
+  // inbox) and the internal-notification email for the Apps Script relay.
+  const form = submission.form;
+  const emails: EmailMessage[] = [];
+  if (emailTemplates.ackEnabled && form.email) {
+    emails.push({
+      to: form.email,
+      cc: recipient,
+      replyTo: recipient,
+      subject: renderTemplate(emailTemplates.ackSubjectTemplate, form),
+      body: renderTemplate(emailTemplates.ackBodyTemplate, form),
+    });
+  }
+  emails.push({
+    to: recipient,
+    replyTo: form.email,
+    subject: renderTemplate(emailTemplates.internalSubjectTemplate, form),
+    body: renderTemplate(emailTemplates.internalBodyTemplate, form),
+  });
+
   // 6. Deliver to every configured channel (best effort, in parallel).
   const deliveries: Promise<DeliveryResult>[] = [];
-  if (isAppsScriptConfigured()) deliveries.push(deliverToAppsScript(submission));
+  if (isAppsScriptConfigured()) deliveries.push(deliverToAppsScript(submission, emails));
   if (isSmtpConfigured())
     deliveries.push(deliverViaSmtp(submission, { toEmail: recipient, subject }));
   if (isGoogleSheetsConfigured()) deliveries.push(deliverToSheet(submission));

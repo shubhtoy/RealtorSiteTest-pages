@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { OptimizedImage } from "@/components/media/OptimizedImage";
+import { AerialBand } from "@/components/media/AerialBand";
 import { Building2, CarFront, PawPrint, MapPin, ShieldCheck, Sparkles } from "lucide-react";
 import { useEditableContent } from "@/context/EditableContentContext";
 import { resolveAppHref } from "@/lib/utils";
@@ -217,6 +218,8 @@ export default function HomePage() {
           <FocusCards cards={home.focusCards} />
         </div>
       </section> : null}
+
+      <AerialBand />
 
       {home.sectionVisibility.unitExplorer ? <section data-studio-section="HomeFloorPlans" className="bg-secondary/30 py-12 md:py-24">
         <div className="mx-auto w-[min(1140px,92vw)]">
