@@ -96,6 +96,19 @@ export default function SiteFooter() {
           <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} {global.siteName}. All rights reserved.
           </p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Made with{" "}
+            <span aria-hidden className="text-primary">♥</span>
+            <span className="sr-only">love</span> by{" "}
+            <a
+              href="https://linkedin.com/in/shubh-mittal"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-foreground underline-offset-2 transition-colors hover:text-primary hover:underline"
+            >
+              Shubh Mittal
+            </a>
+          </p>
         </div>
       </div>
     </footer>

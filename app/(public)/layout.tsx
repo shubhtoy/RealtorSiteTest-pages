@@ -4,6 +4,7 @@ import SiteHeader from "@/components/layout/SiteHeader";
 import SiteFooter from "@/components/layout/SiteFooter";
 import WelcomeGate from "@/components/layout/WelcomeGate";
 import { LocalBusinessJsonLd } from "@/components/seo/LocalBusinessJsonLd";
+import { Toaster } from "sonner";
 
 /**
  * Server layout for the public site.
@@ -27,6 +28,7 @@ export default async function PublicLayout({
       <main id="main-content">{children}</main>
       <SiteFooter />
       <WelcomeGate />
+      <Toaster richColors closeButton position="top-center" />
     </EditableContentProvider>
   );
 }
