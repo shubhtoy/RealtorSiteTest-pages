@@ -63,6 +63,7 @@ function doPost(e) {
         var m = emails[i];
         if (!m || !m.to) continue;
         var opts = {
+          name: "Baba Flats",
           to: m.to,
           subject: m.subject || "Baba Flats",
           body: m.body || "",
@@ -88,6 +89,7 @@ function doPost(e) {
       ];
 
       MailApp.sendEmail({
+        name: "Baba Flats",
         to: CONTACT_TO_EMAIL,
         replyTo: form.email || undefined,
         subject: "New Tour Request - " + (form.fullName || "Website lead"),
