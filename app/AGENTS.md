@@ -11,7 +11,7 @@ for stack, commands, and deploy.
   server-authoritative content, renders `SiteHeader`/`SiteFooter`/`WelcomeGate`, the
   `LocalBusinessJsonLd` structured data, and the sonner `<Toaster/>`.
 - `app/(public)/page.tsx`, `gallery/page.tsx`, `contact/page.tsx` — thin route files that render the
-  page components from `src/pages/*`.
+  page components from `src/views/*`.
 - `app/studio/` — the Puck-based content Studio (password-gated).
 - `app/api/*` — route handlers. `runtime = "nodejs"` and `dynamic = "force-dynamic"` where they do
   filesystem I/O or send email (e.g. `app/api/contact/route.ts`).

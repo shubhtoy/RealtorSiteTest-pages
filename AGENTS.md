@@ -18,16 +18,16 @@ in-browser content Studio (Puck) so non-technical staff can edit the site.
 
 ## Repository map
 
-| Path                       | What lives here                                                                                                        |
-| -------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `app/`                     | Next.js App Router routes, layouts, and API route handlers (`app/api/*`).                                              |
-| `src/pages/`               | Page **components** (HomePage, GalleryPage, ContactPage, StudioPage) imported by `app/` routes. Not Next Pages Router. |
-| `src/components/`          | Reusable UI: `layout/`, `ui/`, `media/`, `seo/`, `studio/`.                                                            |
-| `src/lib/`                 | Framework-free logic: content resolve/store, contact delivery, helpers. Unit-tested.                                   |
-| `src/types/`               | Shared TypeScript types (notably the editable-content document).                                                       |
-| `src/config/`, `src/data/` | Static config and seed data.                                                                                           |
-| `docs/`                    | Operator docs, including the Google Apps Script endpoint (`docs/apps-script/`).                                        |
-| `.github/`                 | CI/CD workflows, issue/PR templates, agent skills.                                                                     |
+| Path                       | What lives here                                                                                 |
+| -------------------------- | ----------------------------------------------------------------------------------------------- |
+| `app/`                     | Next.js App Router routes, layouts, and API route handlers (`app/api/*`).                       |
+| `src/views/`               | Page **components** (HomePage, GalleryPage, ContactPage, StudioPage) imported by `app/` routes. |
+| `src/components/`          | Reusable UI: `layout/`, `ui/`, `media/`, `seo/`, `studio/`.                                     |
+| `src/lib/`                 | Framework-free logic: content resolve/store, contact delivery, helpers. Unit-tested.            |
+| `src/types/`               | Shared TypeScript types (notably the editable-content document).                                |
+| `src/config/`, `src/data/` | Static config and seed data.                                                                    |
+| `docs/`                    | Operator docs, including the Google Apps Script endpoint (`docs/apps-script/`).                 |
+| `.github/`                 | CI/CD workflows, issue/PR templates, agent skills.                                              |
 
 ## Commands (run from the repo root)
 

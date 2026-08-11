@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import { getSiteContent } from "@/lib/content/get-site-content";
-import GalleryPage from "@/pages/GalleryPage";
+import GalleryPage from "@/views/GalleryPage";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { global } = await getSiteContent();

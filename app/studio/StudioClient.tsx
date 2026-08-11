@@ -9,7 +9,7 @@ import { EditableContentProvider } from "@/context/EditableContentContext";
 // localStorage + the client-side content.json fetch. It is intentionally NOT
 // seeded with server-authoritative content (that seeding is for the public
 // site); this preserves the Studio's existing draft workflow.
-const StudioPage = dynamic(() => import("@/pages/StudioPage"), { ssr: false });
+const StudioPage = dynamic(() => import("@/views/StudioPage"), { ssr: false });
 
 export default function StudioClient() {
   return (
