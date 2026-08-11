@@ -5,6 +5,8 @@ import path from "node:path";
 
 import { NextResponse } from "next/server";
 
+import { commitFileToRepo, GitHubSyncError, rawContentUrl } from "@/lib/content/github-sync.server";
+import { isGitHubSyncConfigured } from "@/lib/server-env";
 import { requireStudioAuth } from "@/lib/studio-auth.server";
 
 // Writing files with node:fs requires the Node.js runtime (not Edge).
@@ -14,7 +16,24 @@ export const dynamic = "force-dynamic";
 
 const MAX_FILE_SIZE = 12 * 1024 * 1024; // 12MB
 const ALLOWED_MIME = /^(image|video)\//;
+// Allowlist of safe, non-executable media extensions. SVG is deliberately
+// excluded: it is an XML document that can carry inline <script>, so serving an
+// uploaded .svg from our own origin (public/uploads) would be stored XSS.
+const ALLOWED_EXT = new Set([
+  ".jpg",
+  ".jpeg",
+  ".png",
+  ".gif",
+  ".webp",
+  ".avif",
+  ".mp4",
+  ".webm",
+  ".mov",
+  ".ogg",
+]);
 const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
+/** Repo-relative directory for committed uploads (GitHub-sync mode). */
+const UPLOAD_REPO_DIR = "public/uploads";
 
 /** Sanitize an untrusted upload filename into a safe `base` + `ext` pair. */
 function sanitizeFilename(originalName: string): { base: string; ext: string } {
@@ -69,14 +88,51 @@ export async function POST(request: Request) {
         { status: 415 },
       );
     }
+    const fileExt = path.extname(file.name || "").toLowerCase();
+    if (!ALLOWED_EXT.has(fileExt)) {
+      return NextResponse.json(
+        { ok: false, message: `Unsupported file extension: ${fileExt || "none"}` },
+        { status: 415 },
+      );
+    }
     if (file.size > MAX_FILE_SIZE) {
       return NextResponse.json({ ok: false, message: "File too large" }, { status: 413 });
     }
   }
 
-  await mkdir(UPLOAD_DIR, { recursive: true });
-
   const written: { url: string }[] = [];
+
+  if (isGitHubSyncConfigured()) {
+    // Production: commit each file to the repo and serve it from GitHub's raw
+    // CDN (live immediately, no redeploy). Portable across hosting platforms.
+    try {
+      for (let index = 0; index < files.length; index += 1) {
+        const file = files[index];
+        const { base, ext } = sanitizeFilename(file.name);
+        const filename = `${base}-${Date.now()}-${index}${ext}`;
+        const repoPath = `${UPLOAD_REPO_DIR}/${filename}`;
+        const bytes = Buffer.from(await file.arrayBuffer());
+        await commitFileToRepo({
+          repoPath,
+          content: bytes,
+          message: `chore(media): upload ${filename} via Studio`,
+        });
+        written.push({ url: rawContentUrl(repoPath) });
+      }
+    } catch (error) {
+      if (error instanceof GitHubSyncError) {
+        return NextResponse.json(
+          { ok: false, message: `Upload to GitHub failed: ${error.message}` },
+          { status: 502 },
+        );
+      }
+      throw error;
+    }
+    return NextResponse.json({ ok: true, files: written });
+  }
+
+  // Local development: write to public/uploads so `next dev` serves it directly.
+  await mkdir(UPLOAD_DIR, { recursive: true });
   for (let index = 0; index < files.length; index += 1) {
     const file = files[index];
     const { base, ext } = sanitizeFilename(file.name);

@@ -5,6 +5,7 @@ import { appEnv } from "@/config/env";
 const miniLabel = "mb-1 block text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500";
 const inputCls = "w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm";
 const btnAdd = "rounded-md border border-slate-300 px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100";
+const iconBtn = "flex h-6 w-6 items-center justify-center rounded border border-slate-300 text-xs text-slate-600 hover:bg-slate-100 disabled:opacity-40";
 
 type CustomFieldRenderer = {
   value: string;
@@ -380,6 +381,7 @@ export function galleryManagerField(label: string, categoriesJson?: string) {
       const commit = (next: GalleryItem[]) => commitJson(onChange, next);
       const [isUploading, setIsUploading] = useState(false);
       const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+      const [dragIndex, setDragIndex] = useState<number | null>(null);
 
       const add = (type: "image" | "video") => {
         const next = [...items, { src: "", alt: "", label: "New item", category: categories[0] || "", type, subcategory: "" }];
@@ -407,6 +409,24 @@ export function galleryManagerField(label: string, categoriesJson?: string) {
         setExpandedIndex(to);
       };
 
+      /** Move an item from one index to another (used by drag-and-drop). */
+      const reorder = (from: number, to: number) => {
+        if (from === to || from < 0 || to < 0 || from >= items.length || to >= items.length) return;
+        const next = [...items];
+        const [moved] = next.splice(from, 1);
+        next.splice(to, 0, moved);
+        commit(next);
+        setExpandedIndex(to);
+      };
+
+      /** Insert a copy of an item directly after it. */
+      const duplicate = (index: number) => {
+        const next = [...items];
+        next.splice(index + 1, 0, { ...items[index] });
+        commit(next);
+        setExpandedIndex(index + 1);
+      };
+
       const handleUpload = async (event: ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(event.target.files || []);
         if (!files.length) return;
@@ -429,7 +449,7 @@ export function galleryManagerField(label: string, categoriesJson?: string) {
             return;
           }
           const newItems: GalleryItem[] = (json.files ?? []).map(({ url }) => {
-            const isVideo = /\.(mp4|webm|ogg)$/i.test(url);
+            const isVideo = /\.(mp4|webm|ogg|mov)$/i.test(url);
             const baseLabel =
               (url.split("/").pop() ?? "").replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ") || "New item";
             return { src: url, alt: baseLabel, label: baseLabel, category: categories[0] || "", type: (isVideo ? "video" : "image") as "image" | "video", subcategory: "" };
@@ -450,41 +470,92 @@ export function galleryManagerField(label: string, categoriesJson?: string) {
         <div style={{ display: "grid", gap: 8 }}>
           {/* Actions bar */}
           <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
-            <label className={btnAdd} style={{ cursor: isUploading ? "wait" : "pointer" }}>
-              {isUploading ? "Uploading…" : "📁 Upload Files"}
+            <label
+              className="rounded-md bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-700"
+              style={{ cursor: isUploading ? "wait" : "pointer" }}
+            >
+              {isUploading ? "Uploading…" : "⬆ Upload images / videos"}
               <input type="file" accept="image/*,video/*" multiple style={{ display: "none" }} onChange={handleUpload} disabled={isUploading} />
             </label>
-            <button type="button" className={btnAdd} onClick={() => add("image")}>+ Image</button>
-            <button type="button" className={btnAdd} onClick={() => add("video")}>+ Video</button>
-            <span style={{ fontSize: 11, color: "#64748b" }}>{items.length} items</span>
+            <button type="button" className={btnAdd} onClick={() => add("image")}>+ Image URL</button>
+            <button type="button" className={btnAdd} onClick={() => add("video")}>+ Video URL</button>
+            <span style={{ marginLeft: "auto", fontSize: 11, color: "#64748b" }}>
+              {items.length} item{items.length === 1 ? "" : "s"}
+              {items.length > 0
+                ? ` · ${items.filter((i) => i.type === "image").length} img · ${items.filter((i) => i.type === "video").length} video`
+                : ""}
+            </span>
           </div>
 
           {/* Items list */}
           <div style={{ display: "grid", gap: 6, maxHeight: 500, overflow: "auto" }}>
+            {items.length === 0 && (
+              <div style={{ border: "1px dashed #cbd5e1", borderRadius: 8, padding: 16, textAlign: "center", color: "#64748b", fontSize: 12 }}>
+                No media yet. Use <strong>Upload Files</strong> to add images or videos, or add an item and paste a URL.
+              </div>
+            )}
             {items.map((item, index) => {
               const isExpanded = expandedIndex === index;
               return (
-                <div key={`${item.src}-${index}`} style={{ border: "1px solid #e2e8f0", borderRadius: 8, overflow: "hidden" }}>
+                <div
+                  key={`${item.src}-${index}`}
+                  draggable
+                  onDragStart={(e) => {
+                    setDragIndex(index);
+                    e.dataTransfer.effectAllowed = "move";
+                  }}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    if (dragIndex !== null) reorder(dragIndex, index);
+                    setDragIndex(null);
+                  }}
+                  onDragEnd={() => setDragIndex(null)}
+                  style={{
+                    border: dragIndex === index ? "1px solid #38bdf8" : "1px solid #e2e8f0",
+                    borderRadius: 8,
+                    overflow: "hidden",
+                    opacity: dragIndex === index ? 0.5 : 1,
+                  }}
+                >
                   {/* Collapsed row */}
                   <div
-                    style={{ display: "grid", gridTemplateColumns: "48px 1fr auto", gap: 8, padding: 6, alignItems: "center", cursor: "pointer", background: isExpanded ? "#f0f9ff" : "white" }}
+                    style={{ display: "grid", gridTemplateColumns: "18px 44px minmax(0,1fr) auto", gap: 8, padding: "7px 8px", alignItems: "center", cursor: "pointer", background: isExpanded ? "#f0f9ff" : "white" }}
                     onClick={() => setExpandedIndex(isExpanded ? null : index)}
                   >
-                    <div style={{ width: 48, height: 36, borderRadius: 4, overflow: "hidden", background: "#f1f5f9" }}>
+                    <span title="Drag to reorder" style={{ cursor: "grab", color: "#94a3b8", fontSize: 14, lineHeight: 1, userSelect: "none" }}>⠿</span>
+                    <div style={{ width: 44, height: 44, borderRadius: 6, overflow: "hidden", background: "#f1f5f9", position: "relative" }}>
                       {item.type === "video" ? (
-                        <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>🎬</div>
+                        item.poster ? (
+                          <img src={resolveAppHref(item.poster)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        ) : item.src ? (
+                          <video src={resolveAppHref(item.src)} muted preload="metadata" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        ) : (
+                          <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>🎬</div>
+                        )
                       ) : item.src ? (
                         <img src={resolveAppHref(item.src)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                      ) : null}
+                      ) : (
+                        <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, color: "#94a3b8" }}>🖼️</div>
+                      )}
+                      {item.type === "video" && (
+                        <span style={{ position: "absolute", right: 2, bottom: 2, fontSize: 9, background: "rgba(0,0,0,0.6)", color: "#fff", borderRadius: 3, padding: "0 3px" }}>▶</span>
+                      )}
                     </div>
                     <div style={{ minWidth: 0 }}>
-                      <p style={{ margin: 0, fontSize: 12, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.label || "Untitled"}</p>
-                      <p style={{ margin: 0, fontSize: 10, color: "#64748b" }}>{item.category}{item.subcategory ? ` › ${item.subcategory}` : ""} • {item.type}</p>
+                      <p style={{ margin: 0, fontSize: 13, fontWeight: 600, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.label || "Untitled"}</p>
+                      <p style={{ margin: 0, fontSize: 11, color: "#64748b", lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {item.category}{item.subcategory ? ` › ${item.subcategory}` : ""} • {item.type}
+                        {!item.src && (
+                          <span style={{ marginLeft: 6, color: "#b45309", fontWeight: 600 }}>⚠ needs source</span>
+                        )}
+                      </p>
                     </div>
-                    <div style={{ display: "flex", gap: 4 }}>
-                      <button type="button" className={btnAdd} onClick={(e) => { e.stopPropagation(); move(index, -1); }} disabled={index === 0}>↑</button>
-                      <button type="button" className={btnAdd} onClick={(e) => { e.stopPropagation(); move(index, 1); }} disabled={index === items.length - 1}>↓</button>
-                      <button type="button" className={btnAdd} onClick={(e) => { e.stopPropagation(); remove(index); }}>✕</button>
+                    <div style={{ display: "flex", gap: 3 }}>
+                      <button type="button" title="Move up" className={iconBtn} onClick={(e) => { e.stopPropagation(); move(index, -1); }} disabled={index === 0}>↑</button>
+                      <button type="button" title="Move down" className={iconBtn} onClick={(e) => { e.stopPropagation(); move(index, 1); }} disabled={index === items.length - 1}>↓</button>
+                      <button type="button" title="Duplicate" className={iconBtn} onClick={(e) => { e.stopPropagation(); duplicate(index); }}>⧉</button>
+                      <button type="button" title="Remove" className={iconBtn} onClick={(e) => { e.stopPropagation(); remove(index); }}>✕</button>
                     </div>
                   </div>
 
@@ -528,6 +599,18 @@ export function galleryManagerField(label: string, categoriesJson?: string) {
                         <div>
                           <span className={miniLabel}>Poster (thumbnail)</span>
                           <input className={inputCls} value={item.poster || ""} onChange={(e) => update(index, { poster: e.target.value })} placeholder="/uploads/thumb.jpg" />
+                        </div>
+                      )}
+                      {item.src && (
+                        <div>
+                          <span className={miniLabel}>Preview</span>
+                          <div style={{ borderRadius: 6, overflow: "hidden", background: "#0f172a", maxHeight: 180, display: "flex", justifyContent: "center" }}>
+                            {item.type === "video" ? (
+                              <video src={resolveAppHref(item.src)} poster={item.poster ? resolveAppHref(item.poster) : undefined} controls muted preload="metadata" style={{ maxHeight: 180, maxWidth: "100%" }} />
+                            ) : (
+                              <img src={resolveAppHref(item.src)} alt={item.alt || ""} style={{ maxHeight: 180, maxWidth: "100%", objectFit: "contain" }} />
+                            )}
+                          </div>
                         </div>
                       )}
                     </div>

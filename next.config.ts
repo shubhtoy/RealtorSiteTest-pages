@@ -19,6 +19,14 @@ const nextConfig: NextConfig = {
     // Serve modern formats via the built-in optimizer for local /public images.
     // AVIF first (smaller), WebP fallback. Local images use the default loader.
     formats: ["image/avif", "image/webp"],
+    // Uploaded media is committed to the repo and served from GitHub's raw CDN
+    // (portable across hosts). Allow next/image to load from that host.
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "raw.githubusercontent.com",
+      },
+    ],
   },
   // Baseline security headers applied to every route (ported from the Express
   // server's global header middleware in server/index.mjs).
@@ -30,6 +38,14 @@ const nextConfig: NextConfig = {
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "X-Frame-Options", value: "DENY" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains; preload",
+          },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=()",
+          },
         ],
       },
     ];

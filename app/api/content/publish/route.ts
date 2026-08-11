@@ -6,8 +6,10 @@ import { NextResponse } from "next/server";
 import {
   ContentValidationError,
   DraftNotFoundError,
+  publishDocument,
   publishDraft,
 } from "@/lib/content/store.server";
+import { GitHubSyncError } from "@/lib/content/github-sync.server";
 import { requireStudioAuth } from "@/lib/studio-auth.server";
 
 // node:fs access requires the Node.js runtime (not Edge).
@@ -15,14 +17,31 @@ export const runtime = "nodejs";
 // Publishing mutates disk and must never be cached.
 export const dynamic = "force-dynamic";
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
 export async function POST(request: Request) {
   const unauthorized = requireStudioAuth(request);
   if (unauthorized) return unauthorized;
 
+  // Prefer a document supplied in the request body (self-contained publish that
+  // works on serverless). Fall back to the on-disk draft for local/back-compat.
+  let body: unknown = null;
   try {
-    const published = await publishDraft();
+    body = await request.json();
+  } catch {
+    body = null;
+  }
 
-    // Refresh the server-rendered public routes so the publish is live at once.
+  try {
+    const record = isRecord(body) ? body : {};
+    const published = isRecord(record.document)
+      ? await publishDocument(record.document)
+      : await publishDraft();
+
+    // Refresh the server-rendered public routes so a disk-mode publish is live
+    // at once (in GitHub-sync mode the redeploy serves the new content).
     revalidatePath("/");
     revalidatePath("/gallery");
     revalidatePath("/contact");
@@ -36,6 +55,12 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { ok: false, message: "Draft failed validation", errors: error.errors },
         { status: 400 },
+      );
+    }
+    if (error instanceof GitHubSyncError) {
+      return NextResponse.json(
+        { ok: false, message: `Publish to GitHub failed: ${error.message}` },
+        { status: 502 },
       );
     }
     return NextResponse.json(

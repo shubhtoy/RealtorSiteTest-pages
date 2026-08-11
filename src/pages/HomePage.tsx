@@ -260,9 +260,17 @@ export default function HomePage() {
                   ))}
                 </ul>
 
-                <p className="mt-4 text-[0.68rem] font-semibold uppercase tracking-[0.15em] text-accent">
+                <p className="mt-auto pt-4 text-[0.68rem] font-semibold uppercase tracking-[0.15em] text-accent">
                   {unit.priceRange}
                 </p>
+
+                <Link
+                  href={resolveAppHref("/contact")}
+                  className="group/cta mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-primary transition-all hover:gap-2.5"
+                >
+                  Schedule a tour
+                  <span aria-hidden className="transition-transform group-hover/cta:translate-x-0.5">→</span>
+                </Link>
               </article>
                   </CardItem>
                 </CardBody>
