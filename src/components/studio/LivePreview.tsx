@@ -2,9 +2,9 @@
 
 import { useCallback, type MouseEvent } from "react";
 import { useGetPuck } from "@puckeditor/core";
-import HomePage from "@/pages/HomePage";
-import GalleryPage from "@/pages/GalleryPage";
-import ContactPage from "@/pages/ContactPage";
+import HomePage from "@/views/HomePage";
+import GalleryPage from "@/views/GalleryPage";
+import ContactPage from "@/views/ContactPage";
 
 type StudioPage = "global" | "home" | "gallery" | "contact";
 
