@@ -42,6 +42,7 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 type EmailMessage = {
   to: string;
   cc?: string;
+  bcc?: string;
   replyTo?: string;
   subject: string;
   body: string;
@@ -312,6 +313,13 @@ export async function POST(request: Request) {
     ackBodyTemplate: DEFAULT_ACK_BODY,
     internalSubjectTemplate: DEFAULT_INTERNAL_SUBJECT,
     internalBodyTemplate: DEFAULT_INTERNAL_BODY,
+    ackCc: "",
+    ackBcc: "",
+    ackReplyTo: "",
+    internalTo: "",
+    internalCc: "",
+    internalBcc: "",
+    internalReplyTo: "",
   };
   try {
     const content = await getSiteContent();
@@ -319,7 +327,7 @@ export async function POST(request: Request) {
     if (emailCfg.toEmail.trim()) recipient = emailCfg.toEmail.trim();
     if (content.global.email?.trim()) recipient = content.global.email.trim();
     subject = renderSubject(emailCfg.subjectTemplate, submission.form);
-    // Studio-editable ack/internal templates (content.contact.email).
+    // Studio-editable ack/internal templates + addressing (content.contact.email).
     const editable = content.contact.email;
     emailTemplates.ackEnabled = editable.ackEnabled;
     emailTemplates.ackSubjectTemplate =
@@ -330,26 +338,42 @@ export async function POST(request: Request) {
       editable.internalSubjectTemplate?.trim() || emailTemplates.internalSubjectTemplate;
     emailTemplates.internalBodyTemplate =
       editable.internalBodyTemplate?.trim() || emailTemplates.internalBodyTemplate;
+    emailTemplates.ackCc = editable.ackCc ?? "";
+    emailTemplates.ackBcc = editable.ackBcc ?? "";
+    emailTemplates.ackReplyTo = editable.ackReplyTo ?? "";
+    emailTemplates.internalTo = editable.internalTo ?? "";
+    emailTemplates.internalCc = editable.internalCc ?? "";
+    emailTemplates.internalBcc = editable.internalBcc ?? "";
+    emailTemplates.internalReplyTo = editable.internalReplyTo ?? "";
   } catch (error) {
     console.error("[contact] Failed to read editable email settings:", error);
   }
 
-  // Build the acknowledgement email (to the submitter, cc + reply-to the leasing
-  // inbox) and the internal-notification email for the Apps Script relay.
+  // Build the acknowledgement email (to the submitter) and the internal
+  // notification email for the Apps Script relay. cc / bcc / reply-to / internal
+  // recipient are Studio-editable; empty values fall back to sensible defaults.
   const form = submission.form;
+  // Render an editable address field ({{placeholders}} allowed); "" -> undefined.
+  const addr = (template: string): string | undefined => {
+    const value = renderTemplate(template, form).trim();
+    return value.length > 0 ? value : undefined;
+  };
   const emails: EmailMessage[] = [];
   if (emailTemplates.ackEnabled && form.email) {
     emails.push({
       to: form.email,
-      cc: recipient,
-      replyTo: recipient,
+      cc: addr(emailTemplates.ackCc) ?? recipient,
+      bcc: addr(emailTemplates.ackBcc),
+      replyTo: addr(emailTemplates.ackReplyTo) ?? recipient,
       subject: renderTemplate(emailTemplates.ackSubjectTemplate, form),
       body: renderTemplate(emailTemplates.ackBodyTemplate, form),
     });
   }
   emails.push({
-    to: recipient,
-    replyTo: form.email,
+    to: addr(emailTemplates.internalTo) ?? recipient,
+    cc: addr(emailTemplates.internalCc),
+    bcc: addr(emailTemplates.internalBcc),
+    replyTo: addr(emailTemplates.internalReplyTo) ?? form.email,
     subject: renderTemplate(emailTemplates.internalSubjectTemplate, form),
     body: renderTemplate(emailTemplates.internalBodyTemplate, form),
   });

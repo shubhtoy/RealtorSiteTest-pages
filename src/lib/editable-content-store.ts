@@ -172,6 +172,18 @@ export function validateEditableSiteDocument(document: EditableSiteDocument): { 
       errors.push("contact.email.internalSubjectTemplate must be a string");
     if (!isString(document.contact.email.internalBodyTemplate))
       errors.push("contact.email.internalBodyTemplate must be a string");
+    for (const key of [
+      "ackCc",
+      "ackBcc",
+      "ackReplyTo",
+      "internalTo",
+      "internalCc",
+      "internalBcc",
+      "internalReplyTo",
+    ] as const) {
+      if (!isString(document.contact.email[key]))
+        errors.push(`contact.email.${key} must be a string`);
+    }
   }
   if (!isObject(document.contact.integrations) || !isObject(document.contact.integrations.smtp)) {
     errors.push("contact.integrations.smtp is required");

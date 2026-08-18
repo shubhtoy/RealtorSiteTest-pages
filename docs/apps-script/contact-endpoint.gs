@@ -69,6 +69,7 @@ function doPost(e) {
           body: m.body || "",
         };
         if (m.cc) opts.cc = m.cc;
+        if (m.bcc) opts.bcc = m.bcc;
         if (m.replyTo) opts.replyTo = m.replyTo;
         MailApp.sendEmail(opts);
       }

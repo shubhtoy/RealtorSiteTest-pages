@@ -892,8 +892,15 @@ export default function StudioPage() {
                 },
                 ackSubjectTemplate: { type: "text", label: "Acknowledgement subject" },
                 ackBodyTemplate: { type: "textarea", label: "Acknowledgement body" },
+                ackReplyTo: { type: "text", label: "Ack reply-to (blank = leasing inbox)" },
+                ackCc: { type: "text", label: "Ack cc (blank = leasing inbox)" },
+                ackBcc: { type: "text", label: "Ack bcc" },
+                internalTo: { type: "text", label: "Internal recipient (blank = leasing inbox)" },
                 internalSubjectTemplate: { type: "text", label: "Internal notification subject" },
                 internalBodyTemplate: { type: "textarea", label: "Internal notification body" },
+                internalReplyTo: { type: "text", label: "Internal reply-to (blank = submitter)" },
+                internalCc: { type: "text", label: "Internal cc" },
+                internalBcc: { type: "text", label: "Internal bcc" },
               },
             },
           },
@@ -1239,8 +1246,15 @@ export default function StudioPage() {
               ackEnabled: String(draft.contact.email.ackEnabled),
               ackSubjectTemplate: draft.contact.email.ackSubjectTemplate,
               ackBodyTemplate: draft.contact.email.ackBodyTemplate,
+              ackReplyTo: draft.contact.email.ackReplyTo,
+              ackCc: draft.contact.email.ackCc,
+              ackBcc: draft.contact.email.ackBcc,
+              internalTo: draft.contact.email.internalTo,
               internalSubjectTemplate: draft.contact.email.internalSubjectTemplate,
               internalBodyTemplate: draft.contact.email.internalBodyTemplate,
+              internalReplyTo: draft.contact.email.internalReplyTo,
+              internalCc: draft.contact.email.internalCc,
+              internalBcc: draft.contact.email.internalBcc,
             },
           },
         },
@@ -1488,6 +1502,34 @@ export default function StudioPage() {
           internalBodyTemplate: String(
             (contactIntegrationsEntry?.email as Record<string, unknown> | undefined)
               ?.internalBodyTemplate ?? draft.contact.email.internalBodyTemplate,
+          ),
+          ackReplyTo: String(
+            (contactIntegrationsEntry?.email as Record<string, unknown> | undefined)?.ackReplyTo ??
+              draft.contact.email.ackReplyTo,
+          ),
+          ackCc: String(
+            (contactIntegrationsEntry?.email as Record<string, unknown> | undefined)?.ackCc ??
+              draft.contact.email.ackCc,
+          ),
+          ackBcc: String(
+            (contactIntegrationsEntry?.email as Record<string, unknown> | undefined)?.ackBcc ??
+              draft.contact.email.ackBcc,
+          ),
+          internalTo: String(
+            (contactIntegrationsEntry?.email as Record<string, unknown> | undefined)?.internalTo ??
+              draft.contact.email.internalTo,
+          ),
+          internalReplyTo: String(
+            (contactIntegrationsEntry?.email as Record<string, unknown> | undefined)
+              ?.internalReplyTo ?? draft.contact.email.internalReplyTo,
+          ),
+          internalCc: String(
+            (contactIntegrationsEntry?.email as Record<string, unknown> | undefined)?.internalCc ??
+              draft.contact.email.internalCc,
+          ),
+          internalBcc: String(
+            (contactIntegrationsEntry?.email as Record<string, unknown> | undefined)?.internalBcc ??
+              draft.contact.email.internalBcc,
           ),
         },
         integrations: {
