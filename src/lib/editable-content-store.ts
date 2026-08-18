@@ -1,6 +1,5 @@
 import { toast } from "sonner";
 import { defaultEditableSiteDocument } from "@/lib/editable-content-defaults";
-import { appEnv } from "@/config/env";
 import type { EditableSiteDocument } from "@/types/editable-content";
 
 export const CURRENT_DOCUMENT_VERSION = 1;
@@ -447,12 +446,6 @@ export function writeDraftDocument(document: EditableSiteDocument) {
       toast.warning("Storage quota exceeded. Draft preserved in memory only.");
     }
   }
-  // Persist to server file (non-blocking)
-  fetch(`${appEnv.apiOrigin}/api/content/draft`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json", "x-studio-password": appEnv.studioPassword },
-    body: JSON.stringify({ document: payload }),
-  }).catch(() => {});
 }
 
 export function publishDraftDocument(document: EditableSiteDocument) {

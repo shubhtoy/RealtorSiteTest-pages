@@ -202,7 +202,7 @@ function splitEmailLines(value: unknown, fallback: string[]): string[] {
 }
 
 export default function StudioPage() {
-  const { draft, published, mode, setMode, updateDraft, publish, publishToServer, publishStatus, revertDraft, exportDraftJson } = useEditableContent();
+  const { draft, published, updateDraft, publish, publishToServer, publishStatus, revertDraft, exportDraftJson } = useEditableContent();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [editorPage, setEditorPage] = useState<"global" | "home" | "gallery" | "contact">("home");
   const [password, setPassword] = useState("");
@@ -240,11 +240,6 @@ export default function StudioPage() {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [hasUnpublishedChanges]);
-
-  // The Studio previews the draft you are editing.
-  useEffect(() => {
-    if (isUnlocked) setMode("preview");
-  }, [isUnlocked, setMode]);
 
   // Keyboard shortcuts: Ctrl+S to save draft, Ctrl+Shift+P to publish
   const handleSaveDraft = useCallback(() => {
@@ -1318,7 +1313,7 @@ export default function StudioPage() {
     [draft, editorPage],
   );
 
-  const puckCanvasKey = `${editorPage}-${mode}-${dataNonce}`;
+  const puckCanvasKey = `${editorPage}-${dataNonce}`;
 
   const buildDoc = (nextData: PuckIncomingData) => {
     const globalEntry = PuckDataService.getEntryProps<GlobalBrandProps>(nextData, "GlobalBrand");
@@ -1818,29 +1813,9 @@ export default function StudioPage() {
         <div className="rounded-xl border border-border bg-panel-gradient p-3 shadow-soft">
           {/* Top row: Logo + Section tabs (desktop) + Actions */}
           <div className="flex flex-wrap items-center justify-between gap-3">
-            {/* Left: Canvas mode toggle + autosave status */}
+            {/* Left: Studio label + autosave status */}
             <div className="flex items-center gap-2">
               <span className="hidden text-sm font-display text-foreground sm:inline">Studio</span>
-              <div className="flex items-center rounded-full border border-border bg-background/60 p-0.5">
-                <button
-                  type="button"
-                  onClick={() => { setMode("published"); toast("Live canvas mode"); }}
-                  className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] transition-colors ${
-                    mode === "published" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  Live
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setMode("preview"); toast("Draft preview mode"); }}
-                  className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] transition-colors ${
-                    mode === "preview" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  Draft
-                </button>
-              </div>
               <span
                 className={`rounded-full px-3 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.12em] transition-all ${
                   autosaveStatus === "error"

@@ -3,12 +3,7 @@ import "server-only";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 
-import {
-  ContentValidationError,
-  DraftNotFoundError,
-  publishDocument,
-  publishDraft,
-} from "@/lib/content/store.server";
+import { ContentValidationError, publishDocument } from "@/lib/content/store.server";
 import { GitHubSyncError } from "@/lib/content/github-sync.server";
 import { requireStudioAuth } from "@/lib/studio-auth.server";
 
@@ -36,9 +31,13 @@ export async function POST(request: Request) {
 
   try {
     const record = isRecord(body) ? body : {};
-    const published = isRecord(record.document)
-      ? await publishDocument(record.document)
-      : await publishDraft();
+    if (!isRecord(record.document)) {
+      return NextResponse.json(
+        { ok: false, message: "document object is required" },
+        { status: 400 },
+      );
+    }
+    const published = await publishDocument(record.document);
 
     // Refresh the server-rendered public routes so a disk-mode publish is live
     // at once (in GitHub-sync mode the redeploy serves the new content).
@@ -48,9 +47,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ ok: true, data: published });
   } catch (error) {
-    if (error instanceof DraftNotFoundError) {
-      return NextResponse.json({ ok: false, message: error.message }, { status: 400 });
-    }
     if (error instanceof ContentValidationError) {
       return NextResponse.json(
         { ok: false, message: "Draft failed validation", errors: error.errors },
