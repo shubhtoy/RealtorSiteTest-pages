@@ -19,7 +19,7 @@ import { StudioWorkspace } from "@/components/studio/StudioWorkspace";
 import { AdminAuthService } from "@/lib/admin-auth";
 import { STUDIO_PASSWORD, STUDIO_PASSWORD_ENV_HINT } from "@/config/studio-auth";
 import { coerceEditableSiteDocument, validateEditableSiteDocument } from "@/lib/editable-content-store";
-import { defaultTheme } from "@/lib/editable-content-defaults";
+import { defaultTheme, defaultEditableSiteDocument } from "@/lib/editable-content-defaults";
 import { PuckDataService } from "@/lib/puck-data";
 import { resolveAppHref } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -1256,15 +1256,25 @@ export default function StudioPage() {
               ackEnabled: String(draft.contact.email.ackEnabled),
               ackSubjectTemplate: draft.contact.email.ackSubjectTemplate,
               ackBodyTemplate: draft.contact.email.ackBodyTemplate,
-              ackReplyTo: draft.contact.email.ackReplyTo,
-              ackCc: draft.contact.email.ackCc.join("\n"),
-              ackBcc: draft.contact.email.ackBcc.join("\n"),
-              internalTo: draft.contact.email.internalTo.join("\n"),
+              ackReplyTo:
+                draft.contact.email.ackReplyTo ||
+                defaultEditableSiteDocument.contact.email.ackReplyTo,
+              ackCc: (draft.contact.email.ackCc?.length
+                ? draft.contact.email.ackCc
+                : defaultEditableSiteDocument.contact.email.ackCc
+              ).join("\n"),
+              ackBcc: (draft.contact.email.ackBcc ?? []).join("\n"),
+              internalTo: (draft.contact.email.internalTo?.length
+                ? draft.contact.email.internalTo
+                : defaultEditableSiteDocument.contact.email.internalTo
+              ).join("\n"),
               internalSubjectTemplate: draft.contact.email.internalSubjectTemplate,
               internalBodyTemplate: draft.contact.email.internalBodyTemplate,
-              internalReplyTo: draft.contact.email.internalReplyTo,
-              internalCc: draft.contact.email.internalCc.join("\n"),
-              internalBcc: draft.contact.email.internalBcc.join("\n"),
+              internalReplyTo:
+                draft.contact.email.internalReplyTo ||
+                defaultEditableSiteDocument.contact.email.internalReplyTo,
+              internalCc: (draft.contact.email.internalCc ?? []).join("\n"),
+              internalBcc: (draft.contact.email.internalBcc ?? []).join("\n"),
             },
           },
         },
