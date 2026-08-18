@@ -308,6 +308,16 @@ export const defaultEditableSiteDocument: EditableSiteDocument = {
         "Message:",
         "{{message}}",
       ].join("\n"),
+      // Empty = use sensible fallbacks: ack cc/replyTo -> leasing inbox,
+      // internal to -> leasing inbox, internal replyTo -> submitter. Any value
+      // set here (Studio) overrides; {{placeholders}} are supported.
+      ackCc: "",
+      ackBcc: "",
+      ackReplyTo: "",
+      internalTo: "",
+      internalCc: "",
+      internalBcc: "",
+      internalReplyTo: "",
     },
     integrations: {
       smtp: {
