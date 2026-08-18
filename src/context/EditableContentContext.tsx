@@ -14,8 +14,6 @@ import {
 } from "@/lib/editable-content-store";
 import type { EditableSiteDocument } from "@/types/editable-content";
 
-type EditableMode = "published" | "preview";
-
 type PublishStatus = "idle" | "publishing" | "success" | "error";
 
 /**
@@ -38,8 +36,6 @@ async function readErrorMessage(response: Response): Promise<string> {
 }
 
 type EditableContentContextValue = {
-  mode: EditableMode;
-  setMode: (mode: EditableMode) => void;
   published: EditableSiteDocument;
   draft: EditableSiteDocument;
   current: EditableSiteDocument;
@@ -68,7 +64,9 @@ type Props = {
 };
 
 export function EditableContentProvider({ children, initialContent }: Props) {
-  const [mode, setMode] = useState<EditableMode>("published");
+  // The Studio (no server-seeded content) edits a working copy directly; the
+  // public site (seeded) always shows the published content.
+  const isEditor = initialContent === undefined;
   const [published, setPublished] = useState<EditableSiteDocument>(
     () => initialContent ?? readPublishedDocument(),
   );
@@ -112,11 +110,9 @@ export function EditableContentProvider({ children, initialContent }: Props) {
 
   const value = useMemo<EditableContentContextValue>(
     () => ({
-      mode,
-      setMode,
       published,
       draft,
-      current: mode === "preview" ? draft : published,
+      current: isEditor ? draft : published,
       updateDraft: (next) => {
         setDraft(next);
         writeDraftDocument(next);
@@ -137,22 +133,7 @@ export function EditableContentProvider({ children, initialContent }: Props) {
         };
 
         try {
-          // (a) Persist the current draft to the server. The publish step below
-          // (a) Best-effort: persist the draft server-side for local dev. On a
-          // serverless host this disk write does not survive to the publish
-          // request, so a failure here is non-fatal — publish carries the
-          // document itself below.
-          try {
-            await fetch(`${appEnv.apiOrigin}/api/content/draft`, {
-              method: "PUT",
-              headers,
-              body: JSON.stringify({ document: draft }),
-            });
-          } catch {
-            // Ignore — the publish request below is self-contained.
-          }
-
-          // (b) Self-contained publish: send the full document so it does not
+          // Self-contained publish: send the full document so it does not
           // depend on cross-request draft state. The server commits it to
           // GitHub (prod) or writes disk (local) and revalidates public pages.
           const publishRes = await fetch(`${appEnv.apiOrigin}/api/content/publish`, {
@@ -188,7 +169,7 @@ export function EditableContentProvider({ children, initialContent }: Props) {
       },
       exportDraftJson: () => exportDraftAsJson(),
     }),
-    [draft, mode, published, publishStatus],
+    [draft, isEditor, published, publishStatus],
   );
 
   return <EditableContentContext.Provider value={value}>{children}</EditableContentContext.Provider>;
