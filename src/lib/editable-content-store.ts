@@ -172,17 +172,13 @@ export function validateEditableSiteDocument(document: EditableSiteDocument): { 
       errors.push("contact.email.internalSubjectTemplate must be a string");
     if (!isString(document.contact.email.internalBodyTemplate))
       errors.push("contact.email.internalBodyTemplate must be a string");
-    for (const key of [
-      "ackCc",
-      "ackBcc",
-      "ackReplyTo",
-      "internalTo",
-      "internalCc",
-      "internalBcc",
-      "internalReplyTo",
-    ] as const) {
+    for (const key of ["ackReplyTo", "internalReplyTo"] as const) {
       if (!isString(document.contact.email[key]))
         errors.push(`contact.email.${key} must be a string`);
+    }
+    for (const key of ["ackCc", "ackBcc", "internalTo", "internalCc", "internalBcc"] as const) {
+      if (!isStringArray(document.contact.email[key]))
+        errors.push(`contact.email.${key} must be an array of strings`);
     }
   }
   if (!isObject(document.contact.integrations) || !isObject(document.contact.integrations.smtp)) {
@@ -256,6 +252,38 @@ function parseDocument(raw: string | null): EditableSiteDocument | null {
   } catch {
     return null;
   }
+}
+
+function toEmailList(value: unknown, fallback: string[]): string[] {
+  if (Array.isArray(value)) {
+    return value
+      .filter((entry): entry is string => typeof entry === "string" && entry.trim().length > 0)
+      .map((entry) => entry.trim());
+  }
+  if (typeof value === "string") {
+    return value
+      .split(",")
+      .map((entry) => entry.trim())
+      .filter((entry) => entry.length > 0);
+  }
+  return fallback;
+}
+
+// Coerce the email list fields (cc/bcc/recipients) to string arrays so content
+// written before they were arrays (single string or "") migrates cleanly.
+function normalizeEmailSettings(
+  email: EditableSiteDocument["contact"]["email"],
+): EditableSiteDocument["contact"]["email"] {
+  const defaults = defaultEditableSiteDocument.contact.email;
+  const raw = email as unknown as Record<string, unknown>;
+  return {
+    ...email,
+    ackCc: toEmailList(raw.ackCc, defaults.ackCc),
+    ackBcc: toEmailList(raw.ackBcc, defaults.ackBcc),
+    internalTo: toEmailList(raw.internalTo, defaults.internalTo),
+    internalCc: toEmailList(raw.internalCc, defaults.internalCc),
+    internalBcc: toEmailList(raw.internalBcc, defaults.internalBcc),
+  };
 }
 
 function hydrateDocument(partial: EditableSiteDocument): EditableSiteDocument {
@@ -337,10 +365,10 @@ function hydrateDocument(partial: EditableSiteDocument): EditableSiteDocument {
         ...defaultEditableSiteDocument.contact.sectionVisibility,
         ...partial.contact?.sectionVisibility,
       },
-      email: {
+      email: normalizeEmailSettings({
         ...defaultEditableSiteDocument.contact.email,
         ...partial.contact?.email,
-      },
+      }),
       formOptions: {
         ...defaultEditableSiteDocument.contact.formOptions,
         ...partial.contact?.formOptions,

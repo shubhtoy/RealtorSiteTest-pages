@@ -191,6 +191,16 @@ interface ContactIntegrationsProps {
   email?: Record<string, unknown>;
 }
 
+// Parse a Studio "one email per line" textarea (newline- or comma-separated)
+// into a trimmed string array; falls back when the value isn't a string.
+function splitEmailLines(value: unknown, fallback: string[]): string[] {
+  if (typeof value !== "string") return fallback;
+  return value
+    .split(/[\n,]/)
+    .map((entry) => entry.trim())
+    .filter((entry) => entry.length > 0);
+}
+
 export default function StudioPage() {
   const { draft, published, mode, setMode, updateDraft, publish, publishToServer, publishStatus, revertDraft, exportDraftJson } = useEditableContent();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -892,15 +902,15 @@ export default function StudioPage() {
                 },
                 ackSubjectTemplate: { type: "text", label: "Acknowledgement subject" },
                 ackBodyTemplate: { type: "textarea", label: "Acknowledgement body" },
-                ackReplyTo: { type: "text", label: "Ack reply-to (blank = leasing inbox)" },
-                ackCc: { type: "text", label: "Ack cc (blank = leasing inbox)" },
-                ackBcc: { type: "text", label: "Ack bcc" },
-                internalTo: { type: "text", label: "Internal recipient (blank = leasing inbox)" },
+                ackReplyTo: { type: "text", label: "Ack reply-to" },
+                ackCc: { type: "textarea", label: "Ack cc (one email per line)" },
+                ackBcc: { type: "textarea", label: "Ack bcc (one email per line)" },
+                internalTo: { type: "textarea", label: "Internal recipients (one email per line)" },
                 internalSubjectTemplate: { type: "text", label: "Internal notification subject" },
                 internalBodyTemplate: { type: "textarea", label: "Internal notification body" },
-                internalReplyTo: { type: "text", label: "Internal reply-to (blank = submitter)" },
-                internalCc: { type: "text", label: "Internal cc" },
-                internalBcc: { type: "text", label: "Internal bcc" },
+                internalReplyTo: { type: "text", label: "Internal reply-to" },
+                internalCc: { type: "textarea", label: "Internal cc (one email per line)" },
+                internalBcc: { type: "textarea", label: "Internal bcc (one email per line)" },
               },
             },
           },
@@ -1247,14 +1257,14 @@ export default function StudioPage() {
               ackSubjectTemplate: draft.contact.email.ackSubjectTemplate,
               ackBodyTemplate: draft.contact.email.ackBodyTemplate,
               ackReplyTo: draft.contact.email.ackReplyTo,
-              ackCc: draft.contact.email.ackCc,
-              ackBcc: draft.contact.email.ackBcc,
-              internalTo: draft.contact.email.internalTo,
+              ackCc: draft.contact.email.ackCc.join("\n"),
+              ackBcc: draft.contact.email.ackBcc.join("\n"),
+              internalTo: draft.contact.email.internalTo.join("\n"),
               internalSubjectTemplate: draft.contact.email.internalSubjectTemplate,
               internalBodyTemplate: draft.contact.email.internalBodyTemplate,
               internalReplyTo: draft.contact.email.internalReplyTo,
-              internalCc: draft.contact.email.internalCc,
-              internalBcc: draft.contact.email.internalBcc,
+              internalCc: draft.contact.email.internalCc.join("\n"),
+              internalBcc: draft.contact.email.internalBcc.join("\n"),
             },
           },
         },
@@ -1507,29 +1517,29 @@ export default function StudioPage() {
             (contactIntegrationsEntry?.email as Record<string, unknown> | undefined)?.ackReplyTo ??
               draft.contact.email.ackReplyTo,
           ),
-          ackCc: String(
-            (contactIntegrationsEntry?.email as Record<string, unknown> | undefined)?.ackCc ??
-              draft.contact.email.ackCc,
+          ackCc: splitEmailLines(
+            (contactIntegrationsEntry?.email as Record<string, unknown> | undefined)?.ackCc,
+            draft.contact.email.ackCc,
           ),
-          ackBcc: String(
-            (contactIntegrationsEntry?.email as Record<string, unknown> | undefined)?.ackBcc ??
-              draft.contact.email.ackBcc,
+          ackBcc: splitEmailLines(
+            (contactIntegrationsEntry?.email as Record<string, unknown> | undefined)?.ackBcc,
+            draft.contact.email.ackBcc,
           ),
-          internalTo: String(
-            (contactIntegrationsEntry?.email as Record<string, unknown> | undefined)?.internalTo ??
-              draft.contact.email.internalTo,
+          internalTo: splitEmailLines(
+            (contactIntegrationsEntry?.email as Record<string, unknown> | undefined)?.internalTo,
+            draft.contact.email.internalTo,
           ),
           internalReplyTo: String(
             (contactIntegrationsEntry?.email as Record<string, unknown> | undefined)
               ?.internalReplyTo ?? draft.contact.email.internalReplyTo,
           ),
-          internalCc: String(
-            (contactIntegrationsEntry?.email as Record<string, unknown> | undefined)?.internalCc ??
-              draft.contact.email.internalCc,
+          internalCc: splitEmailLines(
+            (contactIntegrationsEntry?.email as Record<string, unknown> | undefined)?.internalCc,
+            draft.contact.email.internalCc,
           ),
-          internalBcc: String(
-            (contactIntegrationsEntry?.email as Record<string, unknown> | undefined)?.internalBcc ??
-              draft.contact.email.internalBcc,
+          internalBcc: splitEmailLines(
+            (contactIntegrationsEntry?.email as Record<string, unknown> | undefined)?.internalBcc,
+            draft.contact.email.internalBcc,
           ),
         },
         integrations: {
