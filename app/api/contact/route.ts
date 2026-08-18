@@ -313,13 +313,13 @@ export async function POST(request: Request) {
     ackBodyTemplate: DEFAULT_ACK_BODY,
     internalSubjectTemplate: DEFAULT_INTERNAL_SUBJECT,
     internalBodyTemplate: DEFAULT_INTERNAL_BODY,
-    ackCc: "",
-    ackBcc: "",
     ackReplyTo: "",
-    internalTo: "",
-    internalCc: "",
-    internalBcc: "",
+    ackCc: [] as string[],
+    ackBcc: [] as string[],
+    internalTo: [] as string[],
     internalReplyTo: "",
+    internalCc: [] as string[],
+    internalBcc: [] as string[],
   };
   try {
     const content = await getSiteContent();
@@ -338,13 +338,13 @@ export async function POST(request: Request) {
       editable.internalSubjectTemplate?.trim() || emailTemplates.internalSubjectTemplate;
     emailTemplates.internalBodyTemplate =
       editable.internalBodyTemplate?.trim() || emailTemplates.internalBodyTemplate;
-    emailTemplates.ackCc = editable.ackCc ?? "";
-    emailTemplates.ackBcc = editable.ackBcc ?? "";
     emailTemplates.ackReplyTo = editable.ackReplyTo ?? "";
-    emailTemplates.internalTo = editable.internalTo ?? "";
-    emailTemplates.internalCc = editable.internalCc ?? "";
-    emailTemplates.internalBcc = editable.internalBcc ?? "";
+    emailTemplates.ackCc = editable.ackCc ?? [];
+    emailTemplates.ackBcc = editable.ackBcc ?? [];
+    emailTemplates.internalTo = editable.internalTo ?? [];
     emailTemplates.internalReplyTo = editable.internalReplyTo ?? "";
+    emailTemplates.internalCc = editable.internalCc ?? [];
+    emailTemplates.internalBcc = editable.internalBcc ?? [];
   } catch (error) {
     console.error("[contact] Failed to read editable email settings:", error);
   }
@@ -358,21 +358,28 @@ export async function POST(request: Request) {
     const value = renderTemplate(template, form).trim();
     return value.length > 0 ? value : undefined;
   };
+  // Render a list of address fields and join for the relay; [] -> undefined.
+  const addrList = (templates: string[]): string | undefined => {
+    const rendered = templates
+      .map((template) => renderTemplate(template, form).trim())
+      .filter((value) => value.length > 0);
+    return rendered.length > 0 ? rendered.join(", ") : undefined;
+  };
   const emails: EmailMessage[] = [];
   if (emailTemplates.ackEnabled && form.email) {
     emails.push({
       to: form.email,
-      cc: addr(emailTemplates.ackCc) ?? recipient,
-      bcc: addr(emailTemplates.ackBcc),
+      cc: addrList(emailTemplates.ackCc) ?? recipient,
+      bcc: addrList(emailTemplates.ackBcc),
       replyTo: addr(emailTemplates.ackReplyTo) ?? recipient,
       subject: renderTemplate(emailTemplates.ackSubjectTemplate, form),
       body: renderTemplate(emailTemplates.ackBodyTemplate, form),
     });
   }
   emails.push({
-    to: addr(emailTemplates.internalTo) ?? recipient,
-    cc: addr(emailTemplates.internalCc),
-    bcc: addr(emailTemplates.internalBcc),
+    to: addrList(emailTemplates.internalTo) ?? recipient,
+    cc: addrList(emailTemplates.internalCc),
+    bcc: addrList(emailTemplates.internalBcc),
     replyTo: addr(emailTemplates.internalReplyTo) ?? form.email,
     subject: renderTemplate(emailTemplates.internalSubjectTemplate, form),
     body: renderTemplate(emailTemplates.internalBodyTemplate, form),

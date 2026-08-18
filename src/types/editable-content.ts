@@ -221,15 +221,15 @@ export type ContactLayer = {
     ackEnabled: boolean;
     ackSubjectTemplate: string;
     ackBodyTemplate: string;
-    ackCc: string;
-    ackBcc: string;
     ackReplyTo: string;
-    internalTo: string;
+    ackCc: string[];
+    ackBcc: string[];
+    internalTo: string[];
     internalSubjectTemplate: string;
     internalBodyTemplate: string;
-    internalCc: string;
-    internalBcc: string;
     internalReplyTo: string;
+    internalCc: string[];
+    internalBcc: string[];
   };
   integrations: {
     smtp: {
